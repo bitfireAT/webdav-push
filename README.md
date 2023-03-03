@@ -11,4 +11,6 @@ The repo is intended to contain
 
 - discussion and exchange about the WebDAV Push topic (in [Discussions](https://github.com/bitfireAT/webdav-push/discussions)),
 - specific tasks (in Issues) and related patches (in Pull requests),
-- a draft document describing WebDAV Push (maybe as a Markdown file? Or in parts?).
+- a [draft document describing WebDAV Push](webdav-push-draft.md).
+
+Reference implementations?
