@@ -13,4 +13,7 @@ The repo is intended to contain
 - specific tasks (in Issues) and related patches (in Pull requests),
 - a [draft document describing WebDAV Push](webdav-push-draft.md).
 
-Reference implementations?
+There is also a public Matrix channel: [#webdav-push:matrix.org](https://matrix.to/#/#webdav-push:matrix.org).
+If you're interested, don't hesitate to join.
+
+Where to put reference implementations?
