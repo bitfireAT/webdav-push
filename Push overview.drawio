@@ -1,0 +1,308 @@
+<mxfile host="app.diagrams.net" modified="2023-09-19T11:41:31.584Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/117.0" etag="Y_bFbyUZkpli1rY2ExbB" version="21.7.5" type="device">
+  <diagram name="Page-1" id="74e2e168-ea6b-b213-b513-2b3c1d86103e">
+    <mxGraphModel dx="4843" dy="1758" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-23" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;rounded=1;" edge="1" parent="1" source="uT5cAdOJGuDDNsZNP-gC-70" target="WbyVeOGajUIQRo5Y53d9-8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-792.4999999999995" y="880" as="sourcePoint" />
+            <mxPoint x="-995" y="210" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-899" y="210" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-24" value="&lt;div&gt;GET CAPABILITIES&lt;br&gt;&lt;br&gt;Push director address for&amp;nbsp;&lt;/div&gt;&lt;div&gt;the requested service&lt;br&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WbyVeOGajUIQRo5Y53d9-23">
+          <mxGeometry x="-0.4968" y="-2" relative="1" as="geometry">
+            <mxPoint x="6" y="-20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-25" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="uT5cAdOJGuDDNsZNP-gC-70" target="WbyVeOGajUIQRo5Y53d9-12">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1515" y="913" />
+              <mxPoint x="-1515" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-26" value="POST SUBSCRIBE&lt;br&gt;&lt;br&gt;User Authentication&lt;br&gt;App Authentication&lt;br&gt;Method (FCM, UnifiedPush, Websocket)&lt;br&gt;Method Data&lt;br&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WbyVeOGajUIQRo5Y53d9-25">
+          <mxGeometry x="0.2036" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-70" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="-1435" y="880" width="580" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-71" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;curved=1;" parent="1" source="WbyVeOGajUIQRo5Y53d9-11" target="WbyVeOGajUIQRo5Y53d9-15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-73" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;curved=1;" parent="1" source="WbyVeOGajUIQRo5Y53d9-10" target="uT5cAdOJGuDDNsZNP-gC-78" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-650" y="620" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="-1015" y="670" />
+              <mxPoint x="-1085" y="670" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-74" value="websocket" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uT5cAdOJGuDDNsZNP-gC-73" vertex="1" connectable="0">
+          <mxGeometry x="-0.0873" y="3" relative="1" as="geometry">
+            <mxPoint x="7" y="28" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-75" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;curved=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="WbyVeOGajUIQRo5Y53d9-10" target="uT5cAdOJGuDDNsZNP-gC-83" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-615" y="600" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="-1015" y="670" />
+              <mxPoint x="-925" y="670" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-76" value="websocket" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uT5cAdOJGuDDNsZNP-gC-75" vertex="1" connectable="0">
+          <mxGeometry x="-0.0234" y="1" relative="1" as="geometry">
+            <mxPoint x="-31" y="25" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-78" value="&lt;div&gt;WebDAV&amp;nbsp;&lt;/div&gt;&lt;div&gt;FileManager&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-1115" y="930" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-83" value="&lt;div&gt;App in&amp;nbsp;&lt;/div&gt;&lt;div&gt;Web Browser&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-985" y="930" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-16" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-9" target="WbyVeOGajUIQRo5Y53d9-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-1" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1395" y="300" width="460" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-8" target="WbyVeOGajUIQRo5Y53d9-46">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1165" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-7" value="NOTIFY CONTENT CHANGED" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WbyVeOGajUIQRo5Y53d9-6">
+          <mxGeometry x="-0.0544" y="1" relative="1" as="geometry">
+            <mxPoint x="-1" y="-12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-8" value="&lt;div&gt;Application&amp;nbsp;&lt;/div&gt;&lt;div&gt;Server&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1225" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-9" value="&lt;div&gt;Unified Push&lt;/div&gt;&lt;div&gt;Module&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1225" y="550" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-10" value="&lt;div&gt;Websockets&lt;/div&gt;&lt;div&gt;Module&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1075" y="550" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-11" value="&lt;div&gt;FCM Backend&lt;/div&gt;&lt;div&gt;Module&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1365" y="550" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-12" value="&lt;div&gt;Subscription&lt;/div&gt;&lt;div&gt;API&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1455" y="420" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-13" value="&lt;div&gt;Unified Push&lt;/div&gt;&lt;div&gt;endpoints&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="-1255" y="670" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-15" target="WbyVeOGajUIQRo5Y53d9-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-38" value="FCM Application Key + &lt;br&gt;collection to be synced" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WbyVeOGajUIQRo5Y53d9-18">
+          <mxGeometry x="-0.0753" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-15" value="App Client FCM&lt;br&gt;Redirectors" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-1425" y="670" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-17" value="FCM" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1425" y="800" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-20" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Push Clients&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-1395" y="890" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="uT5cAdOJGuDDNsZNP-gC-79" target="uT5cAdOJGuDDNsZNP-gC-88">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-79" value="UnifiedPush&lt;br&gt;Distributor App" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="-1255" y="930" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-88" value="&lt;div&gt;DAVx5 /&amp;nbsp;&lt;/div&gt;&lt;div&gt;other clients&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="-1425" y="930" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uT5cAdOJGuDDNsZNP-gC-86" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;curved=1;" parent="1" source="WbyVeOGajUIQRo5Y53d9-13" target="uT5cAdOJGuDDNsZNP-gC-79" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1285" y="780" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-19" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-17" target="uT5cAdOJGuDDNsZNP-gC-88">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-31" value="&lt;div&gt;&lt;font style=&quot;font-size: 24px;&quot;&gt;Push&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 24px;&quot;&gt;Director&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-1385" y="320" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-33" value="&lt;p&gt;Client Application (eg DAVx5) must provide its own FCM redirector.&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-1585" y="300" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-34" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-1625" y="300" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-35" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="-1625" y="380" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-36" value="UnifiedPush distributor App has its own UnifiedPush user chosen server" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-1585" y="390" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-37" value="&lt;h1&gt;Push Director&lt;br&gt;&lt;/h1&gt;&lt;p&gt;Must be known to the Application Server by hostname and can be a public instance or self-hosted.&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-1585" y="180" width="190" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-46" target="WbyVeOGajUIQRo5Y53d9-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-50" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-46" target="WbyVeOGajUIQRo5Y53d9-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-51" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;curved=1;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-46" target="WbyVeOGajUIQRo5Y53d9-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-46" value="&lt;div&gt;Distribute&lt;/div&gt;&lt;div&gt;to module if there&amp;nbsp;&lt;/div&gt;&lt;div&gt;is 1+ devices&amp;nbsp;&lt;/div&gt;&lt;div&gt;registered&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1230" y="345" width="130" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-54" value="&lt;h1&gt;Websocket Subscription&lt;br&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-700" y="180" width="310" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-58" value="&lt;h1&gt;FCM Subscription&lt;br&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-690" y="420" width="310" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-65" value="App Client FCM&lt;br&gt;Redirector" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-500" y="600" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-133" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-66" target="WbyVeOGajUIQRo5Y53d9-114">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-66" value="Subscription&lt;br&gt;API" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-320" y="490" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-117" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-67" target="WbyVeOGajUIQRo5Y53d9-66">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-450" y="505" />
+              <mxPoint x="-450" y="505" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-122" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-67" target="WbyVeOGajUIQRo5Y53d9-121">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-67" value="&lt;div&gt;DAVx5 /&amp;nbsp;&lt;/div&gt;&lt;div&gt;other clients&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-690" y="490" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-59" value="&lt;p&gt;POST &amp;nbsp; /subscribe&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Method: fcm &lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Auth: ...&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;Collection Token&lt;/span&gt;: XXX&lt;/p&gt;" style="text;html=1;strokeColor=default;fillColor=default;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-550" y="475" width="200" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-87" value="&lt;h1&gt;UnifiedPush Subscription&lt;br&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-700" y="740" width="330" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-93" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-89" target="WbyVeOGajUIQRo5Y53d9-90">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-97" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-89" target="WbyVeOGajUIQRo5Y53d9-92">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-600" y="910" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-89" value="&lt;div&gt;DAVx5 /&amp;nbsp;&lt;/div&gt;&lt;div&gt;other clients&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-690" y="800" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-95" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-90" target="WbyVeOGajUIQRo5Y53d9-89">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-96" value="ENDPOINT" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WbyVeOGajUIQRo5Y53d9-95">
+          <mxGeometry x="0.4077" y="-2" relative="1" as="geometry">
+            <mxPoint x="21" y="-3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-90" value="UnifiedPush&lt;br&gt;Distributor App" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="-440" y="800" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-92" value="&lt;div&gt;Subscription&lt;/div&gt;&lt;div&gt;API&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-320" y="880" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-94" value="REGISTER" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="-560" y="790" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-98" value="&lt;p&gt;POST &amp;nbsp; /subscribe&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Method: unifiedpush&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Auth: ...&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;Collection Token&lt;/span&gt;: XXX&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;UnifiedPush&lt;/span&gt; Endpoint: XXX&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=default;fillColor=default;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-560" y="870" width="190" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-101" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-100" target="WbyVeOGajUIQRo5Y53d9-102">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-80" y="314.75" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-100" value="&lt;div&gt;WebDAV&amp;nbsp;&lt;/div&gt;FileManager" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-690" y="300" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-103" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-102" target="WbyVeOGajUIQRo5Y53d9-100">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-105" value="HTTP 101: UPGRADE TO WEBSOCKET" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WbyVeOGajUIQRo5Y53d9-103">
+          <mxGeometry x="0.2696" y="1" relative="1" as="geometry">
+            <mxPoint x="38" y="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-102" value="Websockets Module" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-320" y="300" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-55" value="&lt;p&gt;POST &amp;nbsp; /subscribe&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Method: websocket&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Auth: ...&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;Collection Token&lt;/span&gt;: XXX&lt;/p&gt;" style="text;html=1;strokeColor=default;fillColor=default;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-545" y="230" width="190" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-106" value="App Client FCM&lt;br&gt;Redirectors" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-1415" y="680" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-110" value="&lt;div&gt;Unified Push&lt;/div&gt;&lt;div&gt;endpoints&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="-1245" y="680" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-111" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-9" target="WbyVeOGajUIQRo5Y53d9-110">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-134" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-114" target="WbyVeOGajUIQRo5Y53d9-65">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-114" value="&lt;div&gt;FCM Backend&lt;/div&gt;&lt;div&gt;Module&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-320" y="600" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-123" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="WbyVeOGajUIQRo5Y53d9-121" target="WbyVeOGajUIQRo5Y53d9-67">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-124" value="Text" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WbyVeOGajUIQRo5Y53d9-123">
+          <mxGeometry x="0.0091" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-125" value="AUTOMATIC&lt;br&gt;&lt;div&gt;SUBSCRIBE TO TOPIC&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WbyVeOGajUIQRo5Y53d9-123">
+          <mxGeometry x="0.0091" y="-5" relative="1" as="geometry">
+            <mxPoint x="25" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-121" value="FCM" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-690" y="600" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-127" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;2&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="-620" y="850" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-130" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;1&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="-580" y="805" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-135" value="&lt;h1&gt;&lt;font style=&quot;font-size: 72px;&quot;&gt;Overview&lt;/font&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-1625" y="70" width="410" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="WbyVeOGajUIQRo5Y53d9-137" value="&lt;h1&gt;&lt;font style=&quot;font-size: 72px;&quot;&gt;Subscriptions&lt;/font&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-780" y="70" width="410" height="70" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
