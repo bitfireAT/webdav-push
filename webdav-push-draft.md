@@ -8,7 +8,7 @@ Draft Document
   * [JMAP Push](https://jmap.io/spec-core.html#push)
   * [Draft: Discovery of CalDAV Push-Notification Settings](https://github.com/apple/ccs-calendarserver/blob/master/doc/Extensions/caldav-pubsubdiscovery.txt)
   * [Draft: Push Discovery and Notification Dispatch Protocol](https://datatracker.ietf.org/doc/html/draft-gajda-dav-push-00)
-  * [Symfony Mercury over SEE]()
+  * [Symfony Mercury over SEE](https://mercure.rocks/spec)
 - extending WebDAV and especially CalDAV/CardDAV
 
 Client-side use cases:
@@ -38,7 +38,7 @@ Server-side use cases:
 
 # Architectural overview
 
-TODO: architectural overview diagram
+![Architectural overview diagram](images/Push%20overview.drawio.png)
 
 ## Application server
 
@@ -101,6 +101,8 @@ FCM redirector: DAVx⁵ would have to host their own FCM redirector
 
 - How to reduce abuse? Require "authentication" with app-internal key; if it's really a problem we could also require a server key that must be obtained from the DAVx⁵ redirector. How do Nextcloud Push and Conversations FCM redirectors handle abuse?
 
+![Flowchart: Push over FCM](images/FCM%20Flowchart.drawio.png)
+
 ### Unified Push
 
 Endpoints
@@ -108,6 +110,8 @@ Endpoints
 ### WebSockets
 
 Define protocol how to deliver the topics to the WS client.
+
+![Flowchart: Push over WebSockets](images/Websocket%20Flowchart.drawio.png)
 
 ## Push Clients
 
