@@ -61,6 +61,12 @@ Interfaces (incoming):
   - authentication should be recommended when possible (but method may vary: hosted instances may require same authentication as for WebDAV, public instances like a DAVx⁵-hosted public instance may require a token that's derived from the DAVx⁵ FCM ID)
 - API for the Application Server where the Push Director can receive a message for every changed collection (HTTP POST, JSON)
 
+There should also be the possibility for additional non-standard subscription/notification APIs. For instance, a Push Client (TODO: is it possible that the
+Push Director does that?) could subscribe to Google Calendars over [Google Calendar API Push notifications](https://developers.google.com/calendar/api/guides/push?hl=en)
+and register a Webhook there. Then the Google Calendar would notify the Push Director, but not over the same `POST /update` as defined in this document, but by
+some proprietary protocol. The Push Client still has to register to the Push Director so that the actual delivery of of the push notification
+over a Push Service can work.
+
 Outgoing side:
 
 - sends filtered (see below) push notifications in correct format to the actual Push Services, like
@@ -84,16 +90,17 @@ TODO: schematic of sample architecture of Push Director
 
 ## Push Services
 
-Push Services are existing services that can be used for the actual push notifications., like
+Push Services are existing services that can be used for the actual push notifications., like (alphabetically)
 
-- Google FCM (Firebase)
-- UnifiedPush
-- WebSocket (already exists, but we have to define how to use it for WebDAV Push)
-- Apple Push Notification (APN) service
+- Apple Push Notification (APN) service (supports topics)
+- [Google FCM](https://firebase.google.com/docs/cloud-messaging) (supports topics)
+- [Huawei HMS](https://developer.huawei.com/consumer/en/hms/huawei-pushkit) (supports topics)
+- [UnifiedPush](https://unifiedpush.org/) (one-to-one)
+- WebSockets (one-to-one; we have to define how to use it for WebDAV Push)
 
-Implementation must support upcoming new Push Services.
+We must support upcoming new Push Services.
 
-### FCM
+### Google FCM
 
 Topics
 
@@ -103,7 +110,7 @@ FCM redirector: DAVx⁵ would have to host their own FCM redirector
 
 ![Flowchart: Push over FCM](images/FCM%20Flowchart.drawio.png)
 
-### Unified Push
+### UnifiedPush
 
 Endpoints
 
