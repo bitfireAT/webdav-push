@@ -1,0 +1,35 @@
+<mxfile host="app.diagrams.net" modified="2023-10-04T13:12:44.677Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0" etag="Nkv3SbYT6rnQJXyGNf5Q" version="22.0.2" type="device">
+  <diagram name="Page-1" id="dmzVw_FlkDARkV1A1c6V">
+    <mxGraphModel dx="2284" dy="759" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="eXf8WQF95aNJMvhJ5Hj6-1" value="&lt;h1&gt;Websocket Subscription&lt;br&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-700" y="180" width="310" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="eXf8WQF95aNJMvhJ5Hj6-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="eXf8WQF95aNJMvhJ5Hj6-3" target="eXf8WQF95aNJMvhJ5Hj6-6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-80" y="314.75" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eXf8WQF95aNJMvhJ5Hj6-3" value="&lt;div&gt;WebDAV&amp;nbsp;&lt;/div&gt;FileManager" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-690" y="300" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="eXf8WQF95aNJMvhJ5Hj6-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="eXf8WQF95aNJMvhJ5Hj6-6" target="eXf8WQF95aNJMvhJ5Hj6-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eXf8WQF95aNJMvhJ5Hj6-5" value="HTTP 101: UPGRADE TO WEBSOCKET" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="eXf8WQF95aNJMvhJ5Hj6-4">
+          <mxGeometry x="0.2696" y="1" relative="1" as="geometry">
+            <mxPoint x="38" y="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eXf8WQF95aNJMvhJ5Hj6-6" value="Websockets Module" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-320" y="300" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="eXf8WQF95aNJMvhJ5Hj6-7" value="&lt;p&gt;POST &amp;nbsp; /subscribe&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Method: websocket&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Auth: ...&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;Collection Token&lt;/span&gt;: XXX&lt;/p&gt;" style="text;html=1;strokeColor=default;fillColor=default;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-545" y="230" width="190" height="100" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
