@@ -38,7 +38,7 @@ Server-side use cases:
 
 # Architectural overview
 
-![Architectural overview diagram](images/Push%20overview.drawio.png)
+![Architectural overview diagram](images/architecture.png)
 
 ## Application server
 
@@ -108,7 +108,7 @@ FCM redirector: DAVx⁵ would have to host their own FCM redirector
 
 - How to reduce abuse? Require "authentication" with app-internal key; if it's really a problem we could also require a server key that must be obtained from the DAVx⁵ redirector. How do Nextcloud Push and Conversations FCM redirectors handle abuse?
 
-![Flowchart: Push over FCM](images/FCM%20Flowchart.drawio.png)
+![WebDAV Push over FCM Flowchart](images/fcm.png)
 
 ### UnifiedPush
 

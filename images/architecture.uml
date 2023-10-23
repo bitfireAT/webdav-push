@@ -1,0 +1,53 @@
+@startuml
+!theme sketchy-outline
+skinparam backgroundColor #eeeeee
+skinparam handwritten false
+
+title WebDAV Push: Architectural Overview
+
+[Application Server] #1cafff
+
+package "Push Director" {
+  [Distributor]
+  
+  [Application Server] --> [Distributor] : POST Content Changed
+  
+  [Subscription API] ..> [Distributor]
+
+  [Distributor] --> [FCM Backend Module]
+  [Distributor] --> [UnifiedPush Module]
+  [Distributor] --> [WebSockets Module]
+}
+
+cloud FCM {
+  [FCM Backend Module] --> [FCM Redirector] : POST Notify Topic
+
+  [FCM Redirector] #aee571
+  note top: A Client Application must provide\nits own FCM Redirector.
+  [FCM Redirector] --> [FCM Infrastructure] : FCM Application Key
+}
+
+[UnifiedPush Server] <-- [UnifiedPush Module] : POST /endpoint
+
+frame "Push Clients" as PC {
+  [UnifiedPush Server] -d-> [UnifiedPush Distributor App]
+
+  [davx5-gplay] #aee571
+  [Google Play Services] -d-> [davx5-gplay] : onMessageReceived()
+
+  [davx5-ose] #aee571
+  [UnifiedPush Distributor App] --> [davx5-ose] : onMessage()
+
+  [WebSockets Module] --> [WebDAV File Manager] : WebSocket
+  [WebSockets Module] --> [Web App] : WebSocket
+}
+
+[FCM Infrastructure] --> [Google Play Services]
+
+PC --> [Application Server] : PROPFIND Capabilities
+note on link: Push Director URL\nCollection Topic
+
+PC --> [Subscription API] : POST Subscribe
+note on link: Subscribe to Topic
+
+@enduml

@@ -1,0 +1,39 @@
+@startuml
+!theme sketchy-outline
+skinparam backgroundColor #eeeeee
+skinparam handwritten false
+
+title WebDAV Push: FCM Flowchart
+
+actor DAVx5 as C
+entity "Application Server" as AS
+entity "Push Director" as PD
+entity "FCM Redirector" as R
+entity "FCM Infrastructure" as FCM
+
+group Subscription
+C -> AS: Is Push supported?
+C <- AS: Push Director URL
+
+C -> AS: Get Token of collection
+C <- AS: Token of collection
+
+C -> PD: Subscribe to topic
+C <- PD: Subscription successful
+end
+
+group On collection update
+AS -> PD: POST notify?topic=…
+
+PD -> R: Forward notification
+note right: With app-private FCM ID
+
+R -> FCM: Send topic notification
+
+FCM -> C: onMessageReceived()
+note left: Over Google Play Services
+
+C <--> AS: Synchronization
+end
+
+@enduml
