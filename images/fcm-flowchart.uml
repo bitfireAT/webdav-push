@@ -5,14 +5,14 @@ skinparam handwritten false
 
 title WebDAV Push: FCM Flowchart
 
-actor DAVx5 as C
+actor Client as C
 entity "Application Server" as AS
 entity "Push Director" as PD
 entity "FCM Redirector" as R
 entity "FCM Infrastructure" as FCM
 
 group Subscription
-C -> AS: Is Push supported?
+C -> AS: Get Push Capabilities
 C <- AS: Push Director URL
 
 C -> AS: Get Token of collection

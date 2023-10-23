@@ -108,11 +108,13 @@ FCM redirector: DAVx⁵ would have to host their own FCM redirector
 
 - How to reduce abuse? Require "authentication" with app-internal key; if it's really a problem we could also require a server key that must be obtained from the DAVx⁵ redirector. How do Nextcloud Push and Conversations FCM redirectors handle abuse?
 
-![WebDAV Push over FCM Flowchart](images/fcm.png)
+![WebDAV Push over FCM Flowchart](images/fcm-flowchart.png)
 
 ### UnifiedPush
 
 Endpoints
+
+![WebDAV Push over UnifiedPush Flowchart](images/unifiedpush-flowchart.png)
 
 ### WebSockets
 
