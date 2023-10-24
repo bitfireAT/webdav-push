@@ -10,6 +10,18 @@ Draft Document
   * [Draft: Push Discovery and Notification Dispatch Protocol](https://datatracker.ietf.org/doc/html/draft-gajda-dav-push-00)
   * [Symfony Mercury over SEE](https://mercure.rocks/spec)
 - extending WebDAV and especially CalDAV/CardDAV
+- multipurpose: provide specification for WebDAV, but should be adoptable for other protocols
+
+This document, below referred to as _WebDAV Push_ or just _Push_, provides a way for Application
+Servers to send notifications to subscribed clients over existing push distributors (like they're
+provided by mobile operating system vendors) or custom implementations.
+
+In a nutshell, there's a new component (Push Director) that can be run separately from the Application
+Server and that handles everything regarding Push. The application server just needs to send all
+update notifications to the Push Director, which forwards the notifications to the Clients.
+
+
+## Use cases
 
 Client-side use cases:
 
@@ -36,61 +48,57 @@ Server-side use cases:
 - Company Nextcloud (risk-exposed)
   - no information should be public at all (= no public FCM)
 
+
 # Architectural overview
 
 ![Architectural overview diagram](images/architecture.png)
 
-## Application server
+## Application Server
 
-For instance. Nextcloud. We want to require as little changes in app server as possible so that it's easily adaptable by a lot of servers. All subscription and actual push distribution logic is out-sourced to the Push Director.
+The Application Server is the component that generates update notifications that should be received by clients. For instance, this could be
+a WebDAV/CalDAV/CardDAV server that wants to notify clients about updates in files.
 
-Required functions on app server:
+One objective of Push is that as little changes as possible should be needed in the Application Server so that Push easily
+adaptable by a lot of servers. All subscription and push distribution logic is outsourced to the Push Director.
 
-- topic generation (TODO what is a topic)
-- send notifications for every change in a collection to Push Director (over HTTP POST)
-  - requires to store some configuration (store URL of Push Director)
-- provide push-specific information (URL of Push Director and whether it requires authentication and which method) to WebDAV clients
+A compliant Application Server needs to:
+
+- generate topics (map each collection that can be subscribed to a topic name),
+- send notifications for every change in a collection to the Push Director,
+- provide push-specific information (URL of Push Director and whether it requires authentication and which method) to Clients.
+This document describes how to provide this information over WebDAV, but there may be additional specifications for other protocols,
+making Push available for non-WebDAV environments, too.
 
 ## Push Director
 
-Some standalone software that runs next to the application server. May be hosted together with the application server (can be private, pseudo-public like for ISPs or maybe a public fallback hosted by a client app developer like DAVx5).
+Some standalone software. May be hosted together with the application server. Usually private, but may also be provided pseudo-public
+like for ISPs or even public (like a fallback server that's hosted by a Client app developer).
 
-Interfaces (incoming):
+Push Director provides these inbound interfaces:
 
-- Subscription API (HTTP POST, JSON) where Push Clients register and (un)subscribe to collections
-  - authentication should be recommended when possible (but method may vary: hosted instances may require same authentication as for WebDAV, public instances like a DAVx⁵-hosted public instance may require a token that's derived from the DAVx⁵ FCM ID)
-- API for the Application Server where the Push Director can receive a message for every changed collection (HTTP POST, JSON)
+- [Notify API](#notify-api) for the Application Server to deposit update notifications (like collection changes)
+- [Subscription API](#subscription-api) for Clients to register and (un)subscribe to collections
 
-There should also be the possibility for additional non-standard subscription/notification APIs. For instance, a Push Client (TODO: is it possible that the
-Push Director does that?) could subscribe to Google Calendars over [Google Calendar API Push notifications](https://developers.google.com/calendar/api/guides/push?hl=en)
-and register a Webhook there. Then the Google Calendar would notify the Push Director, but not over the same `POST /update` as defined in this document, but by
-some proprietary protocol. The Push Client still has to register to the Push Director so that the actual delivery of of the push notification
-over a Push Service can work.
+This document provides an HTTP-based specification for these APIs. Additional non-standard subscription/notification APIs
+are possible. For instance, a Client could subscribe to a proprietary calendar system over a proprietary API, which
+in turn informs the Push Director (that supports this special case) about updates with its own proprietary Webhook protocol.
 
-Outgoing side:
+Push Director receives the incoming update notifications and sends [Push Messages](#push-messages) to the
+registered [Push Services](#push-services), which again forward them to subscribed Clients.
 
-- sends filtered (see below) push notifications in correct format to the actual Push Services, like
-  - one message per topic and FCM ID (+ FCM Proxy URL) to the Firebase FCM backend
-  - one message per endpoint to UnifiedPush server
-  - one message for every active and subscribed WebSocket connection
-- filtering: only topics that have at least one subscriber in a backend module are forwarded to that backend (for instance, if no Push Clients are subscribed over FCM to a topic, this topic must not be sent to the Firebase FCM backend)
+**NOTE**: Push Services may support topics, in which case the Push Director only needs to send one message per topic
+and Push Service that supports topics. For Push Services that don't support topics (like UnifiedPush or WebSockets), Push
+Director has to notify each client separately.
 
-Configuration:
+Implementations _MUST_ only forward notifications to Push Services which have at least one subscriber. So the Push Director
+has to keep a list of active clients per topic.
 
-- which Push Services are enabled for this instance
-- configuration of specific Push Services (like supported FCM IDs)
-
-TODO: schematic of sample architecture of Push Director
-
-- PubSub
-- FCM backend
-- UnifiedPush backend
-- WebSockets backend
-- How subscriptions are handled
+A typical configuration file of a Push Director contains which Push Services are enabled for this instance and
+Push Service-specific configuration (like authorization keys).
 
 ## Push Services
 
-Push Services are existing services that can be used for the actual push notifications., like (alphabetically)
+Push Services are existing services that can be used for the actual push notifications, like (alphabetically)
 
 - Apple Push Notification (APN) service (supports topics)
 - [Google FCM](https://firebase.google.com/docs/cloud-messaging) (supports topics)
@@ -98,7 +106,7 @@ Push Services are existing services that can be used for the actual push notific
 - [UnifiedPush](https://unifiedpush.org/) (one-to-one)
 - WebSockets (one-to-one; we have to define how to use it for WebDAV Push)
 
-We must support upcoming new Push Services.
+Implementations should be extendible for upcoming new Push Services.
 
 ### Google FCM
 
@@ -157,11 +165,15 @@ Note: it should be "easily" possible to detect the Push service over other proto
 
 TODO: WebDAV properties
 
+## Notify API
+
+How to notify the Push Director about changes over HTTP POST.
+
 ## Subscription API
 
-How to (un)subscribe to collections.
+How to (un)subscribe to collections over HTTP POST.
 
-Authentication (see service detection)
+Authentication should be recommended when possible (but method may vary: hosted instances may require same authentication as for WebDAV, public instances like a DAVx⁵-hosted public instance may require a token that's derived from the DAVx⁵ FCM ID)
 
 ~~Depth header: not specified now because of complexity.~~ By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
@@ -173,7 +185,7 @@ Required information:
   - UnifiedPush: endpoint
   - WebSocket: connection ID
 - Expiration: how long by default, min max, server decides (and can impose limits)
-
+ 
 ## Push messages
 
 Actual push message format; may depend on Push Service?
