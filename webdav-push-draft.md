@@ -20,6 +20,8 @@ In a nutshell, there's a new component (Push Director) that can be run separatel
 Server and that handles everything regarding Push. The application server just needs to send all
 update notifications to the Push Director, which forwards the notifications to the Clients.
 
+Capitalized words like Application Server, Client etc. have a special meaning in the context of this document.
+
 
 ## Use cases
 
@@ -151,6 +153,8 @@ Sample scenarios:
 
 Here we define how the commication between the components is done.
 
+For HTTP all requests, the correct `Content-Type` header _MUST_ be sent.
+
 ## Service detection: WebDAV
 
 How Push Clients can detect
@@ -165,15 +169,33 @@ Note: it should be "easily" possible to detect the Push service over other proto
 
 TODO: WebDAV properties
 
+- subscription API access token
+
 ## Notify API
 
-How to notify the Push Director about changes over HTTP POST.
+Defines how to notify the Push Director about changes over HTTP POST.
+
+For authentication, a shared secret (token) between Application Server and Push Director is used. This token is sent to the Push Directory as Bearer token described in RFC 6750 (although it doesn't need to be an access token in OAuth terms). A Push Director _MUST NOT_ accept unauthenticated Notify API requests, even for private deployments.
+
+---
+Sample request from an Application Server, indicating that the resource corresponding to Topic `f0ec984b-4b19-4652-91f2-92c6d81c3c09` has been updated.
+
+```
+POST https://push-director.example.com/notify
+Authorization: Bearer ohb_hLi2ain!oo5d
+Content-Type: application/json
+
+{ "topic": "f0ec984b-4b19-4652-91f2-92c6d81c3c09" }
+```
+---
 
 ## Subscription API
 
 How to (un)subscribe to collections over HTTP POST.
 
-Authentication should be recommended when possible (but method may vary: hosted instances may require same authentication as for WebDAV, public instances like a DAVx⁵-hosted public instance may require a token that's derived from the DAVx⁵ FCM ID)
+Authentication is required, but method may vary: hosted instances may require a token transmitted over WebDAV or same authentication as for WebDAV; public instances like one hosted by a Client vendor may require a pseudo-public token that's integrated in the Client.
+
+**TODO** How to get the token? Separate request, WebDAV property?
 
 ~~Depth header: not specified now because of complexity.~~ By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
@@ -185,7 +207,31 @@ Required information:
   - UnifiedPush: endpoint
   - WebSocket: connection ID
 - Expiration: how long by default, min max, server decides (and can impose limits)
- 
+
+---
+Sample request of a mobile Client:
+
+```
+POST https://push-director.example.com/subscribe
+Authorization: Bearer ee2Ewoob#a!ingei
+Content-Type: application/json
+
+{
+  "client_id": "0f069e09-4486-4a1a-85ff-fdad58400b11",
+  "topic": "f0ec984b-4b19-4652-91f2-92c6d81c3c09",
+  "push_services": {
+    "fcm": {
+      "registration_token": "FCM_REGISTRATION_TOKEN"
+    },
+    "unified_push": {
+      "endpoint": "https://up.example.com/endpoint"
+    }
+  },
+  "expires": 1698165940
+}
+```
+---
+
 ## Push messages
 
 Actual push message format; may depend on Push Service?
