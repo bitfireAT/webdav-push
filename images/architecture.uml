@@ -2,52 +2,63 @@
 !theme sketchy-outline
 skinparam backgroundColor #eeeeee
 skinparam handwritten false
+skinparam FrameBorderColor black
+skinparam FrameFontColor black
 
 title WebDAV Push: Architectural Overview
 
-[Application Server] #1cafff
+legend
+light blue: hosted by WebDAV service provider
+green: provided / hosted by client vendor
+end legend
 
-package "Push Director" {
-  [Distributor]
-  
-  [Application Server] --> [Distributor] : POST Content Changed
-  
-  [Subscription API] ..> [Distributor]
+package "Push-Capable WebDAV Server" #dbeafe {
+  [WebDAV Server]
 
-  [Distributor] --> [FCM Backend Module]
-  [Distributor] --> [UnifiedPush Module]
-  [Distributor] --> [WebSockets Module]
+  [WebDAV-Push Module]
+  note right: manages subscriptions,\nsends push requests
+  
+  [WebDAV Server] --> [WebDAV-Push Module] : Collection (topic) updated
+  
+  [Backend for\nProprietary Push]
+  note top: for vendor-specific cloud\nservice (FCM, Huawei Push, …)
+
+  [WebDAV-Push Module] --> [Backend for\nProprietary Push]
+  [WebDAV-Push Module] --> [SSE Backend]
+  [WebDAV-Push Module] --> [UnifiedPush Backend]
+  [WebDAV-Push Module] --> [Web Push Backend]
 }
 
-cloud FCM {
-  [FCM Backend Module] --> [FCM Redirector] : POST Notify Topic
+cloud "Mobile app vendor" {
+  [Backend for\nProprietary Push] --> [Redirector] : POST messages:send\n?topic=…
 
-  [FCM Redirector] #aee571
-  note top: A Client Application must provide\nits own FCM Redirector.
-  [FCM Redirector] --> [FCM Infrastructure] : FCM Application Key
+  [Redirector] #aee571
+  note top: app-specific\ncredentials
+  [Redirector] --> [Proprietary\nCloud Service] : signed and\nforwarded
 }
-
-[UnifiedPush Server] <-- [UnifiedPush Module] : POST /endpoint
 
 frame "Push Clients" as PC {
-  [UnifiedPush Server] -d-> [UnifiedPush Distributor App]
+  [UnifiedPush Backend] -d-> [UnifiedPush Distributor App] : POST <endpoint>\n(over UnifiedPush server)
 
-  [davx5-gplay] #aee571
-  [Google Play Services] -d-> [davx5-gplay] : onMessageReceived()
+  [Mobile app\n(proprietary push)] #aee571
+  [Proprietary\nLocal Service] -d-> [Mobile app\n(proprietary push)] : onMessageReceived()
 
-  [davx5-ose] #aee571
-  [UnifiedPush Distributor App] --> [davx5-ose] : onMessage()
+  [Mobile app\n(UnifiedPush)] #aee571
+  [UnifiedPush Distributor App] --> [Mobile app\n(UnifiedPush)] : onMessage()
 
-  [WebSockets Module] --> [WebDAV File Manager] : WebSocket
-  [WebSockets Module] --> [Web App] : WebSocket
+  [WebDAV File Manager] #aee571
+  [SSE Backend] <-> [WebDAV File Manager] : SSE (over client-\ninitiated HTTP connection)
+  [Web Push Backend] --> [Browser] : POST <push resource>\n(over browser's push service)
+  [Web App] #aee571
+  [Browser] --> [Web App] : Push API
 }
 
-[FCM Infrastructure] --> [Google Play Services]
+[Proprietary\nCloud Service] --> [Proprietary\nLocal Service]
 
-PC --> [Application Server] : PROPFIND Capabilities
+PC <-> [WebDAV-Push Module] : PROPFIND capabilities
 note on link: Push Director URL\nCollection Topic
 
-PC --> [Subscription API] : POST Subscribe
-note on link: Subscribe to Topic
+PC --> [WebDAV-Push Module] : POST register
+note on link: Client ID, topic, push method\nand method-specific details
 
 @enduml
