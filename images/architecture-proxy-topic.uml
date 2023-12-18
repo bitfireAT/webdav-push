@@ -1,0 +1,67 @@
+@startuml
+!theme sketchy-outline
+skinparam backgroundColor #eeeeee
+skinparam handwritten false
+skinparam FrameBorderColor black
+skinparam FrameFontColor black
+
+title WebDAV Push: Architectural Overview\n(more responsible Redirect Proxy, Unified Push for File Manager)
+
+legend
+light blue: hosted by WebDAV service provider
+green: provided / hosted by client vendor
+end legend
+
+package "Push-Capable WebDAV Server" #dbeafe {
+  [WebDAV Server]
+
+  [WebDAV-Push Module]
+  note right: manages subscriptions,\nsends push requests
+  
+  [WebDAV Server] --> [WebDAV-Push Module] : Collection (topic) updated
+  
+  [WebDAV-Push Module] --> [UnifiedPush Backend]
+
+  [Web Push Backend\nRFC 8030 Application Server] as WebPushBE
+  [WebDAV-Push Module] --> WebPushBE 
+}
+
+cloud "Mobile app vendor" {
+  [Redirect Proxy =\nRFC 8030 Push Service] as RedirProxy #aee571 
+  note top: knows app-specific credentials,\ncreates one Web Push\nsubscription per topic
+
+  WebPushBE --> RedirProxy : POST <push resource>
+  RedirProxy --> [WebDAV-Push Module] : POST register\n?endpoint=…\n&topics=…
+
+  RedirProxy --> [Proprietary\nCloud Service] : sign and\nforward
+}
+
+frame "Push Clients" as PC {
+  frame "Open-Standards Clients" as OPC {
+    [UnifiedPush Backend] -d-> [UnifiedPush Distributor] : POST <endpoint>\n→ UnifiedPush Server
+
+    [Mobile app\n(UnifiedPush)] #aee571
+    [UnifiedPush Distributor] --> [Mobile app\n(UnifiedPush)] : onMessage()
+
+    [WebDAV File Manager] as FileManager #aee571
+    [UnifiedPush Distributor] --> FileManager : onMessage()
+
+    [Web Browser\nRFC 8030 User Agent] as Browser
+    WebPushBE --> Browser : POST <push resource>\n→ RFC 8030 Push Service
+    [Web App] #aee571
+    Browser --> [Web App] : Push API
+  }
+
+  [Mobile app\n(proprietary push)] as PropPushApp #aee571
+  PropPushApp --> RedirProxy : app-specific\nregistration
+  [Proprietary\nLocal Service] -d-> PropPushApp : onMessageReceived()
+}
+
+[Proprietary\nCloud Service] --> [Proprietary\nLocal Service]
+
+PC <-> [WebDAV-Push Module] : PROPFIND capabilities
+note on link: WebDAV-Push API URL\nTopics of collections
+
+OPC --> [WebDAV-Push Module] : POST register\n?endpoint=…\n&topics=…
+
+@enduml
