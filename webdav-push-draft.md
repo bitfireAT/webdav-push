@@ -21,7 +21,7 @@ Typical use cases:
 
 # Architectural overview
 
-![Architectural overview diagram](images/architecture-unifiedpush.png)
+![Architectural overview diagram](images/architecture.png)
 
 ## WebDAV Server + WebDAV-Push Module
 
@@ -34,13 +34,12 @@ A WebDAV server that implements WebDAV-Push needs to
 
 ## Push Transports
 
-WebDAV-Push isn't restricted to specific push services and allows clients to specify which push services
-they support. This allows upcoming push services to be used with WebDav-Push.
+WebDAV-Push isn't restricted to specific push services and allows clients to specify which push services they support. This allows upcoming push services to be used with WebDAV-Push.
 
 However, WebDAV-Push currently suggests to implement at least
 
-- [UnifiedPush](https://unifiedpush.org/) and
-- [Web Push](https://www.rfc-editor.org/rfc/rfc8030) (maybe [not needed](https://github.com/UnifiedPush/wishlist/issues/15)).
+- UnifiedPush (see Appendix A) and
+- Web Push (see Appendix B).
 
 UnifiedPush is an open set of specifications and allows push notifications to be delivered
 over various transports
@@ -59,7 +58,6 @@ A Web Push transport could support [Message Encryption](https://www.rfc-editor.o
 
 Here we define how the communication between the components is done.
 
-
 ## Service detection: WebDAV
 
 How clients can detect
@@ -67,7 +65,7 @@ How clients can detect
 - whether a collection supports WebDAV-Push,
 - which push services are supported (may contain service-specific information)
 
-> **TODO:** WebDAV properties
+> **TODO:** specify WebDAV properties
 
 Example:
 ```
@@ -100,7 +98,7 @@ In this case, the requested collection supports three push transports:
 
 1. UnifiedPush (version 1)
 2. Web Push (RFC 8030)
-3. Some other transport, with some additional relevant information that is required to use it
+3. Some other transport, with some additional relevant information that is required to use it. This is to illustrate that it WebDAV-Push aims to support other or even yet unknown push transports, too.
 
 ## Subscription management
 
@@ -114,11 +112,14 @@ Required information:
 - push transport, including transport-specific details
   - UnifiedPush: endpoint URL
   - Web Push: push resource URL
+  - details for message encryption
 - expiration? how long by default, min/max (24 h), server decides (and can impose limits)
 
 ~~Depth header: not specified now because of complexity.~~ By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
 URL + action query parameter like in [Managed Attachments](https://www.rfc-editor.org/rfc/rfc8607.html#section-3.3)?
+
+Alternative: define URL space so that every subscription has its own URL and can for instance be deleted with this URL.
 
 Allowed response codes
 
@@ -159,6 +160,7 @@ Content-Type: application/xml; charset="utf-8"
 
 HTTP/1.1 204 No Content
 ```
+> **TODO:** name encryption properties, refer to other standards for their content
 
 ### Remove subscription
 
@@ -171,10 +173,13 @@ The server identifies the subscription by its details (for instance, the endpoin
 
 Actual push message format. As little data as possible, i.e. **only the changed topic**.
 
-End-to-end encrypted, for instance as described by RFC 8291?
+JSON, XML, other format?
 
-TTL?
+Shall end-to-end encryption (for instance as described by RFC 8291) be possible / recommended / required?
 
+Shall a TTL value, as used by Web Push, be recommended in general, per transport, or not at all?
+
+Shall multiple enqueued (and not yet delivered) push messages for the same collection be merged to a single one (like _Replacing push messages_ with the `Topic` header in RFC 8030)? Shall this be specified in general, per transport or not at all?
 
 
 # Security considerations
@@ -186,3 +191,38 @@ What happens when information leaks
 What happens when some component is hacked
 
 Which information is shared with which component, especially public ones like the Google FCM + implications
+
+
+# Appendix A: UnifiedPush Transport
+
+WebDAV-Push can be used with [UnifiedPush](https://unifiedpush.org/).
+
+## Transport description
+
+The XML element to specify the transport is `<unifiedpush>`, with these direct sub-elements:
+
+### Endpoint
+Property name: `url`
+Description: UnifiedPush endpoint URL
+Example: `<url>https://up.example.net/yohd4yai5Phiz1wi</url>`
+
+### Message Encryption
+> **TODO:** message encryption
+
+# Appendix B: Web Push Transport
+
+WebDAV-Push can be used with Web Push (RFC 8030) to deliver WebDAV-Push notifications directly to compliant user agents, typically Web browsers which come with operate their own RFC 8030 push services.
+
+Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is recommended.
+
+## Transport description
+
+The XML element to specify the transport is `<web-push>`, with these direct sub-elements:
+
+### Push Resource
+Name: `push-resource`
+Description: push resource URL as defined in RFC 8030
+Example: `<push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>`
+
+### Message Encryption
+>**TODO:** message encryption as defined in RFC 8291
