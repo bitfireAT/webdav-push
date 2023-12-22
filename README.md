@@ -9,9 +9,9 @@ The CalDAV/CardDAV Push function shall allow servers (like Nextcloud) to notify 
 
 The repo is intended to contain
 
-- discussion and exchange about the WebDAV Push topic (in [Discussions](https://github.com/bitfireAT/webdav-push/discussions)),
-- specific tasks (in Issues) and related patches (in Pull requests),
-- **a [draft document describing WebDAV Push](webdav-push-draft.md)**.
+- **discussion and exchange about the WebDAV Push topic (in [Discussions](https://github.com/bitfireAT/webdav-push/discussions))**,
+- specific tasks (in [Issues](https://github.com/bitfireAT/webdav-push/issues)) and related patches (in [Pull requests](https://github.com/bitfireAT/webdav-push/pulls)),
+- **a [draft document describing our current idea of WebDAV-Push](webdav-push-draft.md)**.
 
 There is also a public Matrix channel: [#webdav-push:matrix.org](https://matrix.to/#/#webdav-push:matrix.org).
 If you're interested, don't hesitate to join.
