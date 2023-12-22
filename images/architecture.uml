@@ -1,6 +1,6 @@
 @startuml
 !theme sketchy-outline
-skinparam backgroundColor #eeeeee
+skinparam backgroundColor #eeeee
 skinparam handwritten false
 skinparam FrameBorderColor black
 skinparam FrameFontColor black
@@ -15,41 +15,47 @@ end legend
 package "Push-Capable WebDAV Server" #dbeafe {
   [WebDAV Server]
 
-  [WebDAV-Push Module]
-  note right: manages subscriptions,\nsends push requests
+  [WebDAV-Push Module] as WebDAVPush
+  note bottom: manages subscriptions,\nsends push requests
   
-  [WebDAV Server] --> [WebDAV-Push Module] : Collection (topic) updated
+  [WebDAV Server] -r-> WebDAVPush : Collection updated
   
-  [Backend for\nProprietary Push]
-  note top: for vendor-specific cloud\nservice (FCM, Huawei Push, …)
-
-  [WebDAV-Push Module] --> [Backend for\nProprietary Push]
-  [WebDAV-Push Module] --> [SSE Backend]
-  [WebDAV-Push Module] --> [UnifiedPush Backend]
+  [UnifiedPush Backend] as UPBE
+  WebDAVPush --> UPBE
 
   [Web Push Backend\nRFC 8030 Application Server] as WebPushBE
-  [WebDAV-Push Module] -->WebPushBE 
+  WebDAVPush --> WebPushBE 
+
+  [Backend for\nSome Other Push] as OtherBE
+  WebDAVPush --> OtherBE
 }
 
 cloud "Mobile app vendor" {
-  [Backend for\nProprietary Push] --> [Redirector] : POST messages:\nsend?topic=…
+  [UnifiedPush\nRedirect Proxy] as UPRedirProxy #aee571 
 
-  [Redirector] #aee571
-  note top: app-specific\ncredentials
-  [Redirector] --> [Proprietary\nCloud Service] : sign and\nforward
+  UPBE --> UPRedirProxy : POST <redirect\nproxy endpoint>
+
+  UPRedirProxy --> [Proprietary\nCloud Service] : sign and\nforward
 }
 
+'[Other Push Transport\nmay include Redirect Proxy] as OtherPushTransport
+'OtherBE --> OtherPushTransport : POST (or something else)
+
 frame "Push Clients" as PC {
-  [UnifiedPush Backend] -d-> [UnifiedPush Distributor] : POST <endpoint>\n→ UnifiedPush Server
+  [Other app] #aee571
+  'OtherPushTransport --> [Other app]
+  OtherBE ..> [Other app] : some other push transport
 
-  [Mobile app\n(proprietary push)] #aee571
-  [Proprietary\nLocal Service] -d-> [Mobile app\n(proprietary push)] : onMessageReceived()
+  [UnifiedPush Distributor] as UPDistributor
+  UPBE --> UPDistributor : POST <endpoint>\n→ UnifiedPush Server
+  [Proprietary\nLocal Service] --> UPDistributor : onMessageReceived()
 
-  [Mobile app\n(UnifiedPush)] #aee571
-  [UnifiedPush Distributor] --> [Mobile app\n(UnifiedPush)] : onMessage()
+  [Mobile app\n(UnifiedPush)] as UPApp #aee571
+  UPDistributor --> UPApp : onMessage()
 
-  [WebDAV File Manager] #aee571
-  [SSE Backend] <-> [WebDAV File Manager] : SSE (over client-\ninitiated HTTP connection)
+  [WebDAV File Manager] as FileManager #aee571
+  UPDistributor --> FileManager : onMessage()
+
   [Web Browser\nRFC 8030 User Agent] as Browser
   WebPushBE --> Browser : POST <push resource>\n→ RFC 8030 Push Service
   [Web App] #aee571
@@ -58,10 +64,7 @@ frame "Push Clients" as PC {
 
 [Proprietary\nCloud Service] --> [Proprietary\nLocal Service]
 
-PC <-> [WebDAV-Push Module] : PROPFIND capabilities
-note on link: Push Director URL\nCollection Topic
-
-PC --> [WebDAV-Push Module] : POST register
-note on link: Client ID, topic, push method\nand method-specific details
+PC --> WebDAVPush : PROPFIND capabilities\nto find WebDAV-Push\nAPI URL
+PC --> WebDAVPush : POST register\n?endpoint=…\n&collections=...
 
 @enduml

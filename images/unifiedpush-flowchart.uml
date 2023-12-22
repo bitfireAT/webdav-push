@@ -6,31 +6,24 @@ skinparam handwritten false
 title WebDAV Push: UnifiedPush Flowchart
 
 actor Client as C
-entity "Application Server" as AS
-entity "Push Director" as PD
+entity "WebDAV Server" as WS
 entity "UnifiedPush Server" as UPS
-entity "UnifiedPush Distributor App" as UPD
+entity "UnifiedPush Distributor" as UPD
 
 group Subscription
-C -> AS: Get Push Capabilities
-C <- AS: Push Director URL
+C -> WS: PROPFIND to discover Push capabilities
+C <- WS: advertise Push and supported transports
 
-C -> AS: Get Token of collection
-C <- AS: Token of collection
-
-C -> PD: Subscribe to topic
-C <- PD: Subscription successful
+C -> WS: subscribe to collection (send UnifiedPush endpoint)
 end
 
 group On collection update
-AS -> PD: POST notify?topic=…
-PD -> UPS: Send notification
+WS -> UPS: UnifiedPush notification with collection URL
 
-UPS -> UPD: Forward notification
-note right: by UnifiedPush
+UPS -> UPD: (by UnifiedPush)
 
 UPD -> C: onMessage()
-C <--> AS: Synchronization
+C <--> WS: synchronization 
 end
 
 @enduml
