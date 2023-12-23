@@ -129,11 +129,11 @@ Required information:
 
 ~~Depth header: not specified now because of complexity.~~ By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
-URL + action query parameter like in [Managed Attachments](https://www.rfc-editor.org/rfc/rfc8607.html#section-3.3)?
+1. POST to the collection like for [sharing resources](https://datatracker.ietf.org/doc/html/draft-pot-webdav-resource-sharing-04#section-4.3)
+2. Alternatively: URL + action query parameter like in [Managed Attachments](https://www.rfc-editor.org/rfc/rfc8607.html#section-3.3)
+3. Alternatively: POST to a dedicated URL (that we know from PROPFIND)
 
-Alternative: define URL space so that every subscription has its own URL and can for instance be deleted with this URL.
-
-Do we need to provide a possibility for the client to list its subscriptions or request their details? Could be relevant if the server generates some info (salt) per subscription and the client needs to get hold of it.
+Do we need to provide a possibility for the client to list its subscriptions or request their details? Probably yes. Could be relevant if the server generates some info (salt) per subscription and the client needs to get hold of it. In this case, define collection so that every subscription has its own URL and can for instance be deleted with this URL.
 
 Allowed response codes:
 
@@ -143,29 +143,30 @@ Allowed response codes:
 
 Sample request for UnifiedPush:
 ```
-POST https://example.com/webdav/collection/?action=push-subscribe
+POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
 <?xml version="1.0" encoding="utf-8" ?>
-<subscription xmlns="DAV:Push">
+<push-subscribe xmlns="DAV:Push">
   <transport>
     <unified-push>
       <endpoint>https://up.example.net/yohd4yai5Phiz1wi</endpoint>
     </unified-push>
   </transport>
   <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
-</subscription>
+</push-subscribe>
 
 HTTP/1.1 204 No Content
+Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 ```
 
 Sample request for Web Push with Message Encryption:
 ```
-POST https://example.com/webdav/collection/?action=push-subscribe
+POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
 <?xml version="1.0" encoding="utf-8" ?>
-<subscription xmlns="DAV:Push">
+<push-subscribe xmlns="DAV:Push">
   <transport>
     <web-push>
       <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
@@ -174,14 +175,15 @@ Content-Type: application/xml; charset="utf-8"
     </web-push>
   </transport>
   <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
-</subscription>
+</push-subscribe>
 
 HTTP/1.1 204 No Content
+Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 ```
 
 ### Remove subscription
 
-Works like creating a subscription, but with `action=remove-subscription`.
+> **TODO:** ~~Works like creating a subscription, but with `action=remove-subscription`.~~ Probably better with an own URL per subscription so that clients can DELETE.
 
 The server identifies the subscription by its details (for instance, the endpoint) and then removes it. If it can't find a matching subscription, it returns 404.
 
