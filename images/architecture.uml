@@ -16,13 +16,10 @@ package "Push-Capable WebDAV Server" #dbeafe {
   [WebDAV Server]
 
   [WebDAV-Push Module] as WebDAVPush
-  note bottom: manages subscriptions,\nsends push requests
+  note right: manages subscriptions,\nsends push requests
   
   [WebDAV Server] -r-> WebDAVPush : Collection updated
   
-  [UnifiedPush Backend] as UPBE
-  WebDAVPush --> UPBE
-
   [Web Push Backend\nRFC 8030 Application Server] as WebPushBE
   WebDAVPush --> WebPushBE 
 
@@ -33,7 +30,7 @@ package "Push-Capable WebDAV Server" #dbeafe {
 cloud "Mobile app vendor" {
   [UnifiedPush\nRedirect Proxy] as UPRedirProxy #aee571 
 
-  UPBE --> UPRedirProxy : POST <redirect\nproxy endpoint>
+  WebPushBE --> UPRedirProxy : POST <redirect\nproxy endpoint>
 
   UPRedirProxy --> [Proprietary\nCloud Service] : sign and\nforward
 }
@@ -44,11 +41,11 @@ cloud "Mobile app vendor" {
 frame "Push Clients" as PC {
   [Other app] #aee571
   'OtherPushTransport --> [Other app]
-  OtherBE ..> [Other app] : some other push transport
+  OtherBE ..> [Other app] : Some Other\nPush transport
 
   [UnifiedPush Distributor] as UPDistributor
-  UPBE --> UPDistributor : POST <endpoint>\n→ UnifiedPush Server
-  [Proprietary\nLocal Service] --> UPDistributor : onMessageReceived()
+  WebPushBE --> UPDistributor : POST <endpoint>\n→ UnifiedPush Server
+  [Proprietary\nLocal Service] -r-> UPDistributor : onMessageReceived()
 
   [Mobile app\n(UnifiedPush)] as UPApp #aee571
   UPDistributor --> UPApp : onMessage()
@@ -62,7 +59,7 @@ frame "Push Clients" as PC {
   Browser --> [Web App] : Push API
 }
 
-[Proprietary\nCloud Service] --> [Proprietary\nLocal Service]
+[Proprietary\nCloud Service] --> [Proprietary\nLocal Service] : proprietary protocol
 
 PC --> WebDAVPush : PROPFIND capabilities\nto find WebDAV-Push\nAPI URL
 PC --> WebDAVPush : POST register\n?endpoint=…\n&collections=...

@@ -1,4 +1,4 @@
-WebDAV Push
+	WebDAV Push
 
 Draft Document (In Work)
 
@@ -45,10 +45,7 @@ The server must be prepared to handle errors. For instance, if a push transport 
 
 WebDAV-Push isn't restricted to specific push services and allows clients to specify which push services they support. This allows upcoming push services to be used with WebDAV-Push.
 
-However, WebDAV-Push currently suggests to implement at least
-
-- UnifiedPush (see Appendix A) and
-- Web Push (see Appendix B).
+WebDAV-Push currently recommends to implement at least Web Push (see Appendix A).
 
 UnifiedPush is an open set of specifications and allows push notifications to be delivered
 over various transports.
@@ -121,7 +118,6 @@ Required information:
 
 - Collection to be subscribed
 - Push transport, including transport-specific details
-  - UnifiedPush: endpoint URL
   - Web Push: push resource URL
   - details for message encryption
 - Expiration? how long by default, min/max (24 h), server decides (and can impose limits)
@@ -148,12 +144,14 @@ Content-Type: application/xml; charset="utf-8"
 
 <?xml version="1.0" encoding="utf-8" ?>
 <push-subscribe xmlns="DAV:Push">
-  <transport>
-    <unified-push>
-      <endpoint>https://up.example.net/yohd4yai5Phiz1wi</endpoint>
-    </unified-push>
-  </transport>
-  <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
+  <subscription>
+    <transport>
+      <unified-push>
+        <endpoint>https://up.example.net/yohd4yai5Phiz1wi</endpoint>
+      </unified-push>
+    </transport>
+    <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
+  </subscription>
 </push-subscribe>
 
 HTTP/1.1 204 No Content
@@ -167,14 +165,16 @@ Content-Type: application/xml; charset="utf-8"
 
 <?xml version="1.0" encoding="utf-8" ?>
 <push-subscribe xmlns="DAV:Push">
-  <transport>
-    <web-push>
-      <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
-      <public-key keyid="p256dh" dh="BL0IG_CKsOMezWrQPFQQDC39nRk88ROhz4Ytr9T-NZ7sbuHcjV0cVjoLtE7hR8c5USnRQ3LeKwuRxLvMVozJUt8" />
-      <authentication-secret>c9_nEWEAI8JUnB_uh5uEbQ</authentication-secret>
-    </web-push>
-  </transport>
-  <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
+  <subscription>
+    <transport>
+      <web-push>
+        <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
+        <public-key keyid="p256dh" dh="BL0IG_CKsOMezWrQPFQQDC39nRk88ROhz4Ytr9T-NZ7sbuHcjV0cVjoLtE7hR8c5USnRQ3LeKwuRxLvMVozJUt8" />
+        <authentication-secret>c9_nEWEAI8JUnB_uh5uEbQ</authentication-secret>
+      </web-push>
+    </transport>
+    <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
+  </subscription>
 </push-subscribe>
 
 HTTP/1.1 204 No Content
@@ -227,30 +227,15 @@ What happens when information leaks
 What happens when some component is hacked
 
 
-# Appendix A: UnifiedPush Transport
+# Appendix A: Web Push Transport
 
-WebDAV-Push can be used with [UnifiedPush](https://unifiedpush.org/).
+WebDAV-Push can be used with Web Push (RFC 8030) to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure.
 
-## Transport description
-
-The XML element to specify the transport is `<unifiedpush>`, with these direct sub-elements:
-
-### Endpoint
-Property name: `url`
-Description: UnifiedPush endpoint URL
-Example: `<url>https://up.example.net/yohd4yai5Phiz1wi</url>`
-
-### Message Encryption
-
-> **TODO:** message encryption, if we even need it
-
-# Appendix B: Web Push Transport
-
-WebDAV-Push can be used with Web Push (RFC 8030) to deliver WebDAV-Push notifications directly to compliant user agents, typically Web browsers which come with operate their own RFC 8030 push services.
-
-Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is recommended.
+Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is currently recommended. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if applicable.
 
 > **RESEARCH:** Are subscription-sets of use for us?
+
+> **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is intentionally designed as a 100% compatible subset of Web Push. From a WebDAV server perspective, UP endpoints may used as Web Push resources. UP encryption?
 
 ## Transport description
 
@@ -259,7 +244,10 @@ The XML element to specify the transport is `<web-push>`, with these direct sub-
 ### Push Resource
 Name: `push-resource`
 Description: push resource URL as defined in RFC 8030
-Example: `<push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>`
+Example:
+```
+<push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
+```
 
 ### Message Encryption
 
