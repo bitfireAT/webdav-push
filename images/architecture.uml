@@ -27,12 +27,11 @@ package "Push-Capable WebDAV Server" #dbeafe {
   WebDAVPush --> OtherBE
 }
 
-cloud "Mobile app vendor" {
+cloud "Proprietary push" {
   [UnifiedPush\nRedirect Proxy] as UPRedirProxy #aee571 
-
   WebPushBE --> UPRedirProxy : POST <redirect\nproxy endpoint>
 
-  UPRedirProxy --> [Proprietary\nCloud Service] : sign and\nforward
+  [Proprietary\nCloud Service] as ProprietaryCloud
 }
 
 '[Other Push Transport\nmay include Redirect Proxy] as OtherPushTransport
@@ -45,7 +44,13 @@ frame "Push Clients" as PC {
 
   [UnifiedPush Distributor] as UPDistributor
   WebPushBE --> UPDistributor : POST <endpoint>\n→ UnifiedPush Server
-  [Proprietary\nLocal Service] -r-> UPDistributor : onMessageReceived()
+
+  [Proprietary\nLocal Service] as ProprietaryLocal
+  ProprietaryLocal --> UPDistributor : onMessageReceived()
+
+  UPRedirProxy --> ProprietaryCloud : sign and\nforward
+  ProprietaryCloud -l-> ProprietaryLocal : proprietary protocol
+  WebPushBE ..> ProprietaryCloud : cross-platform\nWeb Push
 
   [Mobile app\n(UnifiedPush)] as UPApp #aee571
   UPDistributor --> UPApp : onMessage()
@@ -58,8 +63,6 @@ frame "Push Clients" as PC {
   [Web App] #aee571
   Browser --> [Web App] : Push API
 }
-
-[Proprietary\nCloud Service] --> [Proprietary\nLocal Service] : proprietary protocol
 
 PC --> WebDAVPush : PROPFIND capabilities\nto find WebDAV-Push\nAPI URL
 PC --> WebDAVPush : POST register\n?endpoint=…\n&collections=...
