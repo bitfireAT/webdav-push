@@ -43,20 +43,15 @@ The server must be prepared to handle errors. For instance, if a push transport 
 
 ## Push Transports
 
-WebDAV-Push isn't restricted to specific push services and allows clients to specify which push services they support. This allows upcoming push services to be used with WebDAV-Push.
+WebDAV-Push isn't restricted to specific push transports and allows clients to specify which push transports they support. This allows upcoming push transports to be used with WebDAV-Push.
 
 WebDAV-Push currently recommends to implement at least Web Push (see Appendix A).
 
-UnifiedPush is an open set of specifications and allows push notifications to be delivered
-over various transports.
-
 For proprietary push services (like Google FCM), client vendors may need to provide
-a _rewrite proxy_ that signs and forwards the UnifiedPush requests to the respective
+a _rewrite proxy_ that signs and forwards the requests to the respective
 proprietary service.
 
-A Web Push transport could support all major browsers and provide [Message Encryption](https://www.rfc-editor.org/rfc/rfc8291.html) and [VAPID](https://www.rfc-editor.org/rfc/rfc8292).
-
-Push transport definitions can define extra properties and additional processing rules. For instance, a transport definition could define that WebDAV servers should send an additional *topic* header so that previous undelivered push messages are replaced by new ones.
+Push transport definitions can define extra properties and additional processing rules. For instance, a transport definition could define that WebDAV servers should send an additional *topic* header with their push notifications so that previous undelivered push messages are replaced by new ones.
 
 
 
@@ -102,11 +97,10 @@ HTTP/1.1 207 Multi-Status
   </response>
 </multistatus>
 ```
-In this case, the requested collection supports three push transports:
+In this case, the requested collection supports two push transports:
 
-1. UnifiedPush (version 1)
-2. Web Push (RFC 8030)
-3. Some other transport, with some additional relevant information that is required to use it. This is to illustrate that it WebDAV-Push aims to support other or even yet unknown push transports, too.
+1. Web Push (RFC 8030)
+2. Some other transport, with some additional relevant information that is required to use it. This is to illustrate that it WebDAV-Push aims to support other or even yet unknown push transports, too.
 
 ## Subscription management
 
@@ -123,13 +117,10 @@ Required information:
 - Expiration? how long by default, min/max (24 h), server decides (and can impose limits)
 - End-to-end-encryption? Or should it be defined per transport?
 
-~~Depth header: not specified now because of complexity.~~ By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
+By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
-1. POST to the collection like for [sharing resources](https://datatracker.ietf.org/doc/html/draft-pot-webdav-resource-sharing-04#section-4.3)
-2. Alternatively: URL + action query parameter like in [Managed Attachments](https://www.rfc-editor.org/rfc/rfc8607.html#section-3.3)
-3. Alternatively: POST to a dedicated URL (that we know from PROPFIND)
-
-Do we need to provide a possibility for the client to list its subscriptions or request their details? Probably yes. Could be relevant if the server generates some info (salt) per subscription and the client needs to get hold of it. In this case, define collection so that every subscription has its own URL and can for instance be deleted with this URL.
+1. **POST to the collection like for [sharing resources](https://datatracker.ietf.org/doc/html/draft-pot-webdav-resource-sharing-04#section-4.3)**
+2. (Alternatively: POST to a dedicated URL that we know from PROPFIND)
 
 Allowed response codes:
 
@@ -187,6 +178,7 @@ Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 
 The server identifies the subscription by its details (for instance, the endpoint) and then removes it. If it can't find a matching subscription, it returns 404.
 
+TODO Expiration
 
 ## Push messages
 
@@ -229,13 +221,13 @@ What happens when some component is hacked
 
 # Appendix A: Web Push Transport
 
-WebDAV-Push can be used with Web Push (RFC 8030) to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure.
+WebDAV-Push can be used with Web Push (RFC 8030) to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure. Currently (2024), all major browsers support Web Push.
 
 Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is currently recommended. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if applicable.
 
 > **RESEARCH:** Are subscription-sets of use for us?
 
-> **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is intentionally designed as a 100% compatible subset of Web Push. From a WebDAV server perspective, UP endpoints may used as Web Push resources. UP encryption?
+> **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a set of specification documents which are intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints may used as Web Push resources.
 
 ## Transport description
 
