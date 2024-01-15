@@ -9,6 +9,10 @@ This document, below referred to as _WebDAV-Push_, provides a way for compliant
 WebDAV servers to send notifications about updated collections to subscribed clients
 over existing push transports.
 
+WebDAV-Push notifications are intended as an additional tool to notify clients about updates in near time so that clients can refresh their views, perform synchronization etc.
+
+A client must not rely on WebDAV-Push notifications, so it should also perform regular WebDAV access / synchronization like when WebDAV-Push notifications are not available. However if a client uses polling, it can significantly reduce the polling interval when WebDAV-Push notifications are available.
+
 Capitalized words like Application Server, Client etc. have a special meaning in the context
 of this document.
 
@@ -87,7 +91,6 @@ HTTP/1.1 207 Multi-Status
     <href>/webdav/collection/</href>
     <prop>
       <P:push-transports>
-        <P:unifiedpush version="1"/>
         <P:web-push />
         <P:some-other-transport>
           <P:some-relevant-info>...<P:some-relevant-info>
@@ -104,7 +107,7 @@ In this case, the requested collection supports two push transports:
 
 ## Subscription management
 
-### Create subscription
+### Register subscription
 
 How to subscribe to collections on the WebDAV server.
 
@@ -119,8 +122,27 @@ Required information:
 
 By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
-1. **POST to the collection like for [sharing resources](https://datatracker.ietf.org/doc/html/draft-pot-webdav-resource-sharing-04#section-4.3)**
-2. (Alternatively: POST to a dedicated URL that we know from PROPFIND)
+To subscribe to a collection, the client sends a POST request to the collection it wants to subscribe with `Content-Type: application/xml`. The root XML element of the XML body is `<push-register>` in the WebDAV-Push name space (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
+
+> **Element definitions:**
+> 
+>Name: `push-register`
+>Namespace: `DAV:Push`
+>Purpose: Indicates that a subscription shall be registered to receive notifications when the collection is updated.
+>Description:
+>
+>This element specifies details about a subscription that shall be notified when the collection is updated. Besides the optional expiration, there must be exactly one child element that defines the subscription details. In this document, only `web-push-subscription` is defined.
+>
+>Definition: `<!ELEMENT push-register (expires?, (web-push-subscription | %other-subscription))`
+>Example: see below
+>
+>Name: `expires`
+>Namespace: `DAV:Push`
+>Purpose: Specifies an expiration date of the registered subscription.
+>Description: Specifies an expiration date-time in the `IMF-fixdate` format (RFC 9110).
+>
+>Definition: `<!ELEMENT expires (#PCDATA)`
+>Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
 
 Allowed response codes:
 
@@ -128,21 +150,17 @@ Allowed response codes:
 * 204 if the subscription was created and there's nothing else to say
 * other error code, ideally with `DAV:error` XML body
 
-Sample request for UnifiedPush:
+Sample request for Web Push without Message Encryption:
 ```
 POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
 <?xml version="1.0" encoding="utf-8" ?>
 <push-subscribe xmlns="DAV:Push">
-  <subscription>
-    <transport>
-      <unified-push>
-        <endpoint>https://up.example.net/yohd4yai5Phiz1wi</endpoint>
-      </unified-push>
-    </transport>
-    <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
-  </subscription>
+  <web-push-subscription>
+    <endpoint>https://up.example.net/yohd4yai5Phiz1wi</endpoint>
+  </web-push-subscription>
+  <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
 </push-subscribe>
 
 HTTP/1.1 204 No Content
@@ -172,13 +190,21 @@ HTTP/1.1 204 No Content
 Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 ```
 
-### Remove subscription
+### Subscription removal
 
 > **TODO:** ~~Works like creating a subscription, but with `action=remove-subscription`.~~ Probably better with an own URL per subscription so that clients can DELETE.
 
 The server identifies the subscription by its details (for instance, the endpoint) and then removes it. If it can't find a matching subscription, it returns 404.
 
-TODO Expiration
+#### Expiration
+
+Clients can specify an expiration date-time when they register a subscription.
+
+A server should take the expiration specified by a client into consideration, but may impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration.
+
+Clients should refresh their registrations regularly because they can't rely on servers to keep their subscriptions until the client-specified expiration date.
+
+Expired subscriptions should be cleaned up and not be used anymore as chances are high that notifying such subscriptions will cause errors.
 
 ## Push messages
 
