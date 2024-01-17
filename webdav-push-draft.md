@@ -9,6 +9,10 @@ This document, below referred to as _WebDAV-Push_, provides a way for compliant
 WebDAV servers to send notifications about updated collections to subscribed clients
 over existing push transports.
 
+WebDAV-Push notifications are intended as an additional tool to notify clients about updates in near time so that clients can refresh their views, perform synchronization etc.
+
+A client must not rely on WebDAV-Push notifications, so it should also perform regular WebDAV access / synchronization like when WebDAV-Push notifications are not available. However if a client uses polling, it can significantly reduce the polling interval when WebDAV-Push notifications are available.
+
 Capitalized words like Application Server, Client etc. have a special meaning in the context
 of this document.
 
@@ -68,7 +72,26 @@ How clients can detect
 - whether a collection supports WebDAV-Push,
 - which push services are supported (may contain service-specific information)
 
-> **TODO:** specify WebDAV properties
+**Element definitions:**
+
+Name: `push-transports`  
+Namespace: `DAV:Push`  
+Purpose: Indicates which push transports are supported by the server.  
+Definition: `<!ELEMENT push-transports (transport*)`  
+Example: see below
+
+Name: `transport`  
+Namespace: `DAV:Push`  
+Purpose: Specifies a push transport (like Web Push).  
+Definition: `<!ELEMENT transport (web-push | %other-transport)`  
+Example: see below
+
+Name: `topic`  
+Namespace: `DAV:Push`  
+Purpose: Globally unique identifier for the collection.  
+Description: … URLs are not canonical … contained in push message body → privacy …  
+Definition: `<!ELEMENT topic (#PCDATA)`  
+Example: `<P:topic>27e7a2f0-bbe9-414a-88e3-73c109838abc</P:topic>`
 
 Example:
 ```
@@ -77,6 +100,7 @@ PROPFIND https://example.com/webdav/collection/
 <propfind xmlns="DAV:" xmlns:P="DAV:Push">
   <prop>
     <P:push-transports/>
+    <P:topic/>
   </prop>
 </propfind>
 
@@ -87,12 +111,14 @@ HTTP/1.1 207 Multi-Status
     <href>/webdav/collection/</href>
     <prop>
       <P:push-transports>
-        <P:unifiedpush version="1"/>
-        <P:web-push />
-        <P:some-other-transport>
-          <P:some-relevant-info>...<P:some-relevant-info>
-        </P:some-other-transport>
+        <P:transport><P:web-push /></P:transport>
+        <P:transport>
+          <P:some-other-transport>
+            <P:some-relevant-info>...<P:some-relevant-info>
+          </P:some-other-transport>
+        </P:transport>
       <P:push-transports>
+      <P:topic>27e7a2f0-bbe9-414a-88e3-73c109838abc</P:topic>
     </prop>
   </response>
 </multistatus>
@@ -104,7 +130,7 @@ In this case, the requested collection supports two push transports:
 
 ## Subscription management
 
-### Create subscription
+### Register subscription
 
 How to subscribe to collections on the WebDAV server.
 
@@ -119,66 +145,80 @@ Required information:
 
 By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
-1. **POST to the collection like for [sharing resources](https://datatracker.ietf.org/doc/html/draft-pot-webdav-resource-sharing-04#section-4.3)**
-2. (Alternatively: POST to a dedicated URL that we know from PROPFIND)
+To subscribe to a collection, the client sends a POST request to the collection it wants to subscribe with `Content-Type: application/xml`. The root XML element of the XML body is `<push-register>` in the WebDAV-Push name space (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
+
+**Element definitions:**
+
+Name: `push-register`  
+Namespace: `DAV:Push`  
+Purpose: Indicates that a subscription shall be registered to receive notifications when the collection is updated.  
+Description:
+
+This element specifies details about a subscription that shall be notified when the collection is updated. Besides the optional expiration, there must be exactly one `subscription` element that defines the subscription details.
+
+Definition: `<!ELEMENT push-register (expires?, subscription)`  
+Example: see below
+
+Name: `subscription`  
+Namespace: `DAV:Push`  
+Purpose: Specifies a subscription that shall be notified on updates. Contains exactly one element with details about a specific subscription type. In this document, only the `web-push-subscription` child element is defined.  
+Definition: `<!ELEMENT subscription (web-push-subscription | %other-subscription)`  
+Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`  
+
+Name: `expires`  
+Namespace: `DAV:Push`  
+Purpose: Specifies an expiration date of the registered subscription.  
+Description: Specifies an expiration date-time in the `IMF-fixdate` format (RFC 9110).  
+Definition: `<!ELEMENT expires (#PCDATA)`  
+Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`  
 
 Allowed response codes:
 
-* 201 with a `<subscription>` element if the subscription was created and the server has to return it to the client with additional information (like encryption details that are only valid for this subscription)
-* 204 if the subscription was created and there's nothing else to say
-* other error code, ideally with `DAV:error` XML body
+* 201 if the subscription was created. The server may return additional information (like encryption details that are only valid for this subscription) if required. Details have to be specified by the particular transport definition.
+* other error code (should include with `DAV:error` XML body)
 
-Sample request for UnifiedPush:
+When registering a subscription, the server creates a URL that identifies that registration (_registration URL_). That URL is sent in the `Location` header and can be used to remove the subscription.
+
+Sample request for Web Push without Message Encryption:
 ```
 POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
 <?xml version="1.0" encoding="utf-8" ?>
-<push-subscribe xmlns="DAV:Push">
+<push-register xmlns="DAV:Push">
   <subscription>
-    <transport>
-      <unified-push>
-        <endpoint>https://up.example.net/yohd4yai5Phiz1wi</endpoint>
-      </unified-push>
-    </transport>
-    <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
+    <web-push-subscription>
+      <push-resource>https://up.example.net/yohd4yai5Phiz1wi</push-resource>
+    </web-push-subscription>
   </subscription>
-</push-subscribe>
+  <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
+</push-register>
 
-HTTP/1.1 204 No Content
+HTTP/1.1 201 Created
 Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 ```
 
-Sample request for Web Push with Message Encryption:
+### Subscription removal
+
+A client can explicitly request subscription removal (unsubscribe) by sending a `DELETE` request to its registration URL.
+
+Sample request:
+
 ```
-POST https://example.com/webdav/collection/
-Content-Type: application/xml; charset="utf-8"
+DELETE https://example.com/webdav/subscriptions/io6Efei4ooph
 
-<?xml version="1.0" encoding="utf-8" ?>
-<push-subscribe xmlns="DAV:Push">
-  <subscription>
-    <transport>
-      <web-push>
-        <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
-        <public-key keyid="p256dh" dh="BL0IG_CKsOMezWrQPFQQDC39nRk88ROhz4Ytr9T-NZ7sbuHcjV0cVjoLtE7hR8c5USnRQ3LeKwuRxLvMVozJUt8" />
-        <authentication-secret>c9_nEWEAI8JUnB_uh5uEbQ</authentication-secret>
-      </web-push>
-    </transport>
-    <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
-  </subscription>
-</push-subscribe>
-
-HTTP/1.1 204 No Content
-Location: https://example.com/webdav/subscriptions/io6Efei4ooph
+HTTP/1.1 204 OK
 ```
 
-### Remove subscription
+#### Expiration
 
-> **TODO:** ~~Works like creating a subscription, but with `action=remove-subscription`.~~ Probably better with an own URL per subscription so that clients can DELETE.
+Clients can specify an expiration date-time when they register a subscription.
 
-The server identifies the subscription by its details (for instance, the endpoint) and then removes it. If it can't find a matching subscription, it returns 404.
+A server should take the expiration specified by a client into consideration, but may impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration.
 
-TODO Expiration
+Clients should refresh their registrations regularly because they can't rely on servers to keep their subscriptions until the client-specified expiration date.
+
+Expired subscriptions should be cleaned up and not be used anymore as chances are high that notifying such subscriptions will cause errors.
 
 ## Push messages
 
@@ -229,16 +269,30 @@ Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is currently recomme
 
 > **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a set of specification documents which are intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints may used as Web Push resources.
 
-## Transport description
+## Subscription
 
-The XML element to specify the transport is `<web-push>`, with these direct sub-elements:
+Element definitions:
 
-### Push Resource
-Name: `push-resource`
-Description: push resource URL as defined in RFC 8030
+Name: `web-push`  
+Purpose: Specifies the Web Push transport.  
+Description: Used to specify the Web Push Transport in the context of a `<transport>` element, for instance in a list of supported transports.  
+Definition: `<!ELEMENT web-push (EMPTY)`  
+Example: `<web-push/>`  
+
+Name: `web-push-subscription`  
+Purpose: Public information of a Web Push subscription that is shared with the WebDAV-Push server (in terms of RFC 8030: application server).  
+Description: Used to specify a Web Push subscription in the context of a `<subscription>` element, for instance to register a subscription.  
+Definition: `<!ELEMENT web-push-subscription (push-resource)`  
+Example: see below
+
+Name: `push-resource`  
+Purpose: Identifies the endpoint where Web Push notifications are sent to (in terms of RFC 8030: push resource).  
+Definition: `<!ELEMENT push-resource (#PCDATA)`  
 Example:
 ```
-<push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
+<web-push-subscription>
+  <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
+</web-push-subscription>
 ```
 
 ### Message Encryption
