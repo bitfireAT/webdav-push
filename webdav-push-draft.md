@@ -89,9 +89,23 @@ Example: see below
 Name: `topic`  
 Namespace: `DAV:Push`  
 Purpose: Globally unique identifier for the collection.  
-Description: … URLs are not canonical … contained in push message body → privacy …  
+Description:
+
+Notification messages contain the topic of the collection so that the client knows which collection has changed. (URLs are not generally canonical, so that the collection URL without an explicit topic would not be enough.)
+
+Because the topic may be sent over push transports without encryption, it should not allow to draw conclusions about the synchronized collection.
+
+A client may register the same subscription for collections from multiple servers. When the client receives a notification over such a shared subscription, the topic can be used to distinguish which collection was updated. Because the client must be able to distinguish between collections from different servers, the topics need to be globally unique.
+
+Because the topic is used as `Topic` header when sent over a Web Push transport, the topic should follow the rules of the RFC 8030 `Topic` header: no more than 32 characters from the URL and filename-safe Base64 alphabet.
+
+For instance, a server could use as a topic:
+
+* a random GUID, encoded with base64url (defined in RFC 4648), for each collection; or
+* a salted hash (constant server-specific salt) of the canonical collection URL, encoded with base64url.
+
 Definition: `<!ELEMENT topic (#PCDATA)`  
-Example: `<P:topic>27e7a2f0-bbe9-414a-88e3-73c109838abc</P:topic>`
+Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
 
 Example:
 ```
@@ -118,7 +132,7 @@ HTTP/1.1 207 Multi-Status
           </P:some-other-transport>
         </P:transport>
       <P:push-transports>
-      <P:topic>27e7a2f0-bbe9-414a-88e3-73c109838abc</P:topic>
+      <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
     </prop>
   </response>
 </multistatus>
@@ -263,11 +277,17 @@ What happens when some component is hacked
 
 WebDAV-Push can be used with Web Push (RFC 8030) to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure. Currently (2024), all major browsers support Web Push.
 
-Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is currently recommended. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if applicable.
+When the Web Push transport is used for WebDAV-Push:
 
-> **RESEARCH:** Are subscription-sets of use for us?
+* RFC 8030 defines how to generate subscriptions and send push messages,
+* the WebDAV-Push server acts as RFC 8030 Application Server,
+* the WebDAV client (or a proxy server, for instance for proprietary environments) acts as RFC 8030 User Agent.
 
-> **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a set of specification documents which are intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints may used as Web Push resources.
+Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is recommended. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if applicable.
+
+> **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a set of specification documents which are intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.
+
+A WebDAV-Push server should use the collection topic as `Topic` header in push messages to replace previous notifications for the same collection.
 
 ## Subscription
 
