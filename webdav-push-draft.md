@@ -5,9 +5,7 @@ Draft Document (In Work)
 
 # Introduction
 
-This document, below referred to as _WebDAV-Push_, provides a way for compliant
-WebDAV servers to send notifications about updated collections to subscribed clients
-over existing push transports.
+This document, below referred to as _WebDAV-Push_, provides a way for compliant WebDAV servers to send notifications about updated collections to subscribed clients over existing push transports.
 
 WebDAV-Push notifications are intended as an additional tool to notify clients about updates in near time so that clients can refresh their views, perform synchronization etc.
 
@@ -236,11 +234,17 @@ Expired subscriptions should be cleaned up and not be used anymore as chances ar
 
 ## Push messages
 
-Actual push message format. As little data as possible, i.e. **only the changed topic**. Can we use a canonical collection URL when the payload is encrypted or do we need a topic ID, for instance if there's no reasonable way to canonicalize the collection URL? Otherwise the server could send another form of the URL in the push message and a user-agent wouldn't know which collection is meant.
+The push message body contains the topic of the changed collection.
+
+Sample push message body:
+
+```
+<push-message xmlns="DAV:Push">
+  <topic>O7M1nQ7cKkKTKsoS_j6Z3w</topic>
+</push-message>
+```
 
 Push notification rate limit?
-
-XML (like in WebDAV), JSON (like in Web Push, seems to be more usual nowadays in push environments), other format?
 
 Shall end-to-end encryption (for instance as described by RFC 8291) be possible / recommended / required?
 
