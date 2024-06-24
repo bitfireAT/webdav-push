@@ -108,7 +108,7 @@ Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
 Example:
 ```
 PROPFIND https://example.com/webdav/collection/
-[…]
+<?xml version="1.0" encoding="utf-8" ?>
 <propfind xmlns="DAV:" xmlns:P="DAV:Push">
   <prop>
     <P:push-transports/>
@@ -117,7 +117,7 @@ PROPFIND https://example.com/webdav/collection/
 </propfind>
 
 HTTP/1.1 207 Multi-Status
-[…]
+<?xml version="1.0" encoding="utf-8" ?>
 <multistatus xmlns="DAV:" xmlns:P="DAV:Push">
   <response>
     <href>/webdav/collection/</href>
@@ -239,6 +239,7 @@ The push message body contains the topic of the changed collection.
 Sample push message body:
 
 ```
+<?xml version="1.0" encoding="utf-8" ?>
 <push-message xmlns="DAV:Push">
   <topic>O7M1nQ7cKkKTKsoS_j6Z3w</topic>
 </push-message>
@@ -314,7 +315,7 @@ Purpose: Identifies the endpoint where Web Push notifications are sent to (in te
 Definition: `<!ELEMENT push-resource (#PCDATA)`  
 Example:
 ```
-<web-push-subscription>
+<web-push-subscription xmlns="DAV:Push">
   <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
 </web-push-subscription>
 ```
