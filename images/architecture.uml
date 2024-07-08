@@ -1,70 +1,66 @@
 @startuml
-!theme sketchy-outline
-skinparam backgroundColor #eeeee
-skinparam handwritten false
-skinparam FrameBorderColor black
-skinparam FrameFontColor black
+skinparam sequenceMessageAlign left
 
 title WebDAV Push: Architectural Overview
 
+package "Push-capable WebDAV server" as Server #dbeafe {
+  [WebDAV-Push functionality] as WebDAVPush
+  note left: manages registered clients,\nsends push messages on updates
+  
+  [WebDAV server] --> WebDAVPush : Collection update
+  
+  [Web Push transport =\nRFC 8030 application server] as WebPushT
+  WebDAVPush --> WebPushT 
+
+  [Backend for some\nother transport] as OtherT
+  WebDAVPush --> OtherT
+}
+
+cloud "RFC 8030 push service" as PS {
+  frame "UnifiedPush (UP)" {
+    [UP server] as UPServer
+    WebPushT --> UPServer
+
+    [Redirect proxy] as UPProxy #aee571 
+    UPServer --> UPProxy
+  }
+
+  [Proprietary\npush service] as PropCloud #ffdd77 
+  WebPushT --> PropCloud
+  UPProxy --> PropCloud : sign and\nforward
+}
+
+frame "Client device" as Device {
+  [UP distributor] as UPDist
+  UPServer --> UPDist
+
+  [Proprietary\nlocal service] as PropLocal #ffdd77
+  PropCloud --> PropLocal
+  PropLocal --> UPDist
+
+  [Web Browser =\nRFC 8030 user agent] as Browser #ffdd77
+  PropCloud --> Browser
+
+  frame "Push client" as PC {
+    [Mobile/desktop app] as UPApp #aee571
+    UPDist --> UPApp : UP integration
+
+    [Web App] #aee571
+    Browser --> [Web App] : W3C Push API
+
+    [Other app] #aee571
+    OtherT ..> [Other app] : other protocol, may use other\nintermediate components
+  }
+}
+PS --> Device : provide push\nresource / endpoint
+
+PC --> WebDAVPush : register\npush\nresource /\nendpoint
+
 legend
-light blue: hosted by WebDAV service provider
-green: provided / hosted by client vendor
+Light blue: hosted by WebDAV service provider
+Green: provided / hosted by client vendor
+Light orange: usually provided by browser/device vendor
 end legend
 
-package "Push-Capable WebDAV Server" #dbeafe {
-  [WebDAV Server]
-
-  [WebDAV-Push Module] as WebDAVPush
-  note right: manages subscriptions,\nsends push requests
-  
-  [WebDAV Server] -r-> WebDAVPush : Collection updated
-  
-  [Web Push Backend\nRFC 8030 Application Server] as WebPushBE
-  WebDAVPush --> WebPushBE 
-
-  [Backend for\nSome Other Push] as OtherBE
-  WebDAVPush --> OtherBE
-}
-
-cloud "Proprietary push" {
-  [UnifiedPush\nRedirect Proxy] as UPRedirProxy #aee571 
-  WebPushBE --> UPRedirProxy : POST <redirect\nproxy endpoint>
-
-  [Proprietary\nCloud Service] as ProprietaryCloud
-}
-
-'[Other Push Transport\nmay include Redirect Proxy] as OtherPushTransport
-'OtherBE --> OtherPushTransport : POST (or something else)
-
-frame "Push Clients" as PC {
-  [Other app] #aee571
-  'OtherPushTransport --> [Other app]
-  OtherBE ..> [Other app] : Some Other\nPush transport
-
-  [UnifiedPush Distributor] as UPDistributor
-  WebPushBE --> UPDistributor : POST <endpoint>\n→ UnifiedPush Server
-
-  [Proprietary\nLocal Service] as ProprietaryLocal
-  ProprietaryLocal --> UPDistributor : onMessageReceived()
-
-  UPRedirProxy --> ProprietaryCloud : sign and\nforward
-  ProprietaryCloud -l-> ProprietaryLocal : proprietary protocol
-  WebPushBE ..> ProprietaryCloud : cross-platform\nWeb Push
-
-  [Mobile app\n(UnifiedPush)] as UPApp #aee571
-  UPDistributor --> UPApp : onMessage()
-
-  [WebDAV File Manager] as FileManager #aee571
-  UPDistributor --> FileManager : onMessage()
-
-  [Web Browser\nRFC 8030 User Agent] as Browser
-  WebPushBE --> Browser : POST <push resource>\n→ RFC 8030 Push Service
-  [Web App] #aee571
-  Browser --> [Web App] : Push API
-}
-
-PC --> WebDAVPush : PROPFIND capabilities\nto find WebDAV-Push\nAPI URL
-PC --> WebDAVPush : POST register\n?endpoint=…\n&collections=...
 
 @enduml
