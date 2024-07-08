@@ -11,6 +11,10 @@ WebDAV-Push notifications are intended as an additional tool to notify clients a
 
 A client must not rely on WebDAV-Push notifications, so it should also perform regular WebDAV access / synchronization like when WebDAV-Push notifications are not available. However if a client uses polling, it can significantly reduce the polling interval when WebDAV-Push notifications are available.
 
+WebDAV-Push notifications are intended as an additional tool to notify clients about updates in near time so that clients can refresh their views, perform synchronization etc.
+
+A client must not rely on WebDAV-Push notifications, so it should also perform regular WebDAV access / synchronization like when WebDAV-Push notifications are not available. However if a client uses polling, it can significantly reduce the polling interval when WebDAV-Push notifications are available.
+
 Capitalized words like Application Server, Client etc. have a special meaning in the context
 of this document.
 
@@ -129,12 +133,13 @@ HTTP/1.1 207 Multi-Status
             <P:some-relevant-info>...<P:some-relevant-info>
           </P:some-other-transport>
         </P:transport>
-      <P:push-transports>
+      </P:push-transports>
       <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
     </prop>
   </response>
 </multistatus>
 ```
+
 In this case, the requested collection supports two push transports:
 
 1. Web Push (RFC 8030)
@@ -231,6 +236,7 @@ A server should take the expiration specified by a client into consideration, bu
 Clients should refresh their registrations regularly because they can't rely on servers to keep their subscriptions until the client-specified expiration date.
 
 Expired subscriptions should be cleaned up and not be used anymore as chances are high that notifying such subscriptions will cause errors.
+
 
 ## Push messages
 
