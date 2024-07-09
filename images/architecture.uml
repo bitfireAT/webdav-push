@@ -19,14 +19,14 @@ package "Push-capable WebDAV server" as Server #dbeafe {
 cloud "RFC 8030 push service" as PS {
   frame "UnifiedPush (UP)" {
     [UP server] as UPServer
-    WebPushT --> UPServer
+    WebPushT --> UPServer : Web Push
 
     [Redirect proxy] as UPProxy #aee571 
     UPServer --> UPProxy
   }
 
   [Proprietary\npush service] as PropCloud #ffdd77 
-  WebPushT --> PropCloud
+  WebPushT --> PropCloud : Web Push
   UPProxy --> PropCloud : sign and\nforward
 }
 
@@ -38,15 +38,18 @@ frame "Client device" as Device {
   PropCloud --> PropLocal
   PropLocal --> UPDist
 
-  [Web Browser =\nRFC 8030 user agent] as Browser #ffdd77
+  [Web browser =\nRFC 8030 user agent] as Browser #ffdd77
   PropCloud --> Browser
 
   frame "Push client" as PC {
     [Mobile/desktop app] as UPApp #aee571
     UPDist --> UPApp : UP integration
 
-    [Web App] #aee571
-    Browser --> [Web App] : W3C Push API
+    [Proprietary app] as PropApp #aee571
+    PropLocal --> PropApp : native\nproprietary\nintegration
+
+    [Web app] #aee571
+    Browser --> [Web app] : W3C Push API
 
     [Other app] #aee571
     OtherT ..> [Other app] : other protocol, may use other\nintermediate components
