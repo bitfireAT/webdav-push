@@ -26,7 +26,7 @@ WS -> UPS: //Push message// with __collection topic__
 UPS -> UPD: (by UP)
 
 UPD -> C: onMessage() with __collection topic__
-C <--> WS: Synchronization 
+C <--> WS: (PROPFIND, or whatever the client does when a collection has changed)
 end
 
 legend
