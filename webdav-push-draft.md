@@ -5,33 +5,23 @@ WebDAV Push – Draft Document (In Work)
 # Introduction
 
 This document, below referred to as _WebDAV-Push_, provides a way for compliant WebDAV servers to
-send notifications about updated collections to subscribed clients over existing push transports.
+send notifications about updated collections to subscribed clients over suitable push transports.
 
-WebDAV-Push notifications are intended as an additional tool to notify clients about updates in near
-time so that clients can refresh their views, perform synchronization etc.
+WebDAV-Push is intended as an additional tool to notify clients about updates in near time so 
+that clients can refresh their views, perform synchronization etc.
 
-A client must not rely on WebDAV-Push notifications, so it should also perform regular WebDAV
-access / synchronization like when WebDAV-Push notifications are not available. However if a client
-uses polling, it can significantly reduce the polling interval when WebDAV-Push notifications are
-available.
-
-WebDAV-Push notifications are intended as an additional tool to notify clients about updates in near
-time so that clients can refresh their views, perform synchronization etc.
-
-A client must not rely on WebDAV-Push notifications, so it should also perform regular WebDAV
-access / synchronization like when WebDAV-Push notifications are not available. However if a client
-uses polling, it can significantly reduce the polling interval when WebDAV-Push notifications are
-available.
-
-Capitalized words like Application Server, Client etc. have a special meaning in the context
-of this document.
+A client should not rely solely on WebDAV-Push, so it should also perform regular polling like when
+WebDAV-Push is not available. However if WebDAV-Push is available, the polling frequency can be
+significantly reduced.
 
 Typical use cases:
 
-- mobile app synchronizes calendars/address books with device storage and wants to be notified on
-  collection updates
-- file manager lists contents of a WebDAV collection and wants to be notified on updates
-- Calendar Web app shows a CalDAV collection and wants to be notified on updates
+- A mobile app synchronizes calendars/address books with device-local storage and wants to be 
+  notified on collection updates in order to re-synchronize.
+- A desktop file manager shows contents of a WebDAV collection and wants to be notified on updates 
+  in order to refresh the view.
+- A calendar Web app shows a CalDAV collection and wants to be notified on updates in order to 
+  refresh the view.
 
 
 
@@ -40,18 +30,17 @@ Typical use cases:
 ![Architectural overview diagram](images/architecture.png)
 
 
-## WebDAV Server + WebDAV-Push Module
+## WebDAV Server with support for WebDAV-Push
 
 A WebDAV server that implements WebDAV-Push needs to
 
 - advertise WebDAV-Push features and relevant information (service detection),
 - manage subscriptions to collections and
-- send push requests when a subscribed collection changes.
+- send push messages when a subscribed collection changes.
 
-In order to manage subscriptions, a WebDAV server must
+In order to manage subscriptions, a WebDAV server needs to
 
-- provide a way for clients to subscribe to a collection (and provide transport-specific
-  information),
+- provide a way for clients to subscribe to a collection (with transport-specific information),
 - provide a way for clients to unsubscribe from collections,
 - handle expired or otherwise invalid subscriptions.
 
@@ -62,29 +51,25 @@ The server must be prepared to handle errors. For instance, if a push transport 
 subscription doesn't exist anymore, it must be removed and not be used again.
 
 
-## Push Transports
+## Push transports
 
-WebDAV-Push isn't restricted to specific push transports and allows clients to specify which push
-transports they support. This allows upcoming push transports to be used with WebDAV-Push.
+WebDAV-Push is not restricted to specific push transports and allows clients to specify which push
+transports they support. This allows even upcoming, yet unknown push transports to be used with 
+WebDAV-Push.
 
-WebDAV-Push currently recommends to implement at least Web Push (see Appendix A).
+WebDAV-Push currently recommends to implement at least Web Push / RFC 8030 (see Appendix A).
 
-For proprietary push services (like Google FCM), client vendors may need to provide
-a _rewrite proxy_ that signs and forwards the requests to the respective
-proprietary service.
+For proprietary push services, client vendors may need to provide a _rewrite proxy_ that signs 
+and forwards the requests to the respective proprietary service.
 
 Push transport definitions can define extra properties and additional processing rules. For
-instance, a transport definition could define that WebDAV servers should send an additional *topic*
-header with their push notifications so that previous undelivered push messages are replaced by new
-ones.
+instance, a transport definition could define that WebDAV servers should send an additional 
+`Topic` header with their push notifications so that previous undelivered push messages are 
+replaced by new ones.
 
 
 
 # Protocol definitions
-
-![Flowchart: WebDAV-Push over UnifiedPush](images/unifiedpush-flowchart.png)
-
-Here we define how the communication between the components is done.
 
 
 ## Service detection: WebDAV
@@ -182,26 +167,34 @@ In this case, the requested collection supports two push transports:
 
 ### Subscription registration
 
-How to subscribe to collections on the WebDAV server.
-
-Required information:
+How to subscribe to collections on the WebDAV server. Required information:
 
 - Collection to be subscribed
 - Push transport, including transport-specific details
     - Web Push: push resource URL
-    - details for message encryption
+    - (TODO details for message encryption)
 - Expiration? how long by default, min/max (24 h), server decides (and can impose limits)
-- End-to-end-encryption? Or should it be defined per transport?
+- (End-to-end-encryption? Or should it be defined per transport?)
 
-By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified
-that servers can send one notification per path segment? Implications?
+TODO By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be 
+specified that servers can send one notification per path segment? Implications?
 
-To subscribe to a collection, the client sends a POST request to the collection it wants to
-subscribe with `Content-Type: application/xml`. The root XML element of the XML body
-is `<push-register>` in the WebDAV-Push name space (`DAV:Push`) and can be used to distinguish
-between a WebDAV-Push and other requests.
+To subscribe to a collection, the client sends a POST request with
+`Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of 
+the XML body is `<push-register>` in the WebDAV-Push name space (`DAV:Push`) and can be used to 
+distinguish between a WebDAV-Push and other requests.
 
-**Element definitions:**
+### Subscription updates
+
+A server must not register a subscription with the same identifier multiple times. Which
+field is used as a unique identifier is specific to the transport. For Web Push, it is the push 
+resource URL.
+
+If a client tries to register a subscription with the same identifier again, the server must 
+update the stored subscription with the subscription details and the expiration date. The server
+can return either the same or a new registration URL for the updated subscription.
+
+### Element definitions
 
 Name: `push-register`  
 Namespace: `DAV:Push`  
@@ -233,16 +226,16 @@ Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
 
 Allowed response codes:
 
-* 201 if the subscription was created. The server may return additional information (like encryption
-  details that are only valid for this subscription) if required. Details have to be specified by
-  the particular transport definition.
-* other error code (should include with `DAV:error` XML body)
+* 201 if the subscription was created. The server may return additional information, like 
+  encryption details that are only valid for this subscription. Details have to 
+  be specified by the particular transport definition.
+* other error code (should include `DAV:error` XML body)
 
-When registering a subscription, the server creates a URL that identifies that registration (
-_registration URL_). That URL is sent in the `Location` header and can be used to remove the
+When registering a subscription, the server creates a URL that identifies that registration
+(_registration URL_). That URL is sent in the `Location` header and can be used to remove the
 subscription.
 
-Sample request for Web Push without Message Encryption:
+Sample request for Web Push without message encryption:
 
 ```
 POST https://example.com/webdav/collection/
@@ -362,13 +355,15 @@ Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is recommended. If f
 extensions become used by push services, WebDAV-Push servers should implement them as well, if
 applicable.
 
+A WebDAV-Push server should use the collection topic as `Topic` header in push messages to replace
+previous notifications for the same collection.
+
 > **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a set of specification documents which
 > are intentionally designed as a 100% compatible subset of Web Push, together with a software that
 > can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be
 > seen as Web Push resources.
 
-A WebDAV-Push server should use the collection topic as `Topic` header in push messages to replace
-previous notifications for the same collection.
+![Flowchart: WebDAV-Push over UnifiedPush](images/unifiedpush-flowchart.png)
 
 
 ## Subscription
@@ -402,6 +397,6 @@ Example:
 </web-push-subscription>
 ```
 
-### Message Encryption
+### Message encryption
 
 > **TODO:** message encryption as defined in RFC 8291
