@@ -283,7 +283,7 @@ Expired subscriptions should be cleaned up and not be used anymore as chances ar
 notifying such subscriptions will cause errors.
 
 
-## Push messages
+## Push message
 
 The push message body contains the topic of the changed collection.
 
@@ -378,8 +378,8 @@ Definition: `<!ELEMENT web-push (EMPTY)`
 Example: `<web-push/>`
 
 Name: `web-push-subscription`  
-Purpose: Public information of a Web Push subscription that is shared with the WebDAV-Push server (
-in terms of RFC 8030: application server).  
+Purpose: Public information of a Web Push subscription that is shared with the WebDAV-Push server
+(in terms of RFC 8030: application server).  
 Description: Used to specify a Web Push subscription in the context of a `<subscription>` element,
 for instance to register a subscription.  
 Definition: `<!ELEMENT web-push-subscription (push-resource)`  
@@ -387,7 +387,7 @@ Example: see below
 
 Name: `push-resource`  
 Purpose: Identifies the endpoint where Web Push notifications are sent to (in terms of RFC 8030:
-push resource).  
+push resource). The push resource is used as the unique identifier for the subscription.  
 Definition: `<!ELEMENT push-resource (#PCDATA)`  
 Example:
 
