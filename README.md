@@ -43,12 +43,17 @@ The plan is to
 
 A lot of people have shown their interest in WebDAV-Push. Thank you for all ideas and encouragement!
 
+
+## Contact
+
 If you're interested:
 
 - have a look at the [document draft](webdav-push-draft.md) and tell us your ideas
 - take part in our [Discussions](https://github.com/bitfireAT/webdav-push/discussions) – feel free to create new topics with your ideas, questions, what you would love to see, …
 - join our Matrix channel: [#webdav-push:matrix.org](https://matrix.to/#/#webdav-push:matrix.org) – not always very active, but well observed
 - watch [@davx5@fosstodon.org](https://fosstodon.org/@davx5app), where we sometimes post Push-related news too
+
+We would love to see some activity!
 
 
 ## Repo organization
