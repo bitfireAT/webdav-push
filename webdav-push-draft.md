@@ -212,7 +212,7 @@ The `push-register` element contains (exactly/at least?) one `subscription` elem
 Allowed response codes:
 
 * 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. Details have to be specified by the particular transport definition.
-* 204 if the subscription was registered.
+* 204 if the subscription was registered
 * other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
 
 In any case, when a subscription is registered the first time, the server creates a URL that identifies that registration (_registration URL_). That URL is sent in the `Location` header and can be used to remove the subscription.
@@ -247,8 +247,9 @@ A server _must not_ register a subscription with the same identifier multiple ti
 
 Allowed response codes:
 
-* 201 if the registered subscription was updated and the server wants to share registration-specific details.
-* 204 if the registered subscription was updated.
+* 201 if the registered subscription was updated and the server wants to share registration-specific details
+* 204 if the registered subscription was updated
+* 404 if the registration URL is unknown (or expired)
 * other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
 
 In any case, the server _must_ return the registration URL in the `Location` header.
@@ -260,16 +261,18 @@ A client can explicitly unsubscribe from a collection by sending a `DELETE` requ
 
 Allowed response codes:
 
-* 204 if the registered subscription was removed and no further push messages will be sent to it.
-* 404 if the registration URL is unknown
+* 204 if the registered subscription was removed.
+* 404 if the registration URL is unknown (or expired).
 * other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
+
+When a subscription registration is removed, no further push messages must be sent to the subscription.
 
 Sample request:
 
 ```
 DELETE https://example.com/webdav/subscriptions/io6Efei4ooph
 
-HTTP/1.1 204 Subscription unregistered
+HTTP/1.1 204 Unregistered
 ```
 
 
@@ -352,7 +355,13 @@ How often / batch / delay?
 
 Expiration ...
 
-Error handling: How to deal with invalid URLs
+### Removal of invalid subscriptions
+
+A WebDAV-Push server _must_ ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed.
+
+An invalid subscription is a subscription that push notifications can't be delivered to. Usually the push service returns an HTTP error code like 404 when it receives a notification for an invalid subscription. There may also be other conditions that render a subscription invalid, like a non-resolvable hostname or an encryption handshake error.
+
+A server _may_ use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
 
 
 ## Element definitions
