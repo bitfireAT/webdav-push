@@ -465,6 +465,8 @@ The push topic _should_ be used to generate the `Topic` header. Since RFC 8030 l
 
 The exact algorithm to derive the `Topic` header from the push topic can be chosen by the server.
 
+The server can use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical for the user, for instance in slowly changing collections like a holiday calendar may be sent with `Urgency: low`.
+
 Example:
 
 Push topic: `O7M1nQ7cKkKTKsoS_j6Z3w`  
