@@ -461,6 +461,8 @@ Example:
 
 ## Push message
 
+The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
+
 The push topic _should_ be used to generate the `Topic` header. Since RFC 8030 limits the `Topic` header to 32 characters from the URL and filename-safe Base64 alphabet, it's _recommended_ to use a hash of the push topic that meets these requirements as the header value.
 
 The exact algorithm to derive the `Topic` header from the push topic can be chosen by the server.
@@ -479,6 +481,7 @@ So push message delivery is requested with this header:
 
 ```
 POST <push subscription URL>
+Content-Type: application/xml; charset="UTF-8"
 Topic: R3iM_PAQ7OMDAXW4-mMna7rqSGI
 
 <push message>
