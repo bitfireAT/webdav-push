@@ -190,6 +190,8 @@ Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
 
 # Subscription management
 
+> **TODO:** ACL for registering subscriptions?
+
 
 ## Subscription registration
 
@@ -202,7 +204,7 @@ How to subscribe to collections on the WebDAV server. Required information:
 - Expiration? how long by default, min/max (24 h), server decides (and can impose limits)
 - (End-to-end-encryption? Or should it be defined per transport?)
 
-TODO By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
+> **TODO:** By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
 To subscribe to a collection, the client sends a POST request with
 `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push name space (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
@@ -214,6 +216,8 @@ Allowed response codes:
 * 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. Details have to be specified by the particular transport definition.
 * 204 if the subscription was registered
 * other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
+
+> **TODO**: Always return expiration
 
 In any case, when a subscription is registered the first time, the server creates a URL that identifies that registration (_registration URL_). That URL is sent in the `Location` header and can be used to remove the subscription.
 
@@ -357,7 +361,7 @@ Expiration ...
 
 ### Removal of invalid subscriptions
 
-A WebDAV-Push server _must_ ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed.
+A WebDAV-Push server _must_ ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed at some time.
 
 An invalid subscription is a subscription that push notifications can't be delivered to. Usually the push service returns an HTTP error code like 404 when it receives a notification for an invalid subscription. There may also be other conditions that render a subscription invalid, like a non-resolvable hostname or an encryption handshake error.
 
@@ -420,7 +424,7 @@ applicable.
 
 A WebDAV-Push server should use the collection topic as `Topic` header in push messages to replace previous notifications for the same collection.
 
-> **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a set of specification documents which are intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.
+> **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a specification which is intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.
 
 ![Flowchart: WebDAV-Push over UnifiedPush](images/unifiedpush-flowchart.png)
 
@@ -486,3 +490,12 @@ Topic: R3iM_PAQ7OMDAXW4-mMna7rqSGI
 
 <push message>
 ```
+
+
+### VAPID
+
+Additional properties
+
+### Message encryption
+
+How to send the encrypted push message
