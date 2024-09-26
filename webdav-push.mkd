@@ -1,0 +1,35 @@
+---
+title: Push for WebDAV
+abbrev: WebDAV-Push
+docname: draft-bitfire-webdav-push-00
+category: exp
+
+submissionType: independent
+ipr: trust200902
+workgroup: None
+keyword: WebDAV
+keyword: push
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs]
+
+author:
+ -
+    ins: R. Hirner
+    name: Ricki Hirner
+    organization: bitfire.at
+    email: hirner@bitfire.at
+
+normative:
+  RFC2119:
+  RFC4918:
+
+
+--- abstract
+
+{::include abstract.md}
+
+
+--- middle
+
+{::include content.md}
