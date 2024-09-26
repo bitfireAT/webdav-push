@@ -97,7 +97,7 @@ A WebDAV client that implements WebDAV-Push typically
 WebDAV-Push is not restricted to specific push transports and allows clients to specify which push transports they support. This allows even upcoming, yet unknown push transports to be used with 
 WebDAV-Push.
 
-WebDAV-Push implementations SHOULD implement at least Web Push / RFC 8030 (see Appendix A).
+WebDAV-Push implementations SHOULD implement at least the Web Push transport (see Appendix A).
 
 For proprietary push services, client vendors may need to provide a _rewrite proxy_ that signs and forwards the requests to the respective proprietary service.
 
@@ -315,7 +315,7 @@ Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
 Name: `expires`  
 Namespace: `DAV:Push`  
 Purpose: Specifies an expiration date of the registered subscription.  
-Description: Specifies an expiration date-time in the `IMF-fixdate` format (RFC 9110).  
+Description: Specifies an expiration date-time in the `IMF-fixdate` format {{RFC9110}}.  
 Definition: `<!ELEMENT expires (#PCDATA)`  
 Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
 
@@ -406,7 +406,7 @@ What happens when some component is hacked
 
 # Appendix A: Web Push Transport
 
-WebDAV-Push can be used with Web Push (RFC 8030) to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure. Currently (2024), all major browsers support Web Push.
+WebDAV-Push can be used with Web Push {{RFC8030}} to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure. Currently (2024), all major browsers support Web Push.
 
 When the Web Push transport is used for WebDAV-Push,
 
@@ -420,7 +420,7 @@ Corresponding terminology:
 * (WebDAV-Push) _push server_ ↔ (RFC 8030) _application server_
 * (WebDAV-Push) _push client_ (or _redirect proxy_) ↔ (RFC 8030) _user agent_
 
-Usage of Message Encryption (RFC 8291) and VAPID (RFC 8292) is recommended. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if
+Usage of Message Encryption {{RFC8291}} and VAPID {{RFC8292}} is recommended. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if
 applicable.
 
 A WebDAV-Push server should use the collection topic as `Topic` header in push messages to replace previous notifications for the same collection.
