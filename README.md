@@ -1,11 +1,22 @@
+[![Specification: HTML](https://img.shields.io/badge/preview-html-brightgreen)](https://bitfireat.github.io/webdav-push/draft-bitfire-webdav-push-00.html)
+[![Specification: TXT](https://img.shields.io/badge/preview-txt-brightgreen)](https://bitfireat.github.io/webdav-push/draft-bitfire-webdav-push-00.txt)
 [![Matrix](https://img.shields.io/matrix/webdav-push:matrix.org)](https://matrix.to/#/#webdav-push:matrix.org)
 [![GitHub Discussions](https://img.shields.io/github/discussions/bitfireAT/webdav-push)](https://img.shields.io/github/discussions/bitfireAT/webdav-push)
 
 
 # The WebDAV Push project
 
-**[View the current draft document](webdav-push-draft.md)**
+**View the current specification draft (in work):**
 
+* [HTML](https://bitfireat.github.io/webdav-push/draft-bitfire-webdav-push-00.html)
+* [TXT](https://bitfireat.github.io/webdav-push/draft-bitfire-webdav-push-00.txt)
+
+These documents are [automatically compiled](https://github.com/bitfireAT/webdav-push/blob/main/.github/workflows/build-rfc.yml) from the source (kramdown-rfc):
+
+* [metadata](https://github.com/bitfireAT/webdav-push/blob/main/webdav-push.mkd)
+* [content](https://github.com/bitfireAT/webdav-push/blob/main/content.md)
+
+---
 
 ## Motivation
 
@@ -36,7 +47,7 @@ Currently, the main organizations / people behind WebDAV Push are:
 
 The plan is to
 
-- [draft a standard document](webdav-push-draft.md),
+- [draft a specification](content.md),
 - make a [first server-side implementation](https://github.com/bitfireAT/nc_ext_dav_push) for [@Nextcloud](https://github.com/nextcloud) (who are interested in supporting that) – it's in development and can already be used for demonstration purposes,
 - make a first client-side implementation for DAVx⁵ – basic support for demonstration purposes is also already available in the lastest releases,
 - ensure that it's usable with [@UnifiedPush](https://github.com/UnifiedPush) (because there's already much awesome open technology available).
@@ -48,7 +59,8 @@ A lot of people have shown their interest in WebDAV-Push. Thank you for all idea
 
 If you're interested:
 
-- have a look at the [document draft](webdav-push-draft.md) and tell us your ideas
+- have a look at the [specification draft](https://bitfireat.github.io/webdav-push/draft-bitfire-webdav-push-00.html) and tell us your ideas
+- send PRs for content of this repository, especially the specification content (`content.md`)
 - take part in our [Discussions](https://github.com/bitfireAT/webdav-push/discussions) – feel free to create new topics with your ideas, questions, what you would love to see, …
 - join our Matrix channel: [#webdav-push:matrix.org](https://matrix.to/#/#webdav-push:matrix.org) – not always very active, but well observed
 - watch [@davx5@fosstodon.org](https://fosstodon.org/@davx5app), where we sometimes post Push-related news too
@@ -60,6 +72,6 @@ We would love to see some activity!
 
 The repository contains:
 
-- **a [draft document describing our current idea of WebDAV-Push](webdav-push-draft.md)**
+- **a specification draft describing our current idea of WebDAV-Push** (see above)
 - discussion and exchange about the WebDAV Push topic (in [Discussions](https://github.com/bitfireAT/webdav-push/discussions))
 - specific tasks (in [Issues](https://github.com/bitfireAT/webdav-push/issues)) and related patches (in [Pull requests](https://github.com/bitfireAT/webdav-push/pulls))
