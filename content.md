@@ -5,7 +5,7 @@ This document, below referred to as _WebDAV-Push_, provides a way for compliant 
 
 WebDAV-Push is intended as an additional tool to notify clients about updates in near time so that clients can refresh their views, perform synchronization etc.
 
-A client should not rely solely on WebDAV-Push, so it should also perform regular polling like when WebDAV-Push is not available. However if WebDAV-Push is available, the polling frequency can be
+A client SHOULD NOT rely solely on WebDAV-Push, so it should also perform regular polling like when WebDAV-Push is not available. However if WebDAV-Push is available, the polling frequency can be
 significantly reduced.
 
 Typical use cases:
@@ -13,6 +13,10 @@ Typical use cases:
 - A mobile app synchronizes calendars/address books with device-local storage and wants to be notified on collection updates in order to re-synchronize.
 - A desktop file manager shows contents of a WebDAV collection and wants to be notified on updates in order to refresh the view.
 - A calendar Web app shows a CalDAV collection and wants to be notified on updates in order to refresh the view.
+
+## Requirements language
+
+{::boilerplate bcp14-tagged}
 
 
 ## Architectural overview
@@ -93,7 +97,7 @@ A WebDAV client that implements WebDAV-Push typically
 WebDAV-Push is not restricted to specific push transports and allows clients to specify which push transports they support. This allows even upcoming, yet unknown push transports to be used with 
 WebDAV-Push.
 
-WebDAV-Push implementations _should_ implement at least Web Push / RFC 8030 (see Appendix A).
+WebDAV-Push implementations SHOULD implement at least Web Push / RFC 8030 (see Appendix A).
 
 For proprietary push services, client vendors may need to provide a _rewrite proxy_ that signs and forwards the requests to the respective proprietary service.
 
@@ -172,9 +176,9 @@ Description:
 
 Character sequence that identifies a WebDAV collection for push purposes (globally unique). A specific collection could be reachable at different URLs, but it can only have one push topic.
 
-A client may register the same subscription for collections from multiple servers. When the client receives a notification over such a shared subscription, the topic can be used to distinguish which collection was updated. Because the client must be able to distinguish between collections from different servers, the topics need to be globally unique.
+A client MAY register the same subscription for collections from multiple servers. When the client receives a notification over such a shared subscription, the topic can be used to distinguish which collection was updated. Because the client must be able to distinguish between collections from different servers, the topics need to be globally unique.
 
-Because push services will typically be able to see push messages in clear text, the topic should not allow to draw conclusions about the synchronized collection.
+Because push services will typically be able to see push messages in clear text, the topic SHOULD NOT allow to draw conclusions about the synchronized collection.
 
 For instance, a server could use as a topic:
 
@@ -244,7 +248,7 @@ Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 
 Every subscription has an identifier that uniquely identifies the (push transport, push service, client) triple. For Web Push, the identifier is the push resource URL.
 
-A server _must not_ register a subscription with the same identifier multiple times. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested collection, the server _must_ update the subscription with the given details and the expiration date. 
+A server MUST NOT register a subscription with the same identifier multiple times. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested collection, the server MUST update the subscription with the given details and the expiration date. 
 
 Allowed response codes:
 
@@ -253,7 +257,7 @@ Allowed response codes:
 * 404 if the registration URL is unknown (or expired)
 * other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
 
-In any case, the server _must_ return the registration URL in the `Location` header.
+In any case, the server MUST return the registration URL in the `Location` header.
 
 
 ## Subscription removal
@@ -281,10 +285,10 @@ HTTP/1.1 204 Unregistered
 
 Clients can specify an expiration date-time when they register a subscription.
 
-A server should take the expiration specified by a client into consideration, but may impose its own (often stricter) expiration rules, for instance to keep their database clean or because the
-client has specified an implausible late expiration. Servers _should_ keep registered subscriptions for at least a week.
+A server SHOULD take the expiration specified by a client into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the
+client has specified an implausible late expiration. Servers SHOULD keep registered subscriptions for at least a week.
 
-Clients should refresh their registrations regularly because they can't rely on servers to keep their subscriptions until the client-specified expiration date. Clients _should_ update subscription registrations at least every few days (significantly more often than weekly).
+Clients should refresh their registrations regularly because they can't rely on servers to keep their subscriptions until the client-specified expiration date. Clients SHOULD update subscription registrations at least every few days (significantly more often than weekly).
 
 Expired subscriptions should be cleaned up on both server and client side and not be used anymore as chances are high that using such subscriptions will cause errors.
 
@@ -358,11 +362,11 @@ Expiration ...
 
 ### Removal of invalid subscriptions
 
-A WebDAV-Push server _must_ ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed at some time.
+A WebDAV-Push server MUST ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed at some time.
 
 An invalid subscription is a subscription that push notifications can't be delivered to. Usually the push service returns an HTTP error code like 404 when it receives a notification for an invalid subscription. There may also be other conditions that render a subscription invalid, like a non-resolvable hostname or an encryption handshake error.
 
-A server _may_ use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
+A server MAY use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
 
 
 ## Element definitions
@@ -464,7 +468,7 @@ Example:
 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
-The push topic _should_ be used to generate the `Topic` header. Since RFC 8030 limits the `Topic` header to 32 characters from the URL and filename-safe Base64 alphabet, it's _recommended_ to use a hash of the push topic that meets these requirements as the header value.
+The push topic SHOULD be used to generate the `Topic` header. Since RFC 8030 limits the `Topic` header to 32 characters from the URL and filename-safe Base64 alphabet, it's _recommended_ to use a hash of the push topic that meets these requirements as the header value.
 
 The exact algorithm to derive the `Topic` header from the push topic can be chosen by the server.
 

@@ -21,7 +21,6 @@ author:
     email: hirner@bitfire.at
 
 normative:
-  RFC2119:
   RFC4918:
 
 
