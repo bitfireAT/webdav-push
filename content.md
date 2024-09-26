@@ -1,6 +1,3 @@
-WebDAV-Push – Draft Document (In Work)
-
-
 
 # Introduction
 
@@ -20,7 +17,7 @@ Typical use cases:
 
 ## Architectural overview
 
-![Architectural overview diagram](images/architecture.png)
+<!-- <artwork type="svg" src="images/architecture.svg"/> -->
 
 
 ## Terminology
@@ -117,7 +114,7 @@ This section describes how a client can detect
 
 Example:
 
-```
+~~~
 PROPFIND https://example.com/webdav/collection/
 <?xml version="1.0" encoding="utf-8" ?>
 <propfind xmlns="DAV:" xmlns:P="DAV:Push">
@@ -137,7 +134,7 @@ HTTP/1.1 207 Multi-Status
         <P:transport><P:web-push /></P:transport>
         <P:transport>
           <P:some-other-transport>
-            <P:some-parameter>...<P:some-parameter>
+            <P:some-parameter>...</P:some-parameter>
           </P:some-other-transport>
         </P:transport>
       </P:push-transports>
@@ -145,7 +142,7 @@ HTTP/1.1 207 Multi-Status
     </prop>
   </response>
 </multistatus>
-```
+~~~
 
 In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). Two push transports can be used:
 
@@ -223,11 +220,11 @@ In any case, when a subscription is registered the first time, the server create
 
 Sample request for Web Push:
 
-```
+~~~
 POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
-<?xml version="1.0" encoding="utf-8" ?>
+\<?xml version="1.0" encoding="utf-8" ?\>
 <push-register xmlns="DAV:Push">
   <subscription>
     <web-push-subscription>
@@ -239,7 +236,7 @@ Content-Type: application/xml; charset="utf-8"
 
 HTTP/1.1 201 Created
 Location: https://example.com/webdav/subscriptions/io6Efei4ooph
-```
+~~~
 
 
 
@@ -273,11 +270,11 @@ When a subscription registration is removed, no further push messages must be se
 
 Sample request:
 
-```
+~~~
 DELETE https://example.com/webdav/subscriptions/io6Efei4ooph
 
 HTTP/1.1 204 Unregistered
-```
+~~~
 
 
 ## Expiration
@@ -335,12 +332,12 @@ The push message body contains the topic of the changed collection.
 
 Sample push message body:
 
-```
-<?xml version="1.0" encoding="utf-8" ?>
+~~~
+\<?xml version="1.0" encoding="utf-8" ?\>
 <push-message xmlns="DAV:Push">
   <topic>O7M1nQ7cKkKTKsoS_j6Z3w</topic>
 </push-message>
-```
+~~~
 
 Push notification rate limit?
 
@@ -426,7 +423,7 @@ A WebDAV-Push server should use the collection topic as `Topic` header in push m
 
 > **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a specification which is intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.
 
-![Flowchart: WebDAV-Push over UnifiedPush](images/unifiedpush-flowchart.png)
+<!-- <artwork type="svg" src="images/unifiedpush-flowchart.svg"/> -->
 
 
 ## Subscription
@@ -454,11 +451,11 @@ push resource). The push resource is used as the unique identifier for the subsc
 Definition: `<!ELEMENT push-resource (#PCDATA)`  
 Example:
 
-```
+~~~
 <web-push-subscription xmlns="DAV:Push">
   <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
 </web-push-subscription>
-```
+~~~
 
 > **TODO:** message encryption as defined in RFC 8291
 
@@ -483,13 +480,13 @@ As base64url: `R3iM_PAQ7OMDAXW4-mMna7rqSGI`
 
 So push message delivery is requested with this header:
 
-```
+~~~
 POST <push subscription URL>
 Content-Type: application/xml; charset="UTF-8"
 Topic: R3iM_PAQ7OMDAXW4-mMna7rqSGI
 
-<push message>
-```
+<push message body>
+~~~
 
 
 ### VAPID
