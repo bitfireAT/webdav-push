@@ -1,6 +1,8 @@
 
 # Introduction
 
+**(This document is in work and has not been submitted yet.)**
+
 This document, below referred to as _WebDAV-Push_, provides a way for compliant WebDAV servers to send notifications about updated collections to subscribed clients over suitable push transports.
 
 WebDAV-Push is intended as an additional tool to notify clients about updates in near time so that clients can refresh their views, perform synchronization etc.

@@ -5,8 +5,8 @@ docname: draft-bitfire-webdav-push-00
 category: exp
 
 submissionType: independent
-ipr: trust200902
-workgroup: None
+ipr: none
+workgroup: Independent submission
 keyword: WebDAV
 keyword: push
 
