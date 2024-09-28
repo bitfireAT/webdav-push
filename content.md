@@ -28,39 +28,57 @@ Typical use cases:
 
 ## Terminology
 
-_(Push) backend:_ Part of a WebDAV-Push server that interacts with a specific push transport. In context of this document, there's only one backend for Web Push.
+If parts of a term are in brackets, it means that those parts may or may not be written together with the other parts. However it means the same in any case.
 
-_Push notification:_ push message or delivery of a push message
+(Push) backend
+: Part of a WebDAV-Push server that interacts with a specific push transport. In context of this document, there's only one backend for Web Push.
 
-_Push message:_ Actual network message that is sent from the WebDAV-Push server over a push service to the WebDAV-Push client. Notifies the client that a specific collection (identified by its push topic) has changed.
+Push notification
+: push message or delivery of a push message
 
-In Web Push context, a server can send a push message (more exact, "request delivery of a push message") by `POST`ing the message to the client's subscription URL.
+Push message
+: Actual network message that is sent from the WebDAV-Push server over a push service to the WebDAV-Push client. Notifies the client that a specific collection (identified by its push topic) has changed.
+  
+  In Web Push context, a server can send a push message (more exact, "request delivery of a push message") by `POST`ing the message to the client's subscription URL.
 
-_Push service:_ Infrastructure that implements a specific push transport. The push service is the actual network service between WebDAV-Push server and WebDAV-Push client. For instance, if the push transport is Web Push and the client is a Web app, the push service would be provided by the vendor of the browser that the client runs in.
+Push service
+: Infrastructure that implements a specific push transport. The push service is the actual network service between WebDAV-Push server and WebDAV-Push client.
+  
+  For instance, if the push transport is Web Push and the client is a Web app, the push service would be provided by the vendor of the browser that the client runs in.
 
-_(Push) subscription (URL)_: The information that the client needs to provide to the server so that the server can send push notifications.
+(Push) subscription (URL)
+: The information that the client needs to provide to the server so that the server can send push notifications.
+  
+  If the transport is Web Push, the term _(push) subscription (URL)_ as used in this document is equivalent to the Web Push term _push resource_. So for instance, a client could have connected to its Web Push service and receive `https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV` as the subscription URL.
 
-If the transport is Web Push, the term _(push) subscription (URL)_ as used in this document is equivalent to the Web Push term _push resource_. So for instance, a client could have connected to its Web Push service and receive `https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV` as the subscription URL.
+(Push) topic
+: Character sequence that identifies a WebDAV collection for push purposes (unique per WebDAV server). A specific collection could be reachable at different URLs, but it can only have one push topic.
 
-_(Push) topic:_ Character sequence that identifies a WebDAV collection for push purposes (unique per WebDAV server). A specific collection could be reachable at different URLs, but it can only have one push topic.
+(Push) transport
+: Protocol that defines an actual push mechanism. In this document, Web Push is the only defined push transport. However, WebDAV-Push may also be used with other push transports like proprietary or yet unknown protocols. In that case, it has to be specified how to use that protocol with WebDAV-Push (like it's done for Web Push in Appendix A). A push transport implementation may or may not involve a push service.
 
-_(Push) transport:_ Protocol that defines an actual push mechanism. In this document, Web Push is the only defined push transport. However, WebDAV-Push may also be used with other push transports like proprietary or yet unknown protocols. In that case, it has to be specified how to use that protocol with WebDAV-Push (like it's done for Web Push in Appendix A). A push transport implementation may or may not involve a push service.
+Rewrite proxy
+: Push services sometimes require authentication from their users and consider their user to be an application vendor who has control over both the server and the client. For instance, a push service could be used by the vendor of a weather app who controls both the servers that deliver weather data and the clients, which are mobile apps that show the weather data. Both servers and clients can authenticate against the push service with the same private key.
+  
+  When however the server and clients are not in control of the same entity, like when the server is a WebDAV-Push server and the client is a mobile app that is not related to the server vendor, client and server can't have the same private key to authenticate against the push service. In that case, the client vendor may need to operate a rewrite proxy that receives each push message delivery request from a server, sign it with the same private key as the client and forwards it to the push service.
 
-_Rewrite proxy:_ Push services sometimes require authentication from their users and consider their user to be an application vendor who has control over both the server and the client. For instance, a push service could be used by the vendor of a weather app who controls both the servers that deliver weather data and the clients, which are mobile apps that show the weather data. Both servers and clients can authenticate against the push service with the same private key.
+{{UnifiedPush}}
+: Implementation of Web Push that is not bound to browsers or infrastructure of browser vendors. Can be used by desktop and mobile applications and with various custom (also self-hosted) push services.
 
-When however the server and clients are not in control of the same entity, like when the server is a WebDAV-Push server and the client is a mobile app that is not related to the server vendor, client and server can't have the same private key to authenticate against the push service. In that case, the client vendor may need to operate a rewrite proxy that receives each push message delivery request from a server, sign it with the same private key as the client and forwards it to the push service.
+(W3C) Push API
+: API for Web applications to use push notifications over Web Push
 
-_UnifiedPush:_ Implementation of Web Push that is not bound to browsers or infrastructure of browser vendors. Can be used by desktop and mobile applications and with various custom (also self-hosted) push services.
+Web Push
+: "Protocol for the delivery of real-time events to user agents", defined by {{RFC8030}}. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like {{UnifiedPush}}. Some parts of RFC 8030 (namely chapter 6 and HTTP/2 delivery between push service and client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients. There are also additional standards that can be considered to belong to Web Push (like VAPID, RFC 8292 and Message Encryption, RFC 8291).
 
-_W3C Push API:_ API for Web applications to use push notifications over Web Push
+WebDAV-Push
+: WebDAV-based protocol to notify clients about updates in collections using a push transport (vs. polling)
 
-_Web Push:_ "protocol for the delivery of real-time events to user agents", defined by RFC 8030. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like UnifiedPush. Some parts of RFC 8030 (namely chapter 6 and HTTP/2 delivery between push service and client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients. There are also additional standards that can be considered to belong to Web Push (like VAPID, RFC 8292 and Message Encryption, RFC 8291).
+(WebDAV-Push) client
+: WebDAV client that supports WebDAV-Push, for instance a CalDAV/CardDAV app on a mobile device
 
-_WebDAV-Push:_ WebDAV-based protocol to notify clients about updates in collections using a push transport (vs. polling)
-
-_(WebDAV-Push) client:_ WebDAV client that supports WebDAV-Push, for instance a CalDAV/CardDAV app on a mobile device
-
-_(WebDAV-Push) server:_ WebDAV server (for instance a CalDAV/CardDAV server) that implements WebDAV-Push
+(WebDAV-Push) server
+: WebDAV server (for instance a CalDAV/CardDAV server) that implements WebDAV-Push
 
 
 ## WebDAV server with support for WebDAV-Push
@@ -230,7 +248,7 @@ Sample request for Web Push:
 POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
-\<?xml version="1.0" encoding="utf-8" ?\>
+<?xml version="1.0" encoding="utf-8" ?>
 <push-register xmlns="DAV:Push">
   <subscription>
     <web-push-subscription>
@@ -339,7 +357,7 @@ The push message body contains the topic of the changed collection.
 Sample push message body:
 
 ~~~
-\<?xml version="1.0" encoding="utf-8" ?\>
+<?xml version="1.0" encoding="utf-8" ?>
 <push-message xmlns="DAV:Push">
   <topic>O7M1nQ7cKkKTKsoS_j6Z3w</topic>
 </push-message>
@@ -356,7 +374,7 @@ Shall multiple enqueued (and not yet delivered) push messages for the same colle
 single one (like _Replacing push messages_ with the `Topic` header in RFC 8030)? Maybe use a
 timestamp? Shall this be specified in general, per transport or not at all?
 
-CTag?
+CTag / sync-token?
 
 How often / batch / delay?
 
@@ -422,12 +440,12 @@ Corresponding terminology:
 * (WebDAV-Push) _push server_ ↔ (RFC 8030) _application server_
 * (WebDAV-Push) _push client_ (or _redirect proxy_) ↔ (RFC 8030) _user agent_
 
-Usage of Message Encryption {{RFC8291}} and VAPID {{RFC8292}} is recommended. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if
+Usage of Message Encryption {{RFC8291}} and VAPID {{RFC8292}} is RECOMMENDED. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if
 applicable.
 
 A WebDAV-Push server should use the collection topic as `Topic` header in push messages to replace previous notifications for the same collection.
 
-> **NOTE**: [UnifiedPush](https://unifiedpush.org/) (UP) is a specification which is intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.
+> [Non-normative, should probably be removed] **NOTE**: {{UnifiedPush}} (UP) is a specification which is intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.
 
 <!-- <artwork type="svg" src="images/unifiedpush-flowchart.svg"/> -->
 
@@ -470,7 +488,7 @@ Example:
 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
-The push topic SHOULD be used to generate the `Topic` header. Since RFC 8030 limits the `Topic` header to 32 characters from the URL and filename-safe Base64 alphabet, it's _recommended_ to use a hash of the push topic that meets these requirements as the header value.
+The push topic SHOULD be used to generate the `Topic` header. Since RFC 8030 limits the `Topic` header to 32 characters from the URL and filename-safe Base64 alphabet, it's RECOMMENDED to use a hash of the push topic that meets these requirements as the header value.
 
 The exact algorithm to derive the `Topic` header from the push topic can be chosen by the server.
 

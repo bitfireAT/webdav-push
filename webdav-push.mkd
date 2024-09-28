@@ -27,6 +27,11 @@ normative:
   RFC8292:
   RFC9110:
 
+informative:
+  UnifiedPush:
+    title: UnifiedPush
+    target: https://unifiedpush.org
+    date: false
 
 --- abstract
 
