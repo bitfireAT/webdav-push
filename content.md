@@ -25,6 +25,8 @@ Typical use cases:
 
 <!-- <artwork type="svg" src="images/architecture.svg"/> -->
 
+> **TODO:** figure
+
 
 ## Terminology
 
@@ -55,7 +57,7 @@ Push service
 : Character sequence that identifies a WebDAV collection for push purposes (unique per WebDAV server). A specific collection could be reachable at different URLs, but it can only have one push topic.
 
 (Push) transport
-: Protocol that defines an actual push mechanism. In this document, Web Push is the only defined push transport. However, WebDAV-Push may also be used with other push transports like proprietary or yet unknown protocols. In that case, it has to be specified how to use that protocol with WebDAV-Push (like it's done for Web Push in Appendix A). A push transport implementation may or may not involve a push service.
+: Protocol that defines an actual push mechanism. In this document, Web Push is the only defined push transport. However, WebDAV-Push may also be used with other push transports like proprietary or yet unknown protocols. In that case, it has to be specified how to use that protocol with WebDAV-Push (like it's done for Web Push in {{transport-web-push}}). A push transport implementation may or may not involve a push service.
 
 Rewrite proxy
 : Push services sometimes require authentication from their users and consider their user to be an application vendor who has control over both the server and the client. For instance, a push service could be used by the vendor of a weather app who controls both the servers that deliver weather data and the clients, which are mobile apps that show the weather data. Both servers and clients can authenticate against the push service with the same private key.
@@ -105,8 +107,8 @@ The server must be prepared to handle errors. For instance, if a push transport 
 A WebDAV client that implements WebDAV-Push typically
 
 - detects whether the server supports WebDAV-Push and which push transports,
-- connects to a service (which is usually not operated by the WebDAV server provider),
-- subscribes to one or more collections on the server (and thus provides information about its push service),
+- connects to a push service (which is usually not operated by the same party as the WebDAV server),
+- subscribes to one or more collections on the server (providing push service-specific details),
 - receives push notifications that cause some client-side action (like to refresh the view or run synchronization),
 - re-subscribes to collections before the subscriptions expire,
 - unsubscribes from collections when notifications are not needed anymore.
@@ -114,15 +116,13 @@ A WebDAV client that implements WebDAV-Push typically
 
 ## Push transports
 
-WebDAV-Push is not restricted to specific push transports and allows clients to specify which push transports they support. This allows even upcoming, yet unknown push transports to be used with 
-WebDAV-Push.
+WebDAV-Push is not restricted to specific push transports and allows clients to specify which push transports they support. This allows even upcoming, yet unknown push transports to be used with WebDAV-Push.
 
-WebDAV-Push implementations SHOULD implement at least the Web Push transport (see Appendix A).
+WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}).
 
-For proprietary push services, client vendors may need to provide a _rewrite proxy_ that signs and forwards the requests to the respective proprietary service.
+For proprietary push services, client vendors may need to provide a rewrite proxy that signs and forwards the requests to the respective proprietary service.
 
-Push transport definitions can define extra properties and additional processing rules. For instance, a transport definition could define that WebDAV servers should send an additional 
-`Topic` header with their push notifications so that previous undelivered push messages are replaced by new ones.
+Push transport definitions can define extra properties and additional processing rules.
 
 
 
@@ -170,7 +170,7 @@ HTTP/1.1 207 Multi-Status
 
 In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). Two push transports can be used:
 
-1. Web Push (RFC 8030), without additional specific information
+1. Web Push (see {{transport-web-push}}), without additional specific information
 2. Some other transport, with some additional specific information that is required to use it. This is to illustrate that it WebDAV-Push supports other or future push transports, too.
 
 
@@ -424,7 +424,7 @@ What happens when some component is hacked
 
 
 
-# Appendix A: Web Push Transport
+# Web Push transport {#transport-web-push}
 
 WebDAV-Push can be used with Web Push {{RFC8030}} to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure. Currently (2024), all major browsers support Web Push.
 
