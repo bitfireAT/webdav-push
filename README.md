@@ -75,3 +75,14 @@ The repository contains:
 - **a specification draft describing our current idea of WebDAV-Push** (see above)
 - discussion and exchange about the WebDAV Push topic (in [Discussions](https://github.com/bitfireAT/webdav-push/discussions))
 - specific tasks (in [Issues](https://github.com/bitfireAT/webdav-push/issues)) and related patches (in [Pull requests](https://github.com/bitfireAT/webdav-push/pulls))
+
+
+## Additional content / FAQ
+
+There are some additional explanations that are non-normative and thus not found in the specification draft.
+
+"Big" architecture diagram:
+
+![Big architecture diagram](images/architecture.svg)
+
+UnifiedPush (UP) is a specification which is intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.

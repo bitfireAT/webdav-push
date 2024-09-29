@@ -24,9 +24,9 @@ Typical use cases:
 
 ## Architectural overview
 
-<!-- <artwork type="svg" src="images/architecture.svg"/> -->
+[^todo] Figure
 
-> **TODO:** figure
+[^todo]: TODO
 
 
 ## Terminology
@@ -52,7 +52,7 @@ Push service
 (Push) subscription (URL)
 : The information that the client needs to provide to the server so that the server can send push notifications.
   
-  If the transport is Web Push, the term _(push) subscription (URL)_ as used in this document is equivalent to the Web Push term _push resource_. So for instance, a client could have connected to its Web Push service and receive `https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV` as the subscription URL.
+  If the transport is Web Push, the term "(push) subscription (URL)" as used in this document is equivalent to the Web Push term _push resource_. So for instance, a client could have connected to its Web Push service and receive `https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV` as the subscription URL.
 
 (Push) topic
 : Character sequence that identifies a WebDAV collection for push purposes (unique per WebDAV server). A specific collection could be reachable at different URLs, but it can only have one push topic.
@@ -209,7 +209,7 @@ Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
 
 # Subscription management
 
-> **TODO:** ACL for registering subscriptions?
+[^todo] ACL for registering subscriptions?
 
 
 ## Subscription registration
@@ -223,7 +223,7 @@ How to subscribe to collections on the WebDAV server. Required information:
 - Expiration? how long by default, min/max (24 h), server decides (and can impose limits)
 - (End-to-end-encryption? Or should it be defined per transport?)
 
-> **TODO:** By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
+[^todo] By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
 To subscribe to a collection, the client sends a POST request with
 `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push name space (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
@@ -236,7 +236,7 @@ Allowed response codes:
 * 204 if the subscription was registered
 * other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
 
-> **TODO**: Always return expiration
+[^todo] Always return expiration
 
 In any case, when a subscription is registered the first time, the server creates a URL that identifies that registration (_registration URL_). That URL is sent in the `Location` header and can be used to remove the subscription.
 
@@ -389,7 +389,7 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 ## Element definitions
 
-TODO `push-message`
+[^todo] `push-message`
 
 
 
@@ -442,9 +442,6 @@ Usage of message encryption {{RFC8291}} and VAPID {{RFC8292}} is RECOMMENDED. If
 
 A WebDAV-Push server SHOULD use the collection topic as `Topic` header in push messages to replace previous notifications for the same collection.
 
-> [Non-normative, should probably be removed] **NOTE**: {{UnifiedPush}} (UP) is a specification which is intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.
-
-<!-- <artwork type="svg" src="images/unifiedpush-flowchart.svg"/> -->
 
 
 ## Subscription
@@ -474,8 +471,6 @@ Example:
   <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
 </web-push-subscription>
 ~~~
-
-> **TODO:** message encryption as defined in RFC 8291
 
 
 ## Push message
@@ -513,7 +508,7 @@ VAPID {{RFC8292}} SHOULD be used to restrict push subscriptions to the specific 
 
 A WebDAV server which supports VAPID stores a key pair. The server exposes an additional transport property:
 
-* `server-public-key` – VAPID public key in uncompressed point form
+* `server-public-key` – VAPID public key in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
 
 Example service detection of a WebDAV server that supports VAPID:
 
@@ -526,7 +521,7 @@ Example service detection of a WebDAV server that supports VAPID:
       <P:push-transports>
         <P:transport>
           <P:web-push>
-            <server-public-key>MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7bDggHmOZi5RexC6TrTzRT_prrFVUYn-tnXXAYXhgYKsqCtoYvRe5uZKa9zjsy7yvzR1L857E9_Iza0zsnj0Wg</server-public-key>
+            <server-public-key type="p256dh">BA1Hxzyi1RUM1b5wjxsn7nGxAszw2u61m164i3MrAIxHF6YK5h4SDYic-dRuU_RCPCfA5aq9ojSwk5Y2EmClBPs</server-public-key>
           </P:web-push>
         </P:transport>
       </P:push-transports>
@@ -536,7 +531,7 @@ Example service detection of a WebDAV server that supports VAPID:
 </multistatus>
 ~~~
 
-The client uses this key to create a restricted subscription at the push service.
+If available, the client SHOULD use this key to create a restricted subscription at the push service.
 
 When the server sends a push message, it includes a corresponding `Authorization` header to prove its identity.
 
@@ -545,20 +540,20 @@ When the server sends a push message, it includes a corresponding `Authorization
 
 Message encryption SHOULD be used to hide details of push messages from the push services.
 
-When creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
+Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
 
 When the client then registers this subscription at the server, it includes additional subscription properties:
 
-* `client-public-key` – public key of the user agent's key pair in uncompressed point form
-* `auth` – authentication secret
+* `client-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
+* `auth-secret` – authentication secret
 
-Example for a subscription as it could be registered at the server:
+Example for a subscription registration requesting message encryption:
 
 ~~~
 <web-push-subscription xmlns="DAV:Push">
   <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
-  <client-public-key>BC4n4Qa_5Tze9nwQOKjhmZ89kUp162_OJv7qEIVciS-nbWR_wLuCC-v667-Atgn9oDIc2GVJTCuZOtO9dT-O5TI</client-public-key>
-  <auth>BTBZMqHH6r4Tts7J_aSIgg</auth>
+  <client-public-key type="p256dh">BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4</client-public-key>
+  <auth-secret>BTBZMqHH6r4Tts7J_aSIgg</auth-secret>
 </web-push-subscription>
 ~~~
 
