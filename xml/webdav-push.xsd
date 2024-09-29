@@ -1,0 +1,46 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="DAV:Push" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:push="DAV:Push">
+
+<!-- subscription registration -->
+<element name="push-register">
+  <complexType>
+    <all>
+      <element name="subscription" maxOccurs="1">
+        <complexType>
+          <all>
+            <element name="web-push-subscription" maxOccurs="1">
+              <complexType>
+                <all>
+                  <element name="push-resource" type="anyURI" minOccurs="1"/>
+
+                  <!-- message encryption -->
+                  <element name="client-public-key" minOccurs="0" maxOccurs="1">
+                    <complexType>
+                      <simpleContent>
+                        <extension base="string">
+                          <attribute name="type" type="string" fixed="p256dh" use="required"/>
+                        </extension>
+                      </simpleContent>
+                    </complexType>
+                  </element>
+                  <element name="auth-secret" type="string" minOccurs="0" maxOccurs="1"/>
+                </all>
+              </complexType>
+            </element>
+          </all>
+        </complexType>
+      </element>
+      <element name="expires" type="string" minOccurs="0" maxOccurs="1"/>
+    </all>
+  </complexType>
+</element>
+
+<!-- push message -->
+<element name="push-message">
+  <complexType>
+    <all>
+      <element name="topic" type="string" minOccurs="1"/>
+    </all>
+  </complexType>
+</element>
+
+</schema>

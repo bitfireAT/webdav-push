@@ -46,4 +46,4 @@ informative:
 
 --- middle
 
-{::include content.md}
+{::include-nested content.mkd}

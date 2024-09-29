@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<push-register xmlns="DAV:Push">
+  <subscription>
+    <web-push-subscription>
+      <push-resource>https://up.example.net/yohd4yai5Phiz1wi</push-resource>
+    </web-push-subscription>
+  </subscription>
+  <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
+</push-register>

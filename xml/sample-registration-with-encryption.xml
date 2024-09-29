@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<push-register xmlns="DAV:Push">
+  <subscription>
+    <web-push-subscription>
+      <push-resource>https://up.example.net/yohd4yai5Phiz1wi</push-resource>
+      <client-public-key type="p256dh">BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4</client-public-key>
+      <auth-secret>BTBZMqHH6r4Tts7J_aSIgg</auth-secret>
+    </web-push-subscription>
+  </subscription>
+  <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
+</push-register>
+

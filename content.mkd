@@ -243,15 +243,7 @@ Sample request for Web Push:
 POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
-<?xml version="1.0" encoding="utf-8" ?>
-<push-register xmlns="DAV:Push">
-  <subscription>
-    <web-push-subscription>
-      <push-resource>https://up.example.net/yohd4yai5Phiz1wi</push-resource>
-    </web-push-subscription>
-  </subscription>
-  <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
-</push-register>
+{::include xml/sample-registration.xml}
 
 HTTP/1.1 201 Created
 Location: https://example.com/webdav/subscriptions/io6Efei4ooph
@@ -352,10 +344,7 @@ The push message body contains the topic of the changed collection.
 Sample push message body:
 
 ~~~
-<?xml version="1.0" encoding="utf-8" ?>
-<push-message xmlns="DAV:Push">
-  <topic>O7M1nQ7cKkKTKsoS_j6Z3w</topic>
-</push-message>
+{::include xml/sample-push-message.xml}
 ~~~
 
 Push notification rate limit?
@@ -549,11 +538,7 @@ When the client then registers this subscription at the server, it includes addi
 Example for a subscription registration requesting message encryption:
 
 ~~~
-<web-push-subscription xmlns="DAV:Push">
-  <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
-  <client-public-key type="p256dh">BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4</client-public-key>
-  <auth-secret>BTBZMqHH6r4Tts7J_aSIgg</auth-secret>
-</web-push-subscription>
+{::include xml/sample-registration-with-encryption.xml}
 ~~~
 
 The server uses these data to encrypt the payload and send it to the push service. The client then decrypts the payload again.
