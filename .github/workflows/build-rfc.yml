@@ -16,11 +16,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .refcache
+          path:
+            - $HOME/.local/share/gem
+            - .refcache
           key: webdav-push.mkd
 
       - name: Install packages
-        run: sudo apt-get install --no-install-recommends -y ruby-kramdown-rfc2629 xml2rfc
+        run: sudo gem install kramdown-rfc && sudo apt-get install --no-install-recommends -y xml2rfc
 
       - name: Prepare output directory
         run: mkdir build
