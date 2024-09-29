@@ -17,7 +17,7 @@ Typical use cases:
 - A calendar Web app shows a CalDAV collection and wants to be notified on updates in order to refresh the view.
 
 
-## Requirements language
+## Notational conventions
 
 {::boilerplate bcp14-tagged}
 
