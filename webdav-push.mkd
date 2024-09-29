@@ -17,7 +17,12 @@ author:
  -
     ins: R. Hirner
     name: Ricki Hirner
-    organization: bitfire.at
+    organization: bitfire web engineering GmbH
+    abbrev: bitfire.at
+    street: Florastraße 27
+    city: Bad Vöslau
+    code: 2540
+    country: Austria
     email: hirner@bitfire.at
 
 normative:

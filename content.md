@@ -3,12 +3,9 @@
 
 **(This document is in work and has not been submitted yet.)**
 
-This document, below referred to as _WebDAV-Push_, provides a way for compliant WebDAV servers to send notifications about updated collections to subscribed clients over suitable push transports.
-
 WebDAV-Push is intended as an additional tool to notify clients about updates in near time so that clients can refresh their views, perform synchronization etc.
 
-A client SHOULD NOT rely solely on WebDAV-Push, so it should also perform regular polling like when WebDAV-Push is not available. However if WebDAV-Push is available, the polling frequency can be
-significantly reduced.
+A client SHOULD NOT rely solely on WebDAV-Push, so it should also perform regular polling like when WebDAV-Push is not available. However if WebDAV-Push is available, the polling frequency can be significantly reduced.
 
 Typical use cases:
 
@@ -17,12 +14,12 @@ Typical use cases:
 - A calendar Web app shows a CalDAV collection and wants to be notified on updates in order to refresh the view.
 
 
-## Notational conventions
+## Notational Conventions
 
 {::boilerplate bcp14-tagged}
 
 
-## Architectural overview
+## Architectural Overview
 
 [^todo] Figure
 
@@ -81,7 +78,7 @@ WebDAV-Push
 : WebDAV server (for instance a CalDAV/CardDAV server) that implements WebDAV-Push
 
 
-## WebDAV server with support for WebDAV-Push
+## WebDAV Server with Support for WebDAV-Push
 
 A WebDAV server that implements WebDAV-Push needs to
 
@@ -100,7 +97,7 @@ Notifications about updates in collections have to be sent to all subscribed cli
 The server must be prepared to handle errors. For instance, if a push transport signals that a subscription doesn't exist anymore, it must be removed and not be used again.
 
 
-## WebDAV client with support for WebDAV-Push
+## WebDAV Client with Support for WebDAV-Push
 
 A WebDAV client that implements WebDAV-Push typically
 
@@ -112,7 +109,7 @@ A WebDAV client that implements WebDAV-Push typically
 - unsubscribes from collections when notifications are not needed anymore.
 
 
-## Push transports
+## Push Transports
 
 WebDAV-Push is not restricted to specific push transports and allows clients to specify which push transports they support. This allows even upcoming, yet unknown push transports to be used with WebDAV-Push.
 
@@ -124,7 +121,7 @@ Push transport definitions can define extra properties and additional processing
 
 
 
-# Service detection
+# Service Detection
 
 This section describes how a client can detect
 
@@ -172,7 +169,7 @@ In this case, the requested collection supports WebDAV-Push in general (because 
 2. Some other transport, with some additional specific information that is required to use it. This is to illustrate that it WebDAV-Push supports other or future push transports, too.
 
 
-## Element definitions
+## Element Definitions
 
 Name: `push-transports`  
 Namespace: `DAV:Push`  
@@ -207,12 +204,12 @@ Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
 
 
 
-# Subscription management
+# Subscription Management
 
 [^todo] ACL for registering subscriptions?
 
 
-## Subscription registration
+## Subscription Registration
 
 How to subscribe to collections on the WebDAV server. Required information:
 
@@ -262,7 +259,7 @@ Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 
 
 
-## Subscription updates
+## Subscription Updates
 
 Every subscription has an identifier that uniquely identifies the (push transport, push service, client) triple. For Web Push, the identifier is the push resource URL.
 
@@ -278,7 +275,7 @@ Allowed response codes:
 In any case, the server MUST return the registration URL in the `Location` header.
 
 
-## Subscription removal
+## Subscription Removal
 
 A client can explicitly unsubscribe from a collection by sending a `DELETE` request to the previously acquired registration URL.
 
@@ -311,7 +308,7 @@ Clients should refresh their registrations regularly because they can't rely on 
 Expired subscriptions should be cleaned up on both server and client side and not be used anymore as chances are high that using such subscriptions will cause errors.
 
 
-## Element definitions
+## Element Definitions
 
 Name: `push-register`  
 Namespace: `DAV:Push`  
@@ -339,7 +336,7 @@ Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
 
 
 
-# Push notification
+# Push Notification
 
 When content of direct members change. What is this exactly?
 
@@ -348,7 +345,7 @@ Data vs. metadata, only about members or also the subscribed collection itself? 
 Typically when CTag / sync-token changes.
 
 
-## Push message
+## Push Message
 
 The push message body contains the topic of the changed collection.
 
@@ -378,7 +375,7 @@ How often / batch / delay?
 
 Expiration ...
 
-### Removal of invalid subscriptions
+### Removal of Invalid Subscriptions
 
 A WebDAV-Push server MUST ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed at some time.
 
@@ -387,22 +384,24 @@ An invalid subscription is a subscription that push notifications can't be deliv
 A server MAY use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
 
 
-## Element definitions
+## Element Definitions
 
 [^todo] `push-message`
 
 
 
-# Security considerations
+# Security Considerations
 
-Which information is shared with which party, especially public ones like the Google FCM +
-implications? Involved parties:
+See RFC 3552.
+
+Which information is shared with which party, especially public ones like the push transport?
+Implications? Involved parties:
 
 * WebDAV server
-* client
-* push transports
+* WebDAV client
+* push transports / push service
 
-Without E2EE, push transports can collect metadata:
+Without message encryption, push transports can collect some data:
 
 * which WebDAV server notifies which clients,
 * which clients are subscribed to the same collection (because they receive the same topic in the
@@ -410,8 +409,8 @@ Without E2EE, push transports can collect metadata:
 * at which times the collection is changed,
 * other metadata (IP addresses etc.)
 
-With E2EE, every push message is different and push transports can only relate clients over
-heuristics, like the clients that are notified at the same time have probably subscribed the same
+With message encryption, every push message is different and push transports can only relate clients over
+metadata and heuristics, like the clients that are notified at the same time have probably subscribed the same
 collection.
 
 How sensitive are the data, how to minimize risks
@@ -422,7 +421,7 @@ What happens when some component is hacked
 
 
 
-# Web Push transport {#transport-web-push}
+# Web Push Transport {#transport-web-push}
 
 WebDAV-Push can be used with Web Push {{RFC8030}} as a transport to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure. Currently (2024), all major browsers support Web Push.
 
@@ -473,7 +472,7 @@ Example:
 ~~~
 
 
-## Push message
+## Push Message
 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
@@ -536,7 +535,7 @@ If available, the client SHOULD use this key to create a restricted subscription
 When the server sends a push message, it includes a corresponding `Authorization` header to prove its identity.
 
 
-## Message encryption
+## Message Encryption
 
 Message encryption SHOULD be used to hide details of push messages from the push services.
 
