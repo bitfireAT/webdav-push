@@ -134,7 +134,7 @@ PROPFIND https://example.com/webdav/collection/
 <?xml version="1.0" encoding="utf-8" ?>
 <propfind xmlns="DAV:" xmlns:P="DAV:Push">
   <prop>
-    <P:push-transports/>
+    <P:transports/>
     <P:topic/>
   </prop>
 </propfind>
@@ -145,14 +145,12 @@ HTTP/1.1 207 Multi-Status
   <response>
     <href>/webdav/collection/</href>
     <prop>
-      <P:push-transports>
-        <P:transport><P:web-push /></P:transport>
-        <P:transport>
-          <P:some-other-transport>
-            <P:some-parameter>...</P:some-parameter>
-          </P:some-other-transport>
-        </P:transport>
-      </P:push-transports>
+      <P:transports>
+        <P:web-push />
+        <P:some-other-transport>
+          <P:some-parameter>...</P:some-parameter>
+        </P:some-other-transport>
+      </P:transports>
       <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
     </prop>
   </response>
@@ -167,17 +165,10 @@ In this case, the requested collection supports WebDAV-Push in general (because 
 
 ## Element Definitions
 
-Name: `push-transports`  
+Name: `transports`  
 Namespace: `DAV:Push`  
 Purpose: Indicates which push transports are supported by the server.  
-Definition: `<!ELEMENT push-transports (transport*)`  
-Example: see below
-
-Name: `transport`  
-Namespace: `DAV:Push`  
-Purpose: Specifies a push transport (like Web Push).  
-[^todo] Why not omit this element and just put the transports directly into `push-transports`?  
-Definition: `<!ELEMENT transport (web-push | %other-transport)`  
+Definition: `<!ELEMENT transports (web-push | %other-transport)+`  
 Example: see below
 
 Name: `topic`  
@@ -447,7 +438,7 @@ Element definitions:
 
 Name: `web-push`  
 Purpose: Specifies the Web Push transport.  
-Description: Used to specify the Web Push Transport in the context of a `<transport>` element, for instance in a list of supported transports.  
+Description: Used to specify the Web Push Transport in the context of a `<transports>` element, for instance in a list of supported transports.  
 Definition: `<!ELEMENT web-push (EMPTY)`  
 Example: `<web-push/>`
 
@@ -515,13 +506,11 @@ Example service detection of a WebDAV server that supports VAPID:
   <response>
     <href>/webdav/collection/</href>
     <prop>
-      <P:push-transports>
-        <P:transport>
-          <P:web-push>
-            <server-public-key type="p256dh">BA1Hxzyi1RUM1b5wjxsn7nGxAszw2u61m164i3MrAIxHF6YK5h4SDYic-dRuU_RCPCfA5aq9ojSwk5Y2EmClBPs</server-public-key>
-          </P:web-push>
-        </P:transport>
-      </P:push-transports>
+      <P:transports>
+        <P:web-push>
+          <server-public-key type="p256dh">BA1Hxzyi1RUM1b5wjxsn7nGxAszw2u61m164i3MrAIxHF6YK5h4SDYic-dRuU_RCPCfA5aq9ojSwk5Y2EmClBPs</server-public-key>
+        </P:web-push>
+      </P:transports>
       <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
     </prop>
   </response>
