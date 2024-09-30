@@ -33,6 +33,7 @@ normative:
   RFC9110:
 
 informative:
+  RFC6578:
   UnifiedPush:
     title: UnifiedPush
     target: https://unifiedpush.org

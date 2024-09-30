@@ -326,30 +326,49 @@ Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
 
 # Push Notification
 
-[^todo] When content of direct members change. What is this exactly? Typically when CTag / sync-token changes.
+A WebDAV-Push server MUST notify registered subscriptions when the content of a subscribed collection changes, this is when a member is added, changed or removed.
 
-[^todo] Data vs. metadata, only about members or also the subscribed collection itself? CalDAV/CardDAV: subscribe home-set?
+This means that a notification is sent whenever the `{DAV:}sync-token` as described in {{RFC6578}} (or the historical `{http://calendarserver.org/ns/:}GetCTag`) changes.
+
+[^todo] Data vs. metadata, only about members or also the subscribed collection itself?
+
+[^todo]CalDAV/CardDAV: subscribe home-set?
 
 
 ## Push Message
 
-The push message body contains the topic of the changed collection.
+The push message body contains a `{DAV:propstat}` element with
 
-Sample push message body:
+* an optional `{DAV:}status` element to notify the client that the collection has changed its status, and
+* a `{DAV:}prop` element that
+
+  * MUST contain the `topic` of the affected collection so that the client can identify it without doubt,
+  * SHOULD contain a `{DAV:}sync-token` element (when available) to allow a client to ignore the push message (and for instance, skip synchronization) when it already knows the latest state,
+  * MUST NOT contain elements with sensitive data (unless message encryption is used).
+
+When the `{DAV:}status` element is present, it indicates a change of the status of the collection itself (and not its members). In this case, clients SHOULD check and process the relevant properties of the collection. Status code 404 or 410 is used to indicate that the collection has been removed.
+
+Sample message body 1:
 
 ~~~
-{::include xml/sample-push-message.xml}
+{::include xml/sample-push-message1.xml}
 ~~~
+
+Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`.
+
+Sample message body 2:
+
+~~~
+{::include xml/sample-push-message2.xml}
+~~~
+
+Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server.
 
 [^todo] Push notification rate limit?
 
 [^todo] Shall a TTL value, as used by Web Push, be recommended in general, per transport, or not at all?
 
-[^todo] Shall multiple enqueued (and not yet delivered) push messages for the same collection be merged to a
-single one (like "Replacing Push Messages" with the `Topic` header in {{RFC8030}})? Maybe use a
-timestamp? Shall this be specified in general, per transport or not at all?
-
-[^todo] CTag / sync-token?
+[^todo] Shall multiple enqueued (and not yet delivered) push messages for the same collection be merged to a single one (like "Replacing Push Messages" with the `Topic` header in {{RFC8030}})? Maybe use a timestamp? Shall this be specified in general, per transport or not at all?
 
 [^todo] How often / batch / delay?
 
@@ -532,4 +551,3 @@ Example for a subscription registration requesting message encryption:
 ~~~
 
 The server uses these data to encrypt the payload and send it to the push service. The client then decrypts the payload again.
-
