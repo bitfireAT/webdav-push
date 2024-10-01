@@ -220,9 +220,9 @@ Allowed response codes:
 * 204 if the subscription was registered
 * other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
 
-[^todo] Always return expiration
+When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
 
-In any case, when a subscription is registered the first time, the server creates a URL that identifies that registration (_registration URL_). That URL is sent in the `Location` header and can be used to remove the subscription.
+The server MUST return a HTTP `Expires` header (as defined in {{RFC9111}}) with the actual expiration date on the server (which may be shorter than the expiration requested by the client).
 
 Sample request for Web Push:
 
@@ -234,6 +234,7 @@ Content-Type: application/xml; charset="utf-8"
 
 HTTP/1.1 201 Created
 Location: https://example.com/webdav/subscriptions/io6Efei4ooph
+Expires: Wed, 02 Oct 2024 07:28:00 GMT
 ~~~
 
 
@@ -251,7 +252,9 @@ Allowed response codes:
 * 404 if the registration URL is unknown (or expired)
 * other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
 
-In any case, the server MUST return the registration URL in the `Location` header.
+The server MUST return the registration URL in the `Location` header.
+
+The server MUST return a HTTP `Expires` header with the actual expiration date on the server.
 
 
 ## Subscription Removal
@@ -277,14 +280,15 @@ HTTP/1.1 204 Unregistered
 
 ## Expiration
 
-Clients can specify an expiration date-time when they register a subscription.
+Clients MAY specify an expiration date-time when they register a subscription.
 
-A server SHOULD take the expiration specified by a client into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the
-client has specified an implausible late expiration. Servers SHOULD keep registered subscriptions for at least a week.
+A server SHOULD take the expiration specified by a client into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server SHOULD allow subscriptions to be valid at least one week.
 
-Clients should refresh their registrations regularly because they can't rely on servers to keep their subscriptions until the client-specified expiration date. Clients SHOULD update subscription registrations at least every few days (significantly more often than weekly).
+Clients have to refresh their registrations regularly and before the expiration date to keep them working.
 
-Expired subscriptions should be cleaned up on both server and client side and not be used anymore as chances are high that using such subscriptions will cause errors.
+Clients can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed. Clients which need ongoing push notifications SHOULD update subscription registrations at least every few days (significantly more often than weekly).
+
+Expired subscriptions MUST NOT be used anymore as chances are high that doing so would cause errors.
 
 
 ## Element Definitions
@@ -298,17 +302,15 @@ This element specifies details about a subscription that shall be notified when 
 defines the subscription details.
 
 Definition: `<!ELEMENT push-register (expires?, subscription)`  
-Example: see below
 
 Name: `subscription`  
 Namespace: `DAV:Push`  
 Purpose: Specifies a subscription that shall be notified on updates. Contains exactly one element with details about a specific subscription type. In this document, only the `web-push-subscription` child element is defined.  
 Definition: `<!ELEMENT subscription (web-push-subscription | %other-subscription)`  
-Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
 
 Name: `expires`  
 Namespace: `DAV:Push`  
-Purpose: Specifies an expiration date of the registered subscription.  
+Purpose: Specifies an expiration date of the registered subscription. Depending on the context, it's either a requested expiration date or an actual expiration date.   
 Description: Specifies an expiration date-time in the `IMF-fixdate` format {{RFC9110}}.  
 Definition: `<!ELEMENT expires (#PCDATA)`  
 Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
