@@ -27,6 +27,7 @@ author:
 
 normative:
   RFC4918:
+  RFC6578:
   RFC8030:
   RFC8291:
   RFC8292:
@@ -34,7 +35,6 @@ normative:
   RFC9111:
 
 informative:
-  RFC6578:
   UnifiedPush:
     title: UnifiedPush
     target: https://unifiedpush.org

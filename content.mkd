@@ -3,7 +3,7 @@
 
 **(This document is in work and has not been submitted yet.)**
 
-WebDAV-Push is intended as an additional tool to notify clients about updates in near time so that clients can refresh their views, perform synchronization etc.
+WebDAV-Push is intended as a tool for WebDAV {{RFC4918}} clients to get notified about updates in collections in near time so that they can refresh their views, perform synchronization etc.
 
 A client SHOULD NOT rely solely on WebDAV-Push, so it should also perform regular polling like when WebDAV-Push is not available. However if WebDAV-Push is available, the polling frequency can be significantly reduced.
 
@@ -199,20 +199,11 @@ Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
 
 ## Subscription Registration
 
-How to subscribe to collections on the WebDAV server. Required information:
-
-- Collection to be subscribed
-- Push transport, including transport-specific details
-    - Web Push: push resource URL
-- Expiration? how long by default, min/max (24 h), server decides (and can impose limits)
-- (End-to-end-encryption? Or should it be defined per transport?)
-
-[^todo] By now, only updates in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
-
-To subscribe to a collection, the client sends a POST request with
-`Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push name space (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
+To subscribe to a collection, the client sends a POST request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push name space (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
 
 The `push-register` element contains (exactly/at least?) one `subscription` element, which contains all information the server needs to send a push message.
+
+[^todo] By now, only data updates of the collection itself and in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
 Allowed response codes:
 
@@ -336,7 +327,7 @@ The push message body contains a `{DAV:propstat}` element with
 * a `{DAV:}prop` element that
 
   * MUST contain the `topic` of the affected collection so that the client can identify it without doubt,
-  * SHOULD contain a `{DAV:}sync-token` element (when available) to allow a client to ignore the push message (and for instance, skip synchronization) when it already knows the latest state,
+  * SHOULD contain a `{DAV:}sync-token` element (when available) to allow a client to ignore the push message when it already knows the latest state,
   * MUST NOT contain elements with sensitive data (unless message encryption is used).
 
 When the `{DAV:}status` element is present, it indicates a change of the status of the collection itself (and not its members). In this case, clients SHOULD check and process the relevant properties of the collection. Status code 404 or 410 is used to indicate that the collection has been removed.
