@@ -14,7 +14,7 @@
 These documents are [automatically compiled](https://github.com/bitfireAT/webdav-push/blob/main/.github/workflows/build-rfc.yml) from the source (kramdown-rfc):
 
 * [metadata](https://github.com/bitfireAT/webdav-push/blob/main/webdav-push.mkd)
-* [content](https://github.com/bitfireAT/webdav-push/blob/main/content.md)
+* [content](https://github.com/bitfireAT/webdav-push/blob/main/content.mkd)
 
 ---
 
