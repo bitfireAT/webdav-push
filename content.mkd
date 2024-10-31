@@ -111,7 +111,9 @@ WebDAV-Push is not restricted to specific push transports and allows clients to 
 
 WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}).
 
-For proprietary push services, client vendors may need to provide a rewrite proxy that signs and forwards the requests to the respective proprietary service.
+If possible, other push transports SHOULD be connected over a Web Push gateway instead of defining a new WebDAV-Push transport.
+
+For proprietary push services, client vendors may need to provide a rewrite proxy that signs and forwards the requests to the respective proprietary service (which usually accepts only authenticated requests from the client vendor).
 
 Push transport definitions can define extra properties and additional processing rules.
 
