@@ -323,7 +323,7 @@ This means that a notification is sent whenever the `{DAV:}sync-token` as descri
 
 ## Push Message
 
-The push message body contains a `{DAV:propstat}` element with
+The push message body consists of a `push-message` element, which contains a `{DAV:propstat}` element with
 
 * an optional `{DAV:}status` element to notify the client that the collection has changed its status, and
 * a `{DAV:}prop` element that
@@ -333,22 +333,6 @@ The push message body contains a `{DAV:propstat}` element with
   * MUST NOT contain elements with sensitive data (unless message encryption is used).
 
 When the `{DAV:}status` element is present, it indicates a change of the status of the collection itself (and not its members). In this case, clients SHOULD check and process the relevant properties of the collection. Status code 404 or 410 is used to indicate that the collection has been removed.
-
-Sample message body 1:
-
-~~~
-{::include xml/sample-push-message1.xml}
-~~~
-
-Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`.
-
-Sample message body 2:
-
-~~~
-{::include xml/sample-push-message2.xml}
-~~~
-
-Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server.
 
 [^todo] Push notification rate limit?
 
@@ -370,7 +354,26 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 ## Element Definitions
 
-[^todo] `push-message`
+Name: `push-message`  
+Namespace: `DAV:Push`  
+Purpose: Contains information of a push message / notification.  
+Definition: `<!ELEMENT push-message (propstat)`
+
+Example 1:
+
+~~~
+{::include xml/sample-push-message1.xml}
+~~~
+
+Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`.
+
+Example 2:
+
+~~~
+{::include xml/sample-push-message2.xml}
+~~~
+
+Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server.
 
 
 
