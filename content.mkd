@@ -127,9 +127,18 @@ This section describes how a client can detect
 - which push services are supported (may contain service-specific information).
 
 
-## PROPFIND for WebDAV-Push
+## Collection Properties
 
-Example:
+To provide information about WebDAV-Push support, new collection properties are defined.
+
+The `transports` element contains push transports are supported by the server (one child element per transport). Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}).
+
+The `topic` is a globally unique identifier for the collection. A specific collection could be reachable at different URLs, but it can only have one push topic. Because push services may be able to see push messages in clear text, the topic SHOULD NOT allow to draw conclusions about the synchronized collection. For instance, a server could use:
+
+- a random UUID for each collection; or
+- a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
+
+Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
 
 ~~~
 PROPFIND https://example.com/webdav/collection/
@@ -146,36 +155,9 @@ HTTP/1.1 207 Multi-Status
 {::include xml/sample-propfind-multistatus.xml}
 ~~~
 
-In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). Two push transports can be used:
+In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). It supports the Web Push transport (without additional specific information).
 
-1. Web Push (see {{transport-web-push}}), without additional specific information
-2. Some other transport, with some additional specific information that is required to use it. This is to illustrate that it WebDAV-Push supports other or future push transports, too.
-
-
-## Element Definitions
-
-Name: `transports`  
-Namespace: `DAV:Push`  
-Purpose: Indicates which push transports are supported by the server.  
-Example: see below
-
-Name: `topic`  
-Namespace: `DAV:Push`  
-Purpose: Globally unique identifier for the collection.  
-Description:
-
-Character sequence that identifies a WebDAV collection for push purposes (globally unique). A specific collection could be reachable at different URLs, but it can only have one push topic.
-
-A client MAY register the same subscription for collections from multiple servers. When the client receives a notification over such a shared subscription, the topic can be used to distinguish which collection was updated. Because the client must be able to distinguish between collections from different servers, the topics need to be globally unique.
-
-Because push services will typically be able to see push messages in clear text, the topic SHOULD NOT allow to draw conclusions about the synchronized collection.
-
-For instance, a server could use as a topic:
-
-* a random UUID for each collection; or
-* a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
-
-Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
+The comment shows how support for some other (not yet defined) transport could be advertised together with additional specific information that is required to use it.
 
 
 
@@ -186,9 +168,11 @@ Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
 
 ## Subscription Registration
 
-To subscribe to a collection, the client sends a POST request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push name space (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
+To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push namespace (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
 
-The `push-register` element contains (exactly/at least?) one `subscription` element, which contains all information the server needs to send a push message.
+The `push-register` element contains exactly one `subscription` element, which contains all information the server needs to send a push message.
+
+The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
 [^todo] By now, only data updates of the collection itself and in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
 
@@ -200,9 +184,9 @@ Allowed response codes:
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
 
-The server MUST return a HTTP `Expires` header (as defined in {{RFC9111}}) with the actual expiration date on the server (which may be shorter than the expiration requested by the client).
+The server MUST return a HTTP `Expires` header (as defined in {{RFC9111}}) in the `IMF-fixdate` format (as defined in {{RFC9110}}) with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
 
-Sample request for Web Push:
+Example:
 
 ~~~
 POST https://example.com/webdav/collection/
@@ -270,33 +254,12 @@ Clients can expect that subscriptions usually stay valid until their expiration,
 Expired subscriptions MUST NOT be used anymore as chances are high that doing so would cause errors.
 
 
-## Element Definitions
-
-Name: `push-register`  
-Namespace: `DAV:Push`  
-Purpose: Indicates that a subscription shall be registered to receive notifications when the collection is updated.  
-Description:
-
-This element specifies details about a subscription that shall be notified when the collection is updated. Besides the optional expiration, there must be exactly one `subscription` element that
-defines the subscription details.
-
-Name: `subscription`  
-Namespace: `DAV:Push`  
-Purpose: Specifies a subscription that shall be notified on updates. Contains exactly one element with details about a specific subscription type. In this document, only the `web-push-subscription` child element is defined.  
-
-Name: `expires`  
-Namespace: `DAV:Push`  
-Purpose: Specifies an expiration date of the registered subscription. Depending on the context, it's either a requested expiration date or an actual expiration date.   
-Description: Specifies an expiration date-time in the `IMF-fixdate` format {{RFC9110}}.  
-Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
-
-
 
 # Push Notification
 
 A WebDAV-Push server MUST notify registered subscriptions when the content of a subscribed collection changes, this is when a member is added, changed or removed.
 
-This means that a notification is sent whenever the `{DAV:}sync-token` as described in {{RFC6578}} (or the historical `{http://calendarserver.org/ns/:}GetCTag`) changes.
+This means that a notification is sent whenever the `{DAV:}sync-token` (as defined in {{RFC6578}}) or the historical `{http://calendarserver.org/ns/:}GetCTag` changes.
 
 [^todo] Data vs. metadata, only about members or also the subscribed collection itself?
 
@@ -305,7 +268,7 @@ This means that a notification is sent whenever the `{DAV:}sync-token` as descri
 
 ## Push Message
 
-The push message body consists of a `push-message` element, which contains a `{DAV:propstat}` element with
+The push message body consists of a `push-message` element, which contains a `{DAV:}propstat` element with
 
 * an optional `{DAV:}status` element to notify the client that the collection has changed its status, and
 * a `{DAV:}prop` element that
@@ -324,22 +287,6 @@ When the `{DAV:}status` element is present, it indicates a change of the status 
 
 [^todo] How often / batch / delay?
 
-
-### Removal of Invalid Subscriptions
-
-A WebDAV-Push server MUST ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed at some time.
-
-An invalid subscription is a subscription that push notifications can't be delivered to. Usually the push service returns an HTTP error code like 404 when it receives a notification for an invalid subscription. There may also be other conditions that render a subscription invalid, like a non-resolvable hostname or an encryption handshake error.
-
-A server MAY use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
-
-
-## Element Definitions
-
-Name: `push-message`  
-Namespace: `DAV:Push`  
-Purpose: Contains information of a push message / notification.  
-
 Example 1:
 
 ~~~
@@ -355,6 +302,15 @@ Example 2:
 ~~~
 
 Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server.
+
+
+## Removal of Invalid Subscriptions
+
+A WebDAV-Push server MUST ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed at some time.
+
+An invalid subscription is a subscription that push notifications can't be delivered to. Usually the push service returns an HTTP error code like 404 when it receives a notification for an invalid subscription. There may also be other conditions that render a subscription invalid, like a non-resolvable hostname or an encryption handshake error.
+
+A server MAY use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
 
 
 
@@ -407,27 +363,19 @@ Corresponding terminology:
 
 Usage of message encryption {{RFC8291}} and VAPID {{RFC8292}} is RECOMMENDED. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if applicable.
 
+Support for the Web Push transport is indicated by the `web-push` element in the `transports` collection property.
+
 A WebDAV-Push server SHOULD use the collection topic as `Topic` header in push messages to replace previous notifications for the same collection.
 
 
+## Subscription Registration
 
-## Subscription
+To register a Web Push subscription, the `subscription` element of the `push-register` request contains exactly one `web-push-subscription`.
 
-Element definitions:
+The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server (Web Push application server).
 
-Name: `web-push`  
-Purpose: Specifies the Web Push transport.  
-Description: Used to specify the Web Push Transport in the context of a `<transports>` element, for instance in a list of supported transports.  
-Example: `<web-push/>`
+It contains exactly one `push-resource` element, which identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.
 
-Name: `web-push-subscription`  
-Purpose: Public information of a Web Push subscription that is shared with the WebDAV-Push server (Web Push application server).  
-Description: Used to specify a Web Push subscription in the context of a `<subscription>` element,
-for instance to register a subscription.  
-Example: see below
-
-Name: `push-resource`  
-Purpose: Identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.  
 Example:
 
 ~~~
@@ -468,9 +416,7 @@ Topic: R3iM_PAQ7OMDAXW4-mMna7rqSGI
 
 VAPID {{RFC8292}} SHOULD be used to restrict push subscriptions to the specific WebDAV server.
 
-A WebDAV server which supports VAPID stores a key pair. The server exposes an additional transport property:
-
-* `server-public-key` – VAPID public key in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
+A WebDAV server which supports VAPID stores a key pair. The server exposes an additional transport property `server-public-key`. It contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256dh"` MUST be added to allow different key types in the future.
 
 Example service detection of a WebDAV server that supports VAPID:
 
@@ -505,6 +451,12 @@ The server uses these data to encrypt the payload and send it to the push servic
 
 
 # XML Schema
+
+When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace (`DAV:Push`). All XML elements defined by this document reside in this namespace.
+
+To reference element names in another namespace, the `{ns}element` syntax is used. For instance, `{DAV:}prop` means the `prop` XML element in the `DAV:` namespace.
+
+The XML schema formally defines the XML elements used by this document and is expressed in {{RELAXNG}}.
 
 ~~~
 {::include xml/webdav-push.rng}

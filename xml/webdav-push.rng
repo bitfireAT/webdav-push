@@ -1,6 +1,6 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" ns="DAV:Push">
 
-  <!-- New WebDAV collection properties -->
+  <!-- New WebDAV Collection Properties -->
 
   <define name="prop-transports">
     <!-- available push transports -->
@@ -20,7 +20,7 @@
   </define>
 
 
-  <!-- Subscription registration -->
+  <!-- Subscription Registration -->
 
   <define name="subscription-registration">
     <element name="push-register">
