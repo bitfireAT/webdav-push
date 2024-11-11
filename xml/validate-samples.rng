@@ -1,0 +1,31 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+
+  <!-- root elements of examples in document -->
+  <start>
+    <choice>
+      <ref name="multistatus"/>
+      <ref name="subscription-registration"/>
+      <ref name="push-message"/>
+      <ref name="web-push-subscription"/>
+    </choice>
+  </start>
+
+  <define name="multistatus" ns="DAV:">
+    <element name="multistatus">
+      <element name="response">
+        <element name="href">
+          <text/>
+        </element>
+        <element name="prop">
+          <zeroOrMore>
+            <ref name="prop-transports"/>
+            <ref name="prop-topic"/>
+          </zeroOrMore>
+        </element>
+      </element>
+    </element>
+  </define>
+
+  <include href="webdav-push.rng"/>
+
+</grammar>

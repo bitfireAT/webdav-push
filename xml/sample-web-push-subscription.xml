@@ -1,0 +1,3 @@
+<web-push-subscription xmlns="DAV:Push">
+  <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
+</web-push-subscription>

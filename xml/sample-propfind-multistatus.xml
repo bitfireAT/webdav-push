@@ -1,0 +1,17 @@
+<multistatus xmlns="DAV:" xmlns:P="DAV:Push">
+  <response>
+    <href>/webdav/collection/</href>
+    <prop>
+      <P:transports>
+        <P:web-push />
+
+        <!-- Not covered by this document:
+        <P:some-other-transport>
+          <P:some-parameter>...</P:some-parameter>
+        </P:some-other-transport>
+        -->
+      </P:transports>
+      <P:topic xmlns="DAV:Push">O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
+    </prop>
+  </response>
+</multistatus>
