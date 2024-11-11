@@ -1,0 +1,114 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" ns="DAV:Push">
+
+  <!-- New WebDAV collection properties -->
+
+  <define name="prop-transports">
+    <!-- available push transports -->
+    <element name="transports">
+      <choice>
+        <ref name="web-push-transport"/>
+        <!-- or other transport, not covered by this schema -->
+      </choice>
+    </element>
+  </define>
+
+  <define name="prop-topic">
+    <!-- push topic -->
+    <element name="topic">
+      <text/>
+    </element>
+  </define>
+
+
+  <!-- Subscription registration -->
+
+  <define name="subscription-registration">
+    <element name="push-register">
+      <!-- subscription to register -->
+      <element name="subscription">
+        <choice>
+          <ref name="web-push-subscription"/>
+          <!-- or other subscription, not covered by this schema -->
+        </choice>
+      </element>
+
+      <!-- expiration -->
+      <optional>
+        <element name="expires">
+          <text/>   <!-- date-time in IMF-fixdate format -->
+        </element>
+      </optional>
+    </element>
+  </define>
+
+
+  <!-- Push Message -->
+
+  <define name="push-message">
+    <element name="push-message">
+      <element ns="DAV:" name="propstat">       <!-- defined in WebDAV (RFC 4918) -->
+        <optional>
+          <element ns="DAV:" name="status">     <!-- defined in WebDAV (RFC 4918) -->
+            <text/>
+          </element>
+        </optional>
+
+        <element ns="DAV:" name="prop">         <!-- defined in WebDAV (RFC 4918) -->
+          <ref name="prop-topic"/>
+
+          <optional>
+            <element ns="DAV:" name="sync-token"> <!-- defined in Collection Synchronization for WebDAV (RFC 6578) -->
+              <text/>
+            </element>
+          </optional>
+        </element>
+      </element>
+    </element>
+  </define>
+
+
+  <!-- Web Push -->
+
+  <define name="web-push-transport">
+    <element name="web-push">
+      <!-- VAPID key -->
+      <optional>
+        <element name="server-public-key">
+          <attribute name="type">
+            <choice>
+              <value>p256dh</value>
+              <!-- or other type / not covered by this schema -->
+            </choice>
+          </attribute>
+          <text/>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+  <define name="web-push-subscription">
+    <element name="web-push-subscription">
+      <element name="push-resource">
+        <text/>   <!-- push resource (URL) -->
+      </element>
+
+      <!-- message encryption -->
+      <optional>
+        <element name="client-public-key">
+          <attribute name="type">
+            <choice>
+              <value>p256dh</value>
+              <!-- or other type / not covered by this schema -->
+            </choice>
+          </attribute>
+          <text/>
+        </element>
+
+        <element name="auth-secret">
+          <text/>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+</grammar>

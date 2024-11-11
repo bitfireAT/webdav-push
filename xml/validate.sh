@@ -1,2 +1,3 @@
 #!/bin/sh
-xmllint --schema webdav-push.xsd --noout *.xml
+
+xmlstarlet val -e -r validate-samples.rng *.xml

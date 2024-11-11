@@ -143,20 +143,7 @@ PROPFIND https://example.com/webdav/collection/
 
 HTTP/1.1 207 Multi-Status
 <?xml version="1.0" encoding="utf-8" ?>
-<multistatus xmlns="DAV:" xmlns:P="DAV:Push">
-  <response>
-    <href>/webdav/collection/</href>
-    <prop>
-      <P:transports>
-        <P:web-push />
-        <P:some-other-transport>
-          <P:some-parameter>...</P:some-parameter>
-        </P:some-other-transport>
-      </P:transports>
-      <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
-    </prop>
-  </response>
-</multistatus>
+{::include xml/sample-propfind-multistatus.xml}
 ~~~
 
 In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). Two push transports can be used:
@@ -170,13 +157,11 @@ In this case, the requested collection supports WebDAV-Push in general (because 
 Name: `transports`  
 Namespace: `DAV:Push`  
 Purpose: Indicates which push transports are supported by the server.  
-Definition: `<!ELEMENT transports (web-push | %other-transport)+`  
 Example: see below
 
 Name: `topic`  
 Namespace: `DAV:Push`  
 Purpose: Globally unique identifier for the collection.  
-Definition: `<!ELEMENT topic (#PCDATA)`  
 Description:
 
 Character sequence that identifies a WebDAV collection for push purposes (globally unique). A specific collection could be reachable at different URLs, but it can only have one push topic.
@@ -223,6 +208,7 @@ Sample request for Web Push:
 POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
+<?xml version="1.0" encoding="utf-8" ?>
 {::include xml/sample-registration.xml}
 
 HTTP/1.1 201 Created
@@ -294,18 +280,14 @@ Description:
 This element specifies details about a subscription that shall be notified when the collection is updated. Besides the optional expiration, there must be exactly one `subscription` element that
 defines the subscription details.
 
-Definition: `<!ELEMENT push-register (expires?, subscription)`  
-
 Name: `subscription`  
 Namespace: `DAV:Push`  
 Purpose: Specifies a subscription that shall be notified on updates. Contains exactly one element with details about a specific subscription type. In this document, only the `web-push-subscription` child element is defined.  
-Definition: `<!ELEMENT subscription (web-push-subscription | %other-subscription)`  
 
 Name: `expires`  
 Namespace: `DAV:Push`  
 Purpose: Specifies an expiration date of the registered subscription. Depending on the context, it's either a requested expiration date or an actual expiration date.   
 Description: Specifies an expiration date-time in the `IMF-fixdate` format {{RFC9110}}.  
-Definition: `<!ELEMENT expires (#PCDATA)`  
 Example: `<expires>Sun, 06 Nov 1994 08:49:37 GMT</expires>`
 
 
@@ -357,7 +339,6 @@ A server MAY use some logic like remembering the last successful delivery plus s
 Name: `push-message`  
 Namespace: `DAV:Push`  
 Purpose: Contains information of a push message / notification.  
-Definition: `<!ELEMENT push-message (propstat)`
 
 Example 1:
 
@@ -437,25 +418,20 @@ Element definitions:
 Name: `web-push`  
 Purpose: Specifies the Web Push transport.  
 Description: Used to specify the Web Push Transport in the context of a `<transports>` element, for instance in a list of supported transports.  
-Definition: `<!ELEMENT web-push (EMPTY)`  
 Example: `<web-push/>`
 
 Name: `web-push-subscription`  
 Purpose: Public information of a Web Push subscription that is shared with the WebDAV-Push server (Web Push application server).  
 Description: Used to specify a Web Push subscription in the context of a `<subscription>` element,
 for instance to register a subscription.  
-Definition: `<!ELEMENT web-push-subscription (push-resource)`  
 Example: see below
 
 Name: `push-resource`  
 Purpose: Identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.  
-Definition: `<!ELEMENT push-resource (#PCDATA)`  
 Example:
 
 ~~~
-<web-push-subscription xmlns="DAV:Push">
-  <push-resource>https://push.example.net/push/JzLQ3raZJfFBR0aqvOMsLrt54w4rJUsV</push-resource>
-</web-push-subscription>
+{::include xml/sample-web-push-subscription.xml}
 ~~~
 
 
@@ -500,19 +476,7 @@ Example service detection of a WebDAV server that supports VAPID:
 
 ~~~
 <?xml version="1.0" encoding="utf-8" ?>
-<multistatus xmlns="DAV:" xmlns:P="DAV:Push">
-  <response>
-    <href>/webdav/collection/</href>
-    <prop>
-      <P:transports>
-        <P:web-push>
-          <server-public-key type="p256dh">BA1Hxzyi1RUM1b5wjxsn7nGxAszw2u61m164i3MrAIxHF6YK5h4SDYic-dRuU_RCPCfA5aq9ojSwk5Y2EmClBPs</server-public-key>
-        </P:web-push>
-      </P:transports>
-      <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
-    </prop>
-  </response>
-</multistatus>
+{::include xml/sample-propfind-multistatus-with-vapid.xml}
 ~~~
 
 If available, the client SHOULD use this key to create a restricted subscription at the push service.
@@ -538,3 +502,10 @@ Example for a subscription registration requesting message encryption:
 ~~~
 
 The server uses these data to encrypt the payload and send it to the push service. The client then decrypts the payload again.
+
+
+# XML Schema
+
+~~~
+{::include xml/webdav-push.rng}
+~~~
