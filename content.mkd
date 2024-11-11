@@ -127,9 +127,18 @@ This section describes how a client can detect
 - which push services are supported (may contain service-specific information).
 
 
-## PROPFIND for WebDAV-Push
+## Collection Properties
 
-Example:
+To provide information about WebDAV-Push support, new collection properties are defined.
+
+The `transports` element contains push transports are supported by the server (one child element per transport). Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}).
+
+The `topic` is a globally unique identifier for the collection. A specific collection could be reachable at different URLs, but it can only have one push topic. Because push services may be able to see push messages in clear text, the topic SHOULD NOT allow to draw conclusions about the synchronized collection. For instance, a server could use:
+
+- a random UUID for each collection; or
+- a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
+
+Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
 
 ~~~
 PROPFIND https://example.com/webdav/collection/
@@ -146,36 +155,9 @@ HTTP/1.1 207 Multi-Status
 {::include xml/sample-propfind-multistatus.xml}
 ~~~
 
-In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). Two push transports can be used:
+In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). It supports the Web Push transport (without additional specific information).
 
-1. Web Push (see {{transport-web-push}}), without additional specific information
-2. Some other transport, with some additional specific information that is required to use it. This is to illustrate that it WebDAV-Push supports other or future push transports, too.
-
-
-## Element Definitions
-
-Name: `transports`  
-Namespace: `DAV:Push`  
-Purpose: Indicates which push transports are supported by the server.  
-Example: see below
-
-Name: `topic`  
-Namespace: `DAV:Push`  
-Purpose: Globally unique identifier for the collection.  
-Description:
-
-Character sequence that identifies a WebDAV collection for push purposes (globally unique). A specific collection could be reachable at different URLs, but it can only have one push topic.
-
-A client MAY register the same subscription for collections from multiple servers. When the client receives a notification over such a shared subscription, the topic can be used to distinguish which collection was updated. Because the client must be able to distinguish between collections from different servers, the topics need to be globally unique.
-
-Because push services will typically be able to see push messages in clear text, the topic SHOULD NOT allow to draw conclusions about the synchronized collection.
-
-For instance, a server could use as a topic:
-
-* a random UUID for each collection; or
-* a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
-
-Example: `<P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>`
+The comment shows how support for some other (not yet defined) transport could be advertised together with additional specific information that is required to use it.
 
 
 
@@ -505,6 +487,8 @@ The server uses these data to encrypt the payload and send it to the push servic
 
 
 # XML Schema
+
+The XML schema formally defines the XML elements used by this document and is expressed in {{RELAXNG}}.
 
 ~~~
 {::include xml/webdav-push.rng}

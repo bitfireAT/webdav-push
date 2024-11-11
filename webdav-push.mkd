@@ -26,6 +26,12 @@ author:
     email: hirner@bitfire.at
 
 normative:
+  RELAXNG:
+    title: "RELAX NG Specification"
+    author:
+      org: The Organization for the Advancement of Structured Information Standards
+    date:
+      3 December 2001
   RFC4918:
   RFC6578:
   RFC8030:
