@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<D:propstat xmlns:D="DAV:" xmlns:P="DAV:Push">
-  <D:status>404 Not Found</D:status>
-  <D:prop>
-    <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
-  </D:prop>
-</D:propstat>
+<P:push-message xmlns:P="DAV:Push">
+  <D:propstat xmlns:D="DAV:">
+    <D:status>404 Not Found</D:status>
+    <D:prop>
+      <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
+    </D:prop>
+  </D:propstat>
+</P:push-message>

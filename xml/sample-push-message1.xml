@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<D:propstat xmlns:D="DAV:" xmlns:P="DAV:Push">
-  <D:prop>
-    <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
-    <D:sync-token>http://example.com/ns/sync/1234</D:sync-token>
-  </D:prop>
-</D:propstat>
+<P:push-message xmlns:D="DAV:" xmlns:P="DAV:Push">
+  <D:propstat>
+    <D:prop>
+      <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
+      <D:sync-token>http://example.com/ns/sync/1234</D:sync-token>
+    </D:prop>
+  </D:propstat>
+</P:push-message>
