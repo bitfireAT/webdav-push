@@ -32,6 +32,7 @@ normative:
       org: The Organization for the Advancement of Structured Information Standards
     date:
       3 December 2001
+    target: https://relaxng.org/spec-20011203.html
   RFC4918:
   RFC6578:
   RFC8030:
