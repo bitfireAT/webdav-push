@@ -1,4 +1,4 @@
-<multistatus xmlns="DAV:" xmlns:P="DAV:Push">
+<multistatus xmlns="DAV:" xmlns:P="https://bitfire.at/webdav-push">
   <response>
     <href>/webdav/collection/</href>
     <prop>
@@ -11,7 +11,7 @@
         </P:some-other-transport>
         -->
       </P:transports>
-      <P:topic xmlns="DAV:Push">O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
+      <P:topic xmlns="https://bitfire.at/webdav-push">O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
     </prop>
   </response>
 </multistatus>

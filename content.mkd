@@ -143,7 +143,7 @@ Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
 ~~~
 PROPFIND https://example.com/webdav/collection/
 <?xml version="1.0" encoding="utf-8" ?>
-<propfind xmlns="DAV:" xmlns:P="DAV:Push">
+<propfind xmlns="DAV:" xmlns:P="https://bitfire.at/webdav-push">
   <prop>
     <P:transports/>
     <P:topic/>
@@ -168,7 +168,7 @@ The comment shows how support for some other (not yet defined) transport could b
 
 ## Subscription Registration
 
-To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push namespace (`DAV:Push`) and can be used to distinguish between a WebDAV-Push and other requests.
+To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push namespace (`https://bitfire.at/webdav-push`) and can be used to distinguish between a WebDAV-Push and other requests.
 
 The `push-register` element contains exactly one `subscription` element, which contains all information the server needs to send a push message.
 
@@ -452,7 +452,7 @@ The server uses these data to encrypt the payload and send it to the push servic
 
 # XML Schema
 
-When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace (`DAV:Push`). All XML elements defined by this document reside in this namespace.
+When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace (`https://bitfire.at/webdav-push`). All XML elements defined by this document reside in this namespace.
 
 To reference element names in another namespace, the `{ns}element` syntax is used. For instance, `{DAV:}prop` means the `prop` XML element in the `DAV:` namespace.
 

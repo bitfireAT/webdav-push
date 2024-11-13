@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<P:push-message xmlns:P="DAV:Push">
+<P:push-message xmlns:P="https://bitfire.at/webdav-push">
   <D:propstat xmlns:D="DAV:">
     <D:status>404 Not Found</D:status>
     <D:prop>
