@@ -1,4 +1,4 @@
-<push-register xmlns="DAV:Push">
+<push-register xmlns="https://bitfire.at/webdav-push">
   <subscription>
     <web-push-subscription>
       <push-resource>https://up.example.net/yohd4yai5Phiz1wi</push-resource>

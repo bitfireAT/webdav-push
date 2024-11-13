@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<P:push-message xmlns:D="DAV:" xmlns:P="DAV:Push">
+<P:push-message xmlns:D="DAV:" xmlns:P="https://bitfire.at/webdav-push">
   <D:propstat>
     <D:prop>
       <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>

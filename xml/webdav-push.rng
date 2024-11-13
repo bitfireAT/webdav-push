@@ -1,4 +1,4 @@
-<grammar xmlns="http://relaxng.org/ns/structure/1.0" ns="DAV:Push">
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" ns="https://bitfire.at/webdav-push">
 
   <!-- New WebDAV Collection Properties -->
 

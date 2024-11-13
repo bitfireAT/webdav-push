@@ -1,4 +1,4 @@
-<multistatus xmlns="DAV:" xmlns:P="DAV:Push">
+<multistatus xmlns="DAV:" xmlns:P="https://bitfire.at/webdav-push">
   <response>
     <href>/webdav/collection/</href>
     <prop>
