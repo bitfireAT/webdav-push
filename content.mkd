@@ -168,13 +168,18 @@ The comment shows how support for some other (not yet defined) transport could b
 
 ## Subscription Registration
 
-To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push namespace (`https://bitfire.at/webdav-push`) and can be used to distinguish between a WebDAV-Push and other requests.
+To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` and can be used to distinguish between WebDAV-Push and other requests.
 
 The `push-register` element contains exactly one `subscription` element, which contains all information the server needs to send a push message.
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
-[^todo] By now, only data updates of the collection itself and in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
+When a client subscribes to a collection, it will receive notifications on data changes of that collection. It can send the a `Depth` header (as defined in {{RFC4918}}) to request a certain number of levels for which updates are received:
+
+- `Depth: 0` requests notifications only for the collection itself. A notification will be sent when the collection itself (not its members) is changed, modified or deleted.
+- `Depth: 1` (default when no `Depth` is sent) additionally requests notifications when
+
+[^todo] By now, only data updates internal members (equals `Depth: 1`) are sent. What about sending updates of the collection itself too, with `Depth: 0` in the push message? And/or support notifications on updates in deeper levels?
 
 Allowed response codes:
 
