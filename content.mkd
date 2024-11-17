@@ -170,7 +170,7 @@ The comment shows how support for some other (not yet defined) transport could b
 
 To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push namespace (`https://bitfire.at/webdav-push`) and can be used to distinguish between a WebDAV-Push and other requests.
 
-The `push-register` element contains exactly one `subscription` element, which contains all information the server needs to send a push message.
+The `push-register` element contains exactly one `subscription` element, which contains all information the server needs to send a push message, plus an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{RFC9110}}).
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
@@ -184,7 +184,7 @@ Allowed response codes:
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
 
-The server MUST return a HTTP `Expires` header (as defined in {{RFC9111}}) in the `IMF-fixdate` format (as defined in {{RFC9110}}) with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
+The server MUST return a HTTP `Expires` header (as defined in {{RFC9111}}) in the `IMF-fixdate` format with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
 
 Example:
 
