@@ -245,11 +245,9 @@ HTTP/1.1 204 Unregistered
 
 Clients MAY specify an expiration date-time when they register a subscription.
 
-A server SHOULD take the expiration specified by a client into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server SHOULD allow subscriptions to be valid at least one week.
+A server SHOULD take the expiration specified by a client into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server MUST allow subscriptions to be valid at least three days.
 
-Clients have to refresh their registrations regularly and before the expiration date to keep them working.
-
-Clients can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed. Clients which need ongoing push notifications SHOULD update subscription registrations at least every few days (significantly more often than weekly).
+Clients have to refresh their registrations regularly and before the expiration date to keep them working. They can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed.
 
 Expired subscriptions MUST NOT be used anymore as chances are high that doing so would cause errors.
 
