@@ -46,14 +46,22 @@
 
   <define name="push-message">
     <element name="push-message">
-      <element ns="DAV:" name="propstat">       <!-- defined in WebDAV (RFC 4918) -->
+      <element ns="DAV:" name="depth">            <!-- defined in WebDAV (RFC 4918) -->
+        <choice>
+          <value>0</value>
+          <value>1</value>
+          <value>infinity</value>
+        </choice>
+      </element>
+
+      <element ns="DAV:" name="propstat">         <!-- defined in WebDAV (RFC 4918) -->
         <optional>
-          <element ns="DAV:" name="status">     <!-- defined in WebDAV (RFC 4918) -->
+          <element ns="DAV:" name="status">       <!-- defined in WebDAV (RFC 4918) -->
             <text/>
           </element>
         </optional>
 
-        <element ns="DAV:" name="prop">         <!-- defined in WebDAV (RFC 4918) -->
+        <element ns="DAV:" name="prop">           <!-- defined in WebDAV (RFC 4918) -->
           <ref name="prop-topic"/>
 
           <optional>

@@ -174,10 +174,13 @@ The `push-register` element contains exactly one `subscription` element, which c
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
-When a client subscribes to a collection, it will receive notifications on data changes of that collection. It can send the a `Depth` header (as defined in {{RFC4918}}) to request a certain number of levels for which updates are received:
+When a client subscribes to a collection, it will receive notifications on data changes of that collection. It can send the a `Depth` header (similar to the one defined in {{RFC4918}}) to request a certain number of levels for which updates are received:
 
-- `Depth: 0` requests notifications only for the collection itself. A notification will be sent when the collection itself (not its members) is changed, modified or deleted.
-- `Depth: 1` (default when no `Depth` is sent) additionally requests notifications when
+- `Depth: 0` requests notifications only for the collection itself. A notification will be sent when the collection itself is modified or deleted. [^todo] Specify in detail. Which Entity changes and/or which properties cause notification? Don't push when for instance only sync-token changes.
+- `Depth: 1` (default when no `Depth` is sent) additionally requests notifications when internal members of the collection are added, modified or deleted. This implies that a notification is sent whenever the `{DAV:}sync-token` (as defined in {{RFC6578}}) changes.
+- `Depth: infinity` is like `Depth: 1`, but for all members (not only internal members).
+
+Server MUST support `Depth: 0` and `Depth: 1`. A server MAY reject infinite depth with 403 Forbidden and the precondition code `{DAV:}depth-not-supported` inside the error body.
 
 [^todo] By now, only data updates internal members (equals `Depth: 1`) are sent. What about sending updates of the collection itself too, with `Depth: 0` in the push message? And/or support notifications on updates in deeper levels?
 
@@ -262,13 +265,7 @@ Expired subscriptions MUST NOT be used anymore as chances are high that doing so
 
 # Push Notification
 
-A WebDAV-Push server MUST notify registered subscriptions when the content of a subscribed collection changes, this is when a member is added, changed or removed.
-
-This means that a notification is sent whenever the `{DAV:}sync-token` (as defined in {{RFC6578}}) or the historical `{http://calendarserver.org/ns/:}GetCTag` changes.
-
-[^todo] Data vs. metadata, only about members or also the subscribed collection itself?
-
-[^todo]CalDAV/CardDAV: subscribe home-set?
+A WebDAV-Push server MUST notify registered subscriptions when the content of a subscribed collection changes, taking the `Depth` header given at subscription registration into account.
 
 
 ## Push Message
@@ -298,7 +295,7 @@ Example 1:
 {::include xml/sample-push-message1.xml}
 ~~~
 
-Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`.
+Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`. The depth of one indicates that the notification was caused by addition/change/removal of an internal member.
 
 Example 2:
 
@@ -306,7 +303,15 @@ Example 2:
 {::include xml/sample-push-message2.xml}
 ~~~
 
-Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server.
+Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`. The infinite depth indicates that the notification was caused by addition/change/removal of a member.
+
+Example 3:
+
+~~~
+{::include xml/sample-push-message3.xml}
+~~~
+
+Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server. The zero depth indicates that this message is about the collection itself, and not about its members.
 
 
 ## Removal of Invalid Subscriptions
