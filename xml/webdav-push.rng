@@ -89,7 +89,7 @@
   <define name="web-push-subscription">
     <element name="web-push-subscription">
       <element name="push-resource">
-        <text/>   <!-- push resource (URL) -->
+        <text/>   <!-- push resource (absolute URI) -->
       </element>
 
       <!-- message encryption -->

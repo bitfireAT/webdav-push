@@ -204,7 +204,7 @@ Expires: Wed, 02 Oct 2024 07:28:00 GMT
 
 ## Subscription Updates
 
-Every subscription has an identifier that uniquely identifies the (push transport, push service, client) triple. For Web Push, the identifier is the push resource URL.
+Every subscription has an identifier that uniquely identifies the (push transport, push service, client) triple. For Web Push, the identifier is the push resource URI.
 
 A server MUST NOT register a subscription with the same identifier multiple times. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested collection, the server MUST update the subscription with the given details and the expiration date. 
 
@@ -372,7 +372,7 @@ To register a Web Push subscription, the `subscription` element of the `push-reg
 
 The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server (Web Push application server).
 
-It contains exactly one `push-resource` element, which identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.
+It contains exactly one `push-resource` element, which contains an absolute URI that identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.
 
 Example:
 
