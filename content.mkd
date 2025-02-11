@@ -277,13 +277,13 @@ The push message body consists of a `push-message` element, which contains a `{D
 
 When the `{DAV:}status` element is present, it indicates a change of the status of the collection itself (and not its members). In this case, clients SHOULD check and process the relevant properties of the collection. Status code 404 or 410 is used to indicate that the collection has been removed.
 
-[^todo] Push notification rate limit?
+When necessary or useful, a server MAY
 
-[^todo] Shall a TTL value, as used by Web Push, be recommended in general, per transport, or not at all?
+* impose a rate limit for push messages,
+* delay push messages for a short time,
+* omit/merge push messages.
 
-[^todo] Shall multiple enqueued (and not yet delivered) push messages for the same collection be merged to a single one (like "Replacing Push Messages" with the `Topic` header in {{RFC8030}})? Maybe use a timestamp? Shall this be specified in general, per transport or not at all?
-
-[^todo] How often / batch / delay?
+However the server MUST ensure that such restrictions don't change the semantics of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that occur shortly after each other, all but the last message can be omitted – but only if they notify the client about the same thing (content updates with `{DAV:}sync-token`). If one of the push messages contains a `{DAV:}status` property to indicate a property update, it can't be omitted.
 
 Example 1:
 
