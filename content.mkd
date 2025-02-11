@@ -255,27 +255,28 @@ Expired subscriptions MUST NOT be used anymore as chances are high that doing so
 
 # Push Notification
 
-A WebDAV-Push server MUST notify registered subscriptions when the content of a subscribed collection changes, this is when a member is added, changed or removed.
+A WebDAV-Push server MUST notify registered subscriptions of a subscribed collection:
 
-This means that a notification is sent whenever the `{DAV:}sync-token` (as defined in {{RFC6578}}) or the historical `{http://calendarserver.org/ns/:}GetCTag` changes.
+- on a _content update_ of the collection: this is when a member is changed or removed, (as explained in {{RFC6578}}), so that the `{DAV:}sync-token` changes;
+- on a _property update_ of the colleciton: this is when
+  - certain properties of the collection (like `DAV:{display-name}`) itself change,
+  - or the property itself is removed, which changes its `{DAV:status}` to 4xx.
 
-[^todo] Data vs. metadata, only about members or also the subscribed collection itself?
-
-[^todo]CalDAV/CardDAV: subscribe home-set?
+[^todo] Which properties?
 
 
 ## Push Message
 
-The push message body consists of a `push-message` element, which contains a `{DAV:}propstat` element with
+The push message body consists of a `push-message` element, which contains a `{DAV:}propstat` element with a `{DAV:}prop` element that MUST contain the `topic` of the affected collection so that the client can identify it without doubt.
 
-* an optional `{DAV:}status` element to notify the client that the collection has changed its status, and
-* a `{DAV:}prop` element that
+In case of a _content update_ of the affected collection, the `{DAV:}prop` element MUST contain a `{DAV:}sync-token` element to allow a client to ignore the push message when it already knows the latest state.
 
-  * MUST contain the `topic` of the affected collection so that the client can identify it without doubt,
-  * SHOULD contain a `{DAV:}sync-token` element (when available) to allow a client to ignore the push message when it already knows the latest state,
-  * MUST NOT contain elements with sensitive data (unless message encryption is used).
+To indicate a _property update_ of the affected collection, a `{DAV:}status` element is added to the `{DAV:}prop` element:
 
-When the `{DAV:}status` element is present, it indicates a change of the status of the collection itself (and not its members). In this case, clients SHOULD check and process the relevant properties of the collection. Status code 404 or 410 is used to indicate that the collection has been removed.
+* status code 200 to indicate properties of the affected collection have changed,
+* status code 404 to indicate that the collection has been removed.
+
+Clients can determine whether a push message notifies about a content and/or property update by checking the presence of `{DAV:}sync-token`.
 
 When necessary or useful, a server MAY
 
@@ -316,7 +317,7 @@ A server MAY use some logic like remembering the last successful delivery plus s
 [^todo] Specific implementation notes for CalDAV/CardDAV. Especially a recommendation of what clients shall subscribe to and why:
 
 * homesets → content updates may trigger calendar list refresh
-* calendars → content updates may trigger sync, property updates may trigger calendar meta-data refresh
+* calendars / address books → content updates may trigger sync, property updates may trigger calendar meta-data refresh
 * principals → keep displayed user data up-to-date
 
 
