@@ -311,6 +311,15 @@ An invalid subscription is a subscription that push notifications can't be deliv
 A server MAY use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
 
 
+# CalDAV/CardDAV
+
+[^todo] Specific implementation notes for CalDAV/CardDAV. Especially a recommendation of what clients shall subscribe to and why:
+
+* homesets → content updates may trigger calendar list refresh
+* calendars → content updates may trigger sync, property updates may trigger calendar meta-data refresh
+* principals → keep displayed user data up-to-date
+
+
 
 # Security Considerations
 
