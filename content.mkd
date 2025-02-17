@@ -138,6 +138,8 @@ The `topic` is a globally unique identifier for the collection. A specific colle
 - a random UUID for each collection; or
 - a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
 
+[^todo] supports-on
+
 Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
 
 ~~~
@@ -163,26 +165,67 @@ The comment shows how support for some other (not yet defined) transport could b
 
 # Subscription Management
 
-[^todo] ACL for registering subscriptions?
+[^todo] Permissions / what to report when user is not allowed to register push.
 
 
 ## Subscription Registration
 
 To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` and can be used to distinguish between WebDAV-Push and other requests.
 
-The `push-register` element contains exactly one `subscription` element, which contains all information the server needs to send a push message.
+The `push-register` element contains:
+
+* exactly one `subscription` element, which contains all information the server needs to send a push message,
+* an optional `on` element to specify the types of events the client wants to be notified about,
+* an optional `expires` element to request a specific expiration time.
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
-When a client subscribes to a collection, it will receive notifications on data changes of that collection. It can send the a `Depth` header (similar to the one defined in {{RFC4918}}) to request a certain number of levels for which updates are received:
+To specify which updates the client wants to be notified about, it uses the `on` element, which itself can contain:
 
-- `Depth: 0` requests notifications only for the collection itself. A notification will be sent when the collection itself is modified or deleted. [^todo] Specify in detail. Which Entity changes and/or which properties cause notification? Don't push when for instance only sync-token changes.
-- `Depth: 1` (default when no `Depth` is sent) additionally requests notifications when internal members of the collection are added, modified or deleted. This implies that a notification is sent whenever the `{DAV:}sync-token` (as defined in {{RFC6578}}) changes.
-- `Depth: infinity` is like `Depth: 1`, but for all members (not only internal members).
+* A `content-update` element to indicate the client's interest in notifications when the members of the collection change (_content update_).
+* A `property-update` element to indicate the client's interest in notifications when the WebDAV properties of the collection change (_property update_).
 
-Server MUST support `Depth: 0` and `Depth: 1`. A server MAY reject infinite depth with 403 Forbidden and the precondition code `{DAV:}depth-not-supported` inside the error body.
+If the `on` element is missing or empty, the following default will be assumed:
 
-[^todo] By now, only data updates internal members (equals `Depth: 1`) are sent. What about sending updates of the collection itself too, with `Depth: 0` in the push message? And/or support notifications on updates in deeper levels?
+~~~xml
+<!-- default "on" if not specified: -->
+<on xmlns="https://bitfire.at/webdav-push" xmlns:D="DAV:">
+  <!-- client wants be notified about content updates of direct members -->
+  <content-update>
+    <D:sync-level>1</D:depth>
+  </content-update>
+
+   <!-- client wants to be notified about property changes of the collection -->
+  <property-update>
+    <D:depth>0</D:depth>
+    <D:prop/>
+  </property-update>
+</on>
+~~~
+
+### Content Updates
+
+A _content update_ occurs when a member is changed or removed, as defined in {{RFC6578}} _3.5 Types of Changes Reported on Subsequent Synchronizations_ (typically when a member is added or removed or its contents are modified). If the server supports {{RFC6578}}, a content update implies that the `{DAV:}sync-token` changes.
+
+The `content` element can contain an optional `{DAV:}sync-level` element (default value when missing: `1`) that specifies whether the client is interested only in changes of internal members or of all members.
+
+A server MUST support a `{DAV:}sync-level` of `1` and MAY support `infinite`. In case of `infinite`, the limitations described in {{RFC6578}} _3.3 Depth Behavior_ apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported
+
+### Property Updates
+
+A _property update_ occurs when the WebDAV properties of the collection or its members are modified. Notifications about properties update are controlled by two elements within `properties`:
+
+1. The optional `{DAV:}depth` element (as defined in {{RFC4918}}, value if missing: `0`) specifies the depth:
+
+    * A depth of `0` means that the client is only interested in property updates of the subscribed collection itself.
+    * A depth of `1` means that the client is interested in property updates of the subscribed collection and its internal members.
+    * A depth of `infinite` means that the client is interested in property updates of the subscribed collection and all its members.
+
+    A server MUST support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{RFC6578}} _3.3 Depth Behavior_ apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported.
+
+2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. [^todo] XML error when not supported.
+
+### Response
 
 Allowed response codes:
 

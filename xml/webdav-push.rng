@@ -32,6 +32,53 @@
         </choice>
       </element>
 
+      <!-- types of events -->
+      <optional>
+        <element name="on">
+          <interleave>
+            <optional>
+              <element name="content-update">
+                <optional>
+                  <element ns="DAV:" name="sync-level"> <!-- defined in RFC 6578 -->
+                    <choice>
+                      <value>1</value>
+                      <value>infinite</value>
+                    </choice>
+                  </element>
+                </optional>
+              </element>
+            </optional>
+
+            <optional>
+              <element name="property-update">
+                <interleave>
+                  <optional>
+                    <element ns="DAV:" name="depth">  <!-- defined in WebDAV (RFC 4918) -->
+                      <choice>
+                        <value>0</value>
+                        <value>1</value>
+                        <value>infinite</value>
+                      </choice>
+                    </element>
+                  </optional>
+
+                  <optional>
+                    <element ns="DAV:" name="prop">   <!-- defined in WebDAV (RFC 4918) -->
+                      <zeroOrMore>
+                        <element>
+                          <anyName/>
+                          <empty/>
+                        </element>
+                      </zeroOrMore>
+                    </element>
+                  </optional>
+                </interleave>
+              </element>
+            </optional>
+          </interleave>
+        </element>
+      </optional>
+
       <!-- expiration -->
       <optional>
         <element name="expires">
