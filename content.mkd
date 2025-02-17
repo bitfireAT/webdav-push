@@ -175,8 +175,8 @@ To subscribe to a collection, the client sends a `POST` request with `Content-Ty
 The `push-register` element contains:
 
 * exactly one `subscription` element, which contains all information the server needs to send a push message,
-* an optional `on` element to specify the types of events the client wants to be notified about,
-* an optional `expires` element to request a specific expiration time.
+* an optional `on` element to specify the types of events the client wants to be notified about, and
+* an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{RFC9110}}).
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
@@ -235,7 +235,7 @@ Allowed response codes:
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
 
-The server MUST return a HTTP `Expires` header (as defined in {{RFC9111}}) in the `IMF-fixdate` format (as defined in {{RFC9110}}) with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
+The server MUST return a HTTP `Expires` header (as defined in {{RFC9111}}) in the `IMF-fixdate` format with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
 
 Example:
 
@@ -255,7 +255,7 @@ Expires: Wed, 02 Oct 2024 07:28:00 GMT
 
 ## Subscription Updates
 
-Every subscription has an identifier that uniquely identifies the (push transport, push service, client) triple. For Web Push, the identifier is the push resource URL.
+Every subscription has an identifier that uniquely identifies the (push transport, push service, client) triple. For Web Push, the identifier is the push resource URI.
 
 A server MUST NOT register a subscription with the same identifier multiple times. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested collection, the server MUST update the subscription with the given details and the expiration date. 
 
@@ -296,11 +296,9 @@ HTTP/1.1 204 Unregistered
 
 Clients MAY specify an expiration date-time when they register a subscription.
 
-A server SHOULD take the expiration specified by a client into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server SHOULD allow subscriptions to be valid at least one week.
+A server SHOULD take the expiration specified by a client into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server MUST allow subscriptions to be valid at least three days.
 
-Clients have to refresh their registrations regularly and before the expiration date to keep them working.
-
-Clients can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed. Clients which need ongoing push notifications SHOULD update subscription registrations at least every few days (significantly more often than weekly).
+Clients have to refresh their registrations regularly and before the expiration date to keep them working. They can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed.
 
 Expired subscriptions MUST NOT be used anymore as chances are high that doing so would cause errors.
 
@@ -308,29 +306,34 @@ Expired subscriptions MUST NOT be used anymore as chances are high that doing so
 
 # Push Notification
 
-A WebDAV-Push server MUST notify registered subscriptions when the content of a subscribed collection changes, taking the `Depth` header given at subscription registration into account.
+A WebDAV-Push server MUST notify registered subscriptions of a subscribed collection:
+
+- on a _content update_ of the collection, if this was requested during subscription registration,
+- on a _property update_ of the collection, if this was requested during subscription registration.
+
+[^todo] Content/property update changes
 
 
 ## Push Message
 
-The push message body consists of a `push-message` element, which contains a `{DAV:}propstat` element with
+The push message body consists of a `push-message` element, which contains a `{DAV:}propstat` element with a `{DAV:}prop` element that MUST contain the `topic` of the affected collection so that the client can identify it without doubt.
 
-* an optional `{DAV:}status` element to notify the client that the collection has changed its status, and
-* a `{DAV:}prop` element that
+In case of a _content update_ of the affected collection, the `{DAV:}prop` element MUST contain a `{DAV:}sync-token` element to allow a client to ignore the push message when it already knows the latest state.
 
-  * MUST contain the `topic` of the affected collection so that the client can identify it without doubt,
-  * SHOULD contain a `{DAV:}sync-token` element (when available) to allow a client to ignore the push message when it already knows the latest state,
-  * MUST NOT contain elements with sensitive data (unless message encryption is used).
+To indicate a _property update_ of the affected collection, a `{DAV:}status` element is added to the `{DAV:}prop` element:
 
-When the `{DAV:}status` element is present, it indicates a change of the status of the collection itself (and not its members). In this case, clients SHOULD check and process the relevant properties of the collection. Status code 404 or 410 is used to indicate that the collection has been removed.
+* status code 200 to indicate properties of the affected collection have changed,
+* status code 404 to indicate that the collection has been removed.
 
-[^todo] Push notification rate limit?
+Clients can determine whether a push message notifies about a content and/or property update by checking the presence of `{DAV:}sync-token`.
 
-[^todo] Shall a TTL value, as used by Web Push, be recommended in general, per transport, or not at all?
+When necessary or useful, a server MAY
 
-[^todo] Shall multiple enqueued (and not yet delivered) push messages for the same collection be merged to a single one (like "Replacing Push Messages" with the `Topic` header in {{RFC8030}})? Maybe use a timestamp? Shall this be specified in general, per transport or not at all?
+* impose a rate limit for push messages,
+* delay push messages for a short time,
+* omit/merge push messages.
 
-[^todo] How often / batch / delay?
+However the server MUST ensure that such restrictions don't change the semantics of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that occur shortly after each other, all but the last message can be omitted – but only if they notify the client about the same thing (content updates with `{DAV:}sync-token`). If one of the push messages contains a `{DAV:}status` property to indicate a property update, it can't be omitted.
 
 Example 1:
 
@@ -364,6 +367,15 @@ A WebDAV-Push server MUST ensure that invalid subscriptions (encountered when tr
 An invalid subscription is a subscription that push notifications can't be delivered to. Usually the push service returns an HTTP error code like 404 when it receives a notification for an invalid subscription. There may also be other conditions that render a subscription invalid, like a non-resolvable hostname or an encryption handshake error.
 
 A server MAY use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
+
+
+# CalDAV/CardDAV
+
+[^todo] Specific implementation notes for CalDAV/CardDAV. Especially a recommendation of what clients shall subscribe to and why:
+
+* homesets → content updates may trigger calendar list refresh
+* calendars / address books → content updates may trigger sync, property updates may trigger calendar meta-data refresh
+* principals → keep displayed user data up-to-date
 
 
 
@@ -427,7 +439,7 @@ To register a Web Push subscription, the `subscription` element of the `push-reg
 
 The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server (Web Push application server).
 
-It contains exactly one `push-resource` element, which identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.
+It contains exactly one `push-resource` element, which contains an absolute URI that identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.
 
 Example:
 
