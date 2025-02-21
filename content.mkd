@@ -138,7 +138,7 @@ The `topic` is a globally unique identifier for the collection. A specific colle
 - a random UUID for each collection; or
 - a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
 
-[^todo] supports-on
+[^todo] supports-trigger
 
 Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
 
@@ -175,21 +175,21 @@ To subscribe to a collection, the client sends a `POST` request with `Content-Ty
 The `push-register` element contains:
 
 * exactly one `subscription` element, which contains all information the server needs to send a push message,
-* an optional `on` element to specify the types of events the client wants to be notified about, and
+* an optional `trigger` element to specify the types of events the client wants to be notified about, and
 * an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{RFC9110}}).
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
-To specify which updates the client wants to be notified about, it uses the `on` element, which itself can contain:
+To specify which updates the client wants to be notified about, it uses the `trigger` element, which itself can contain:
 
 * A `content-update` element to indicate the client's interest in notifications when the members of the collection change (_content update_).
 * A `property-update` element to indicate the client's interest in notifications when the WebDAV properties of the collection change (_property update_).
 
-If the `on` element is missing or empty, the following default will be assumed:
+If the `trigger` element is missing or empty, the following default will be assumed:
 
 ~~~xml
-<!-- default "on" if not specified: -->
-<on xmlns="https://bitfire.at/webdav-push" xmlns:D="DAV:">
+<!-- default "trigger" if not specified: -->
+<trigger xmlns="https://bitfire.at/webdav-push" xmlns:D="DAV:">
   <!-- client wants be notified about content updates of direct members -->
   <content-update>
     <D:sync-level>1</D:depth>
@@ -200,7 +200,7 @@ If the `on` element is missing or empty, the following default will be assumed:
     <D:depth>0</D:depth>
     <D:prop/>
   </property-update>
-</on>
+</trigger>
 ~~~
 
 ### Content Updates

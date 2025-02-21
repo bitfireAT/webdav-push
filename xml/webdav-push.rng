@@ -34,7 +34,7 @@
 
       <!-- types of events -->
       <optional>
-        <element name="on">
+        <element name="trigger">
           <interleave>
             <optional>
               <element name="content-update">

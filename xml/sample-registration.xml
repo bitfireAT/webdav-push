@@ -4,7 +4,7 @@
       <push-resource>https://up.example.net/yohd4yai5Phiz1wi</push-resource>
     </web-push-subscription>
   </subscription>
-  <on>
+  <trigger>
     <content-update>
       <D:sync-level>infinite</D:sync-level>
     </content-update>
@@ -15,6 +15,6 @@
         <D:owner/>
       </D:prop>
     </property-update>
-  </on>
+  </trigger>
   <expires>Wed, 20 Dec 2023 10:03:31 GMT</expires>
 </push-register>
