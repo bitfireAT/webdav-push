@@ -430,8 +430,6 @@ Usage of message encryption {{RFC8291}} and VAPID {{RFC8292}} is RECOMMENDED. If
 
 Support for the Web Push transport is indicated by the `web-push` element in the `transports` collection property.
 
-A WebDAV-Push server SHOULD use the collection topic as `Topic` header in push messages to replace previous notifications for the same collection.
-
 
 ## Subscription Registration
 
@@ -452,29 +450,9 @@ Example:
 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
-The push topic SHOULD be used to generate the `Topic` header. Since RFC 8030 limits the `Topic` header to 32 characters from the URL and filename-safe Base64 alphabet, it's RECOMMENDED to use a hash of the push topic that meets these requirements as the header value.
-
-The exact algorithm to derive the `Topic` header from the push topic can be chosen by the server.
+The server MAY send a `Topic` header with the push message so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. To achieve this, the `Topic` can be calculated from the collection topic and the information whether the push message indicates a content and/or property update. The exact algorithm to derive the value can be chosen by the server. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
 
 The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical for the user, for instance in slowly changing collections like a holiday calendar may be sent with `Urgency: low`.
-
-Example:
-
-Push topic: `O7M1nQ7cKkKTKsoS_j6Z3w`  
-SHA1(push topic): `47788cfcf010ece3030175b8fa63276bbaea4862`  
-As base64url: `R3iM_PAQ7OMDAXW4-mMna7rqSGI`
-
-(Note that SHA1 doesn't serve a cryptographical purpose here and is just used to generate a fixed-length hash out of the variable-length topic.)
-
-So push message delivery is requested with this header:
-
-~~~
-POST <push subscription URL>
-Content-Type: application/xml; charset="UTF-8"
-Topic: R3iM_PAQ7OMDAXW4-mMna7rqSGI
-
-<push message body>
-~~~
 
 
 ## VAPID

@@ -122,7 +122,7 @@
   </define>
 
 
-  <!-- Web Push -->
+  <!-- Web Push Properties -->
 
   <define name="web-push-transport">
     <element name="web-push">
