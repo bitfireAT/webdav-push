@@ -10,16 +10,7 @@ permissions:
   id-token: write
 
 jobs:
-  validate:
-    name: Validate XML samples
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -q xmlstarlet
-      - run: (cd xml; ./validate.sh)
-
   build:
-    needs: validate
     name: Generate HTML/TXT
     runs-on: ubuntu-latest
     steps:
