@@ -2,7 +2,6 @@
   <response>
     <href>/webdav/collection/</href>
     <prop>
-      <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
       <P:transports>
         <P:web-push />
 
@@ -12,6 +11,10 @@
         </X:some-other-transport>
         -->
       </P:transports>
+      <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
+      <P:supported-triggers>
+        <P:content-update />
+      </P:supported-triggers>
     </prop>
   </response>
 </multistatus>

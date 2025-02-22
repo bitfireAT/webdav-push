@@ -138,7 +138,7 @@ The `topic` is a globally unique identifier for the collection. A specific colle
 - a random UUID for each collection; or
 - a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
 
-[^todo] supports-trigger
+[^todo] The `supported-triggers` element contains supported trigger methods (see {{content-updates}} and {{property-updates}}). Do we even need it? Is it optional? Default value? Specify all depths, max depths?
 
 Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
 
@@ -149,6 +149,7 @@ PROPFIND https://example.com/webdav/collection/
   <prop>
     <P:transports/>
     <P:topic/>
+    <P:supported-triggers/>
   </prop>
 </propfind>
 
@@ -203,7 +204,7 @@ If the `trigger` element is missing or empty, the following default will be assu
 </trigger>
 ~~~
 
-### Content Updates
+### Content Updates {#content-updates}
 
 A _content update_ occurs when a member is changed or removed, as defined in {{RFC6578}} _3.5 Types of Changes Reported on Subsequent Synchronizations_ (typically when a member is added or removed or its contents are modified). If the server supports {{RFC6578}}, a content update implies that the `{DAV:}sync-token` changes.
 
@@ -211,7 +212,7 @@ The `content` element can contain an optional `{DAV:}sync-level` element (defaul
 
 A server MUST support a `{DAV:}sync-level` of `1` and MAY support `infinite`. In case of `infinite`, the limitations described in {{RFC6578}} _3.3 Depth Behavior_ apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported
 
-### Property Updates
+### Property Updates {#property-updates}
 
 A _property update_ occurs when the WebDAV properties of the collection or its members are modified. Notifications about properties update are controlled by two elements within `properties`:
 
@@ -408,6 +409,7 @@ collection.
 
 [^todo] What happens when some component is hacked
 
+[^todo] Topic header, don't use insecure hashes
 
 
 # Web Push Transport {#transport-web-push}
@@ -450,7 +452,7 @@ Example:
 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
-The server MAY send a `Topic` header with the push message so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. To achieve this, the `Topic` can be calculated from the collection topic and the information whether the push message indicates a content and/or property update. The exact algorithm to derive the value can be chosen by the server. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
+The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. Usually this means that the value is derived from the collection topic and the information whether the push message indicates a content and/or property update. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
 
 The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical for the user, for instance in slowly changing collections like a holiday calendar may be sent with `Urgency: low`.
 

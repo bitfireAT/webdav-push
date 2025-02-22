@@ -24,6 +24,9 @@
             <optional>
               <ref name="prop-topic"/>
             </optional>
+            <optional>
+              <ref name="prop-supported-triggers"/>
+            </optional>
           </interleave>
         </element>
       </element>

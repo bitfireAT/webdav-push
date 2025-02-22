@@ -20,6 +20,59 @@
   </define>
 
 
+  <define name="trigger-content-update">
+    <element name="content-update">
+      <optional>
+        <element ns="DAV:" name="sync-level"> <!-- defined in RFC 6578 -->
+          <choice>
+            <value>1</value>
+            <value>infinite</value>
+          </choice>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+  <define name="trigger-property-update">
+    <element name="property-update">
+      <interleave>
+        <optional>
+          <element ns="DAV:" name="depth">  <!-- defined in WebDAV (RFC 4918) -->
+            <choice>
+              <value>0</value>
+              <value>1</value>
+              <value>infinite</value>
+            </choice>
+          </element>
+        </optional>
+
+        <optional>
+          <element ns="DAV:" name="prop">   <!-- defined in WebDAV (RFC 4918) -->
+            <zeroOrMore>
+              <element>
+                <anyName/>
+                <empty/>
+              </element>
+            </zeroOrMore>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="prop-supported-triggers">
+    <!-- supported triggers -->
+    <element name="supported-triggers">
+      <zeroOrMore>
+        <ref name="trigger-content-update"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="trigger-property-update"/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+
   <!-- Subscription Registration -->
 
   <define name="subscription-registration">
@@ -37,43 +90,10 @@
         <element name="trigger">
           <interleave>
             <optional>
-              <element name="content-update">
-                <optional>
-                  <element ns="DAV:" name="sync-level"> <!-- defined in RFC 6578 -->
-                    <choice>
-                      <value>1</value>
-                      <value>infinite</value>
-                    </choice>
-                  </element>
-                </optional>
-              </element>
+              <ref name="trigger-content-update"/>
             </optional>
-
             <optional>
-              <element name="property-update">
-                <interleave>
-                  <optional>
-                    <element ns="DAV:" name="depth">  <!-- defined in WebDAV (RFC 4918) -->
-                      <choice>
-                        <value>0</value>
-                        <value>1</value>
-                        <value>infinite</value>
-                      </choice>
-                    </element>
-                  </optional>
-
-                  <optional>
-                    <element ns="DAV:" name="prop">   <!-- defined in WebDAV (RFC 4918) -->
-                      <zeroOrMore>
-                        <element>
-                          <anyName/>
-                          <empty/>
-                        </element>
-                      </zeroOrMore>
-                    </element>
-                  </optional>
-                </interleave>
-              </element>
+              <ref name="trigger-property-update"/>
             </optional>
           </interleave>
         </element>
