@@ -20,6 +20,59 @@
   </define>
 
 
+  <define name="trigger-content-update">
+    <element name="content-update">
+      <optional>
+        <element ns="DAV:" name="sync-level"> <!-- defined in RFC 6578 -->
+          <choice>
+            <value>1</value>
+            <value>infinite</value>
+          </choice>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+  <define name="trigger-property-update">
+    <element name="property-update">
+      <interleave>
+        <optional>
+          <element ns="DAV:" name="depth">  <!-- defined in WebDAV (RFC 4918) -->
+            <choice>
+              <value>0</value>
+              <value>1</value>
+              <value>infinite</value>
+            </choice>
+          </element>
+        </optional>
+
+        <optional>
+          <element ns="DAV:" name="prop">   <!-- defined in WebDAV (RFC 4918) -->
+            <zeroOrMore>
+              <element>
+                <anyName/>
+                <empty/>
+              </element>
+            </zeroOrMore>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="prop-supported-triggers">
+    <!-- supported triggers -->
+    <element name="supported-triggers">
+      <zeroOrMore>
+        <ref name="trigger-content-update"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="trigger-property-update"/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+
   <!-- Subscription Registration -->
 
   <define name="subscription-registration">
@@ -31,6 +84,20 @@
           <!-- or other subscription, not covered by this schema -->
         </choice>
       </element>
+
+      <!-- types of events -->
+      <optional>
+        <element name="trigger">
+          <interleave>
+            <optional>
+              <ref name="trigger-content-update"/>
+            </optional>
+            <optional>
+              <ref name="trigger-property-update"/>
+            </optional>
+          </interleave>
+        </element>
+      </optional>
 
       <!-- expiration -->
       <optional>
@@ -46,14 +113,22 @@
 
   <define name="push-message">
     <element name="push-message">
-      <element ns="DAV:" name="propstat">       <!-- defined in WebDAV (RFC 4918) -->
+      <element ns="DAV:" name="depth">            <!-- defined in WebDAV (RFC 4918) -->
+        <choice>
+          <value>0</value>
+          <value>1</value>
+          <value>infinity</value>
+        </choice>
+      </element>
+
+      <element ns="DAV:" name="propstat">         <!-- defined in WebDAV (RFC 4918) -->
         <optional>
-          <element ns="DAV:" name="status">     <!-- defined in WebDAV (RFC 4918) -->
+          <element ns="DAV:" name="status">       <!-- defined in WebDAV (RFC 4918) -->
             <text/>
           </element>
         </optional>
 
-        <element ns="DAV:" name="prop">         <!-- defined in WebDAV (RFC 4918) -->
+        <element ns="DAV:" name="prop">           <!-- defined in WebDAV (RFC 4918) -->
           <ref name="prop-topic"/>
 
           <optional>
@@ -67,7 +142,7 @@
   </define>
 
 
-  <!-- Web Push -->
+  <!-- Web Push Properties -->
 
   <define name="web-push-transport">
     <element name="web-push">

@@ -17,10 +17,17 @@
           <text/>
         </element>
         <element name="prop">
-          <zeroOrMore>
-            <ref name="prop-transports"/>
-            <ref name="prop-topic"/>
-          </zeroOrMore>
+          <interleave>
+            <optional>
+              <ref name="prop-transports"/>
+            </optional>
+            <optional>
+              <ref name="prop-topic"/>
+            </optional>
+            <optional>
+              <ref name="prop-supported-triggers"/>
+            </optional>
+          </interleave>
         </element>
       </element>
     </element>

@@ -6,12 +6,15 @@
         <P:web-push />
 
         <!-- Not covered by this document:
-        <P:some-other-transport>
-          <P:some-parameter>...</P:some-parameter>
-        </P:some-other-transport>
+        <X:some-other-transport>
+          <X:some-parameter>...</X:some-parameter>
+        </X:some-other-transport>
         -->
       </P:transports>
-      <P:topic xmlns="https://bitfire.at/webdav-push">O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
+      <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
+      <P:supported-triggers>
+        <P:content-update />
+      </P:supported-triggers>
     </prop>
   </response>
 </multistatus>

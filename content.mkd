@@ -138,6 +138,8 @@ The `topic` is a globally unique identifier for the collection. A specific colle
 - a random UUID for each collection; or
 - a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
 
+[^todo] The `supported-triggers` element contains supported trigger methods (see {{content-updates}} and {{property-updates}}). Do we even need it? Is it optional? Default value? Specify all depths, max depths?
+
 Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
 
 ~~~
@@ -147,6 +149,7 @@ PROPFIND https://example.com/webdav/collection/
   <prop>
     <P:transports/>
     <P:topic/>
+    <P:supported-triggers/>
   </prop>
 </propfind>
 
@@ -163,18 +166,67 @@ The comment shows how support for some other (not yet defined) transport could b
 
 # Subscription Management
 
-[^todo] ACL for registering subscriptions?
+[^todo] Permissions / what to report when user is not allowed to register push.
 
 
 ## Subscription Registration
 
-To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` in the WebDAV-Push namespace (`https://bitfire.at/webdav-push`) and can be used to distinguish between a WebDAV-Push and other requests.
+To subscribe to a collection, the client sends a `POST` request with `Content-Type: application/xml` to the collection it wants to subscribe. The root XML element of the XML body is `push-register` and can be used to distinguish between WebDAV-Push and other requests.
 
-The `push-register` element contains exactly one `subscription` element, which contains all information the server needs to send a push message, plus an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{RFC9110}}).
+The `push-register` element contains:
+
+* exactly one `subscription` element, which contains all information the server needs to send a push message,
+* an optional `trigger` element to specify the types of events the client wants to be notified about, and
+* an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{RFC9110}}).
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
-[^todo] By now, only data updates of the collection itself and in direct members (equals `Depth: 1`) are sent. Maybe it could be specified that servers can send one notification per path segment? Implications?
+To specify which updates the client wants to be notified about, it uses the `trigger` element, which itself can contain:
+
+* A `content-update` element to indicate the client's interest in notifications when the members of the collection change (_content update_).
+* A `property-update` element to indicate the client's interest in notifications when the WebDAV properties of the collection change (_property update_).
+
+If the `trigger` element is missing or empty, the following default will be assumed:
+
+~~~xml
+<!-- default "trigger" if not specified: -->
+<trigger xmlns="https://bitfire.at/webdav-push" xmlns:D="DAV:">
+  <!-- client wants be notified about content updates of direct members -->
+  <content-update>
+    <D:sync-level>1</D:depth>
+  </content-update>
+
+   <!-- client wants to be notified about property changes of the collection -->
+  <property-update>
+    <D:depth>0</D:depth>
+    <D:prop/>
+  </property-update>
+</trigger>
+~~~
+
+### Content Updates {#content-updates}
+
+A _content update_ occurs when a member is changed or removed, as defined in {{RFC6578}} _3.5 Types of Changes Reported on Subsequent Synchronizations_ (typically when a member is added or removed or its contents are modified). If the server supports {{RFC6578}}, a content update implies that the `{DAV:}sync-token` changes.
+
+The `content` element can contain an optional `{DAV:}sync-level` element (default value when missing: `1`) that specifies whether the client is interested only in changes of internal members or of all members.
+
+A server MUST support a `{DAV:}sync-level` of `1` and MAY support `infinite`. In case of `infinite`, the limitations described in {{RFC6578}} _3.3 Depth Behavior_ apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported
+
+### Property Updates {#property-updates}
+
+A _property update_ occurs when the WebDAV properties of the collection or its members are modified. Notifications about properties update are controlled by two elements within `properties`:
+
+1. The optional `{DAV:}depth` element (as defined in {{RFC4918}}, value if missing: `0`) specifies the depth:
+
+    * A depth of `0` means that the client is only interested in property updates of the subscribed collection itself.
+    * A depth of `1` means that the client is interested in property updates of the subscribed collection and its internal members.
+    * A depth of `infinite` means that the client is interested in property updates of the subscribed collection and all its members.
+
+    A server MUST support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{RFC6578}} _3.3 Depth Behavior_ apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported.
+
+2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. [^todo] XML error when not supported.
+
+### Response
 
 Allowed response codes:
 
@@ -257,12 +309,10 @@ Expired subscriptions MUST NOT be used anymore as chances are high that doing so
 
 A WebDAV-Push server MUST notify registered subscriptions of a subscribed collection:
 
-- on a _content update_ of the collection: this is when a member is changed or removed, (as explained in {{RFC6578}}), so that the `{DAV:}sync-token` changes;
-- on a _property update_ of the colleciton: this is when
-  - certain properties of the collection (like `DAV:{display-name}`) itself change,
-  - or the property itself is removed, which changes its `{DAV:status}` to 4xx.
+- on a _content update_ of the collection, if this was requested during subscription registration,
+- on a _property update_ of the collection, if this was requested during subscription registration.
 
-[^todo] Which properties?
+[^todo] Content/property update changes
 
 
 ## Push Message
@@ -292,7 +342,7 @@ Example 1:
 {::include xml/sample-push-message1.xml}
 ~~~
 
-Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`.
+Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`. The depth of one indicates that the notification was caused by addition/change/removal of an internal member.
 
 Example 2:
 
@@ -300,7 +350,15 @@ Example 2:
 {::include xml/sample-push-message2.xml}
 ~~~
 
-Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server.
+Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`. The infinite depth indicates that the notification was caused by addition/change/removal of a member.
+
+Example 3:
+
+~~~
+{::include xml/sample-push-message3.xml}
+~~~
+
+Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server. The zero depth indicates that this message is about the collection itself, and not about its members.
 
 
 ## Removal of Invalid Subscriptions
@@ -351,6 +409,7 @@ collection.
 
 [^todo] What happens when some component is hacked
 
+[^todo] Topic header, don't use insecure hashes
 
 
 # Web Push Transport {#transport-web-push}
@@ -373,8 +432,6 @@ Usage of message encryption {{RFC8291}} and VAPID {{RFC8292}} is RECOMMENDED. If
 
 Support for the Web Push transport is indicated by the `web-push` element in the `transports` collection property.
 
-A WebDAV-Push server SHOULD use the collection topic as `Topic` header in push messages to replace previous notifications for the same collection.
-
 
 ## Subscription Registration
 
@@ -395,29 +452,9 @@ Example:
 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
-The push topic SHOULD be used to generate the `Topic` header. Since RFC 8030 limits the `Topic` header to 32 characters from the URL and filename-safe Base64 alphabet, it's RECOMMENDED to use a hash of the push topic that meets these requirements as the header value.
-
-The exact algorithm to derive the `Topic` header from the push topic can be chosen by the server.
+The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. Usually this means that the value is derived from the collection topic and the information whether the push message indicates a content and/or property update. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
 
 The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical for the user, for instance in slowly changing collections like a holiday calendar may be sent with `Urgency: low`.
-
-Example:
-
-Push topic: `O7M1nQ7cKkKTKsoS_j6Z3w`  
-SHA1(push topic): `47788cfcf010ece3030175b8fa63276bbaea4862`  
-As base64url: `R3iM_PAQ7OMDAXW4-mMna7rqSGI`
-
-(Note that SHA1 doesn't serve a cryptographical purpose here and is just used to generate a fixed-length hash out of the variable-length topic.)
-
-So push message delivery is requested with this header:
-
-~~~
-POST <push subscription URL>
-Content-Type: application/xml; charset="UTF-8"
-Topic: R3iM_PAQ7OMDAXW4-mMna7rqSGI
-
-<push message body>
-~~~
 
 
 ## VAPID
