@@ -60,7 +60,7 @@ Rewrite proxy
   When however the server and clients are not in control of the same entity (like it's typically the case in WebDAV context), client and server can't share the same private key to authenticate against the push service. In that case, the client vendor may need to operate a rewrite proxy that receives each push message from the WebDAV-Push server, signs it with the same private key as the client and forwards it to the push service.
 
 Web Push
-: "Protocol for the delivery of real-time events to user agents", defined by {{RFC8030}}. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like {{UnifiedPush}}. Some parts of {{RFC8030}} (namely chapter 6 and HTTP/2 delivery between push service and client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients.
+: "Protocol for the delivery of real-time events to user agents", defined by {{RFC8030}}. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like {{UnifiedPush}}. Some parts of {{RFC8030}} (namely how Push clients receive the push messages and HTTP/2 delivery between push service and client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients.
 
   There are also additional standards that can be considered to belong to Web Push, especially VAPID ({{RFC8292}}) and Message Encryption ({{RFC8291}}).
 
@@ -133,10 +133,7 @@ To provide information about WebDAV-Push support, new collection properties are 
 
 The `transports` element contains push transports are supported by the server (one child element per transport). Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}).
 
-The `topic` is a globally unique identifier for the collection. A specific collection could be reachable at different URLs, but it can only have one push topic. Because push services may be able to see push messages in clear text, the topic SHOULD NOT allow to draw conclusions about the synchronized collection. For instance, a server could use:
-
-- a random UUID for each collection; or
-- a salted hash (server-specific salt) of the canonical collection URL, encoded with base64.
+The `topic` is a globally unique identifier for the collection. A specific collection could be reachable at different URLs, but it can only have one push topic. A server could for instance use a server-internal ID that is not going to change or a random UUID per collection.
 
 [^todo] The `supported-triggers` element contains supported trigger methods (see {{content-updates}} and {{property-updates}}). Do we even need it? Is it optional? Default value? Specify all depths, max depths?
 
@@ -177,7 +174,7 @@ The `push-register` element contains:
 
 * exactly one `subscription` element, which contains all information the server needs to send a push message,
 * an optional `trigger` element to specify the types of events the client wants to be notified about, and
-* an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{RFC9110}}).
+* an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{Section 5.6.7 of RFC9110}}).
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
@@ -206,23 +203,23 @@ If the `trigger` element is missing or empty, the following default will be assu
 
 ### Content Updates {#content-updates}
 
-A _content update_ occurs when a member is changed or removed, as defined in {{RFC6578}} _3.5 Types of Changes Reported on Subsequent Synchronizations_ (typically when a member is added or removed or its contents are modified). If the server supports {{RFC6578}}, a content update implies that the `{DAV:}sync-token` changes.
+A _content update_ occurs when a member is changed or removed, as defined in {{Section 3.5 of RFC6578}} (typically when a member is added or removed or its contents are modified). If the server supports {{RFC6578}}, a content update implies that the `{DAV:}sync-token` changes.
 
 The `content` element can contain an optional `{DAV:}sync-level` element (default value when missing: `1`) that specifies whether the client is interested only in changes of internal members or of all members.
 
-A server MUST support a `{DAV:}sync-level` of `1` and MAY support `infinite`. In case of `infinite`, the limitations described in {{RFC6578}} _3.3 Depth Behavior_ apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported
+A server MUST support a `{DAV:}sync-level` of `1` and MAY support `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported
 
 ### Property Updates {#property-updates}
 
 A _property update_ occurs when the WebDAV properties of the collection or its members are modified. Notifications about properties update are controlled by two elements within `properties`:
 
-1. The optional `{DAV:}depth` element (as defined in {{RFC4918}}, value if missing: `0`) specifies the depth:
+1. The optional `{DAV:}depth` element (as defined in {{Section 10.2 of RFC4918}}, value if missing: `0`) specifies the depth:
 
     * A depth of `0` means that the client is only interested in property updates of the subscribed collection itself.
     * A depth of `1` means that the client is interested in property updates of the subscribed collection and its internal members.
     * A depth of `infinite` means that the client is interested in property updates of the subscribed collection and all its members.
 
-    A server MUST support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{RFC6578}} _3.3 Depth Behavior_ apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported.
+    A server MUST support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported.
 
 2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. [^todo] XML error when not supported.
 
@@ -236,7 +233,7 @@ Allowed response codes:
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
 
-The server MUST return a HTTP `Expires` header (as defined in {{RFC9111}}) in the `IMF-fixdate` format with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
+The server MUST return a HTTP `Expires` header (as defined in {{Section 5.3 of RFC9111}}) in the `IMF-fixdate` format with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
 
 Example:
 
@@ -317,7 +314,7 @@ A WebDAV-Push server MUST notify registered subscriptions of a subscribed collec
 
 The push message body consists of a `push-message` element, which contains information about the affected collection:
 
-- a `topic` element with the collection topic,
+- a `topic` element with the push topic,
 - a `content-update` element in case of a content update, and/or
 - a `property-update` element in case of a property update.
 
@@ -361,26 +358,16 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 # Security Considerations
 
-See RFC 3552.
+The general requirements from {{Section 8 of RFC8030}} apply regardless of which transport is used. Especially:
 
-Which information is shared with which party, especially public ones like the push transport?
-Implications? Involved parties:
+- HTTP over TLS MUST be used for all communications, and
+- mechanisms that provide end-to-end confidentiality, integrity and data origin authentication MUST be used.
 
-* WebDAV server
-* WebDAV client
-* push transports / push service
+Push services could relate clients over metadata and heuristics. For instance, clients which are at the same time notified by a specific WebDAV-Push server have probably subscribed the same collection.
 
-Without message encryption, push transports can collect some data:
+[^todo] See RFC 3552 and RFC 6973.
 
-* which WebDAV server notifies which clients,
-* which clients are subscribed to the same collection (because they receive the same topic in the
-  push message),
-* at which times the collection is changed,
-* other metadata (IP addresses etc.)
-
-With message encryption, every push message is different and push transports can only relate clients over
-metadata and heuristics, like the clients that are notified at the same time have probably subscribed the same
-collection.
+[^todo] `Topic` header, don't use insecure hashes
 
 [^todo] How sensitive are the data, how to minimize risks
 
@@ -388,12 +375,10 @@ collection.
 
 [^todo] What happens when some component is hacked
 
-[^todo] Topic header, don't use insecure hashes
-
 
 # Web Push Transport {#transport-web-push}
 
-WebDAV-Push can be used with Web Push {{RFC8030}} as a transport to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure. Currently (2024), all major browsers support Web Push.
+WebDAV-Push can be used with Web Push {{RFC8030}} as a transport to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure.
 
 When the Web Push transport is used for WebDAV-Push,
 
@@ -407,9 +392,9 @@ Corresponding terminology:
 * (WebDAV-Push) push server ↔ (Web Push) application server
 * (WebDAV-Push) push client (or redirect proxy) ↔ (Web Push) user agent
 
-Usage of message encryption {{RFC8291}} and VAPID {{RFC8292}} is RECOMMENDED. If future protocol extensions become used by push services, WebDAV-Push servers should implement them as well, if applicable.
+Message encryption {{RFC8291}} and VAPID {{RFC8292}} MUST be used. (If other methods to provide a security context for Web Push become established, those ones shall be used and add required WebDAV properties should be added to this document. If future protocol extensions become available used by push services, WebDAV-Push servers should implement them as well, if applicable.)
 
-Support for the Web Push transport is indicated by the `web-push` element in the `transports` collection property.
+A server that supports the Web Push transport MUST list the `web-push` element in the `transports` property.
 
 
 ## Subscription Registration
