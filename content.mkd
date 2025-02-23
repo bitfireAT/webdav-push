@@ -312,28 +312,16 @@ A WebDAV-Push server MUST notify registered subscriptions of a subscribed collec
 - on a _content update_ of the collection, if this was requested during subscription registration,
 - on a _property update_ of the collection, if this was requested during subscription registration.
 
-[^todo] Content/property update changes
-
 
 ## Push Message
 
 The push message body consists of a `push-message` element, which contains information about the affected collection:
 
-- a `topic` element with the collection topic, and
-- a `content-update` element in case of a _content update_, and/or
-- a `property-update` element in case of a _property update_.
+- a `topic` element with the collection topic,
+- a `content-update` element in case of a content update, and/or
+- a `property-update` element in case of a property update.
 
-The `content-update` element SHOULD contain a `{DAV:}sync-token` element to allow a client to ignore the push message when it already knows the latest state.
-
-[^todo] property-update: no sync-token or equivalent known
-
-When necessary or useful, a server MAY
-
-* impose a rate limit for push messages,
-* delay push messages for a short time,
-* omit/merge push messages.
-
-The server MUST ensure that such measures don't change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted. If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened.
+The `content-update` element SHOULD contain a `{DAV:}sync-token` element so that a client can ignore the push message when it already knows the latest state.
 
 Example:
 
@@ -342,6 +330,14 @@ Example:
 ~~~
 
 Here, both the contents and the properties of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed. The new sync-token (after the change) is `http://example.com/sync/10`.
+
+When necessary or useful, a server MAY
+
+* impose a rate limit for push messages,
+* delay push messages for a short time,
+* omit/merge push messages.
+
+The server MUST ensure that such measures don't change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted. If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened.
 
 
 ## Removal of Invalid Subscriptions
