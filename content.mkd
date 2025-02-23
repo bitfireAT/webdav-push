@@ -335,29 +335,13 @@ When necessary or useful, a server MAY
 
 The server MUST ensure that such measures don't change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted. If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened.
 
-Example 1:
+Example:
 
 ~~~
-{::include xml/sample-push-message1.xml}
+{::include xml/sample-push-message.xml}
 ~~~
 
-Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`. The depth of one indicates that the notification was caused by addition/change/removal of an internal member.
-
-Example 2:
-
-~~~
-{::include xml/sample-push-message2.xml}
-~~~
-
-Here, the contents of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed and the new sync-token (after the change) is `http://example.com/ns/sync/1234`. The infinite depth indicates that the notification was caused by addition/change/removal of a member.
-
-Example 3:
-
-~~~
-{::include xml/sample-push-message3.xml}
-~~~
-
-Here the server notifies the client that the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` is no longer available on the server. The zero depth indicates that this message is about the collection itself, and not about its members.
+Here, both the contents and the properties of the collection with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed. The new sync-token (after the change) is `http://example.com/sync/10`.
 
 
 ## Removal of Invalid Subscriptions
