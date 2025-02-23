@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<P:push-message xmlns:D="DAV:" xmlns:P="https://bitfire.at/webdav-push">
+  <content-update>
+    <D:sync-token"http://example.com/sync/10></D:sync-token>
+  </content-update>
+  <property-update />
+</P:push-message>
