@@ -113,31 +113,28 @@
 
   <define name="push-message">
     <element name="push-message">
-      <element ns="DAV:" name="depth">            <!-- defined in WebDAV (RFC 4918) -->
-        <choice>
-          <value>0</value>
-          <value>1</value>
-          <value>infinity</value>
-        </choice>
-      </element>
+      <interleave>
+        <!-- collection topic -->
+        <ref name="prop-topic"/>
 
-      <element ns="DAV:" name="propstat">         <!-- defined in WebDAV (RFC 4918) -->
-        <optional>
-          <element ns="DAV:" name="status">       <!-- defined in WebDAV (RFC 4918) -->
-            <text/>
+        <!-- content update -->
+        <zeroOrMore>
+          <element name="content-update">
+            <optional>
+              <element ns="DAV:" name="sync-token">
+                <text/>
+              </element>
+            </optional>
           </element>
-        </optional>
+        </zeroOrMore>
 
-        <element ns="DAV:" name="prop">           <!-- defined in WebDAV (RFC 4918) -->
-          <ref name="prop-topic"/>
-
-          <optional>
-            <element ns="DAV:" name="sync-token"> <!-- defined in Collection Synchronization for WebDAV (RFC 6578) -->
-              <text/>
-            </element>
-          </optional>
-        </element>
-      </element>
+        <!-- property update -->
+        <zeroOrMore>
+          <element name="property-update">
+            <empty/>
+          </element>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 
