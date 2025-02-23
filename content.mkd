@@ -60,7 +60,7 @@ Rewrite proxy
   When however the server and clients are not in control of the same entity (like it's typically the case in WebDAV context), client and server can't share the same private key to authenticate against the push service. In that case, the client vendor may need to operate a rewrite proxy that receives each push message from the WebDAV-Push server, signs it with the same private key as the client and forwards it to the push service.
 
 Web Push
-: "Protocol for the delivery of real-time events to user agents", defined by {{RFC8030}}. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like {{UnifiedPush}}. Some parts of {{RFC8030}} (namely how Push clients receive the push messages and HTTP/2 delivery between push service and client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients.
+: "Protocol for the delivery of real-time events to user agents", defined by {{RFC8030}}. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like {{UnifiedPush}}. Some parts (namely push message delivery from the push service to the client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients.
 
   There are also additional standards that can be considered to belong to Web Push, especially VAPID ({{RFC8292}}) and Message Encryption ({{RFC8291}}).
 
@@ -360,8 +360,8 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 The general requirements from {{Section 8 of RFC8030}} apply regardless of which transport is used. Especially:
 
-- HTTP over TLS MUST be used for all communications, and
-- mechanisms that provide end-to-end confidentiality, integrity and data origin authentication MUST be used.
+- HTTP over TLS MUST be used for all communications.
+- Mechanisms that provide end-to-end confidentiality, integrity and data origin authentication MUST be used.
 
 Push services could relate clients over metadata and heuristics. For instance, clients which are at the same time notified by a specific WebDAV-Push server have probably subscribed the same collection.
 
