@@ -127,7 +127,7 @@ This section describes how a client can detect
 - which push services are supported (may contain service-specific information).
 
 
-## Collection Properties
+## Collection Properties {#collection-properties}
 
 To provide information about WebDAV-Push support, new properties are defined. A WebDAV-Push server is REQUIRED to provide the `transports`, `topic` and `supported-triggers` properties for collections that support WebDAV-Push.
 
@@ -157,8 +157,6 @@ HTTP/1.1 207 Multi-Status
 <?xml version="1.0" encoding="utf-8" ?>
 {::include xml/sample-propfind-multistatus.xml}
 ~~~
-
-[^todo] vapid key
 
 In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). It supports the Web Push transport. Push notifications can be requested on content updates of internal members and on property updates of the collection itself.
 
@@ -397,7 +395,7 @@ Corresponding terminology:
 * (WebDAV-Push) push server ↔ (Web Push) application server
 * (WebDAV-Push) push client (or redirect proxy) ↔ (Web Push) user agent
 
-Message encryption {{RFC8291}} and VAPID {{RFC8292}} MUST be used. (If other methods to provide a security context for Web Push become established, those ones shall be used and add required WebDAV properties should be added to this document. If future protocol extensions become available used by push services, WebDAV-Push servers should implement them as well, if applicable.)
+Message encryption {{RFC8291}} MUST be used. VAPID {{RFC8292}} SHOULD be used. (If other methods to provide a security context for Web Push become established, those ones can and shall be used and necessary WebDAV properties shall be added to this document.)
 
 A server that supports the Web Push transport MUST list the `web-push` element in the `transports` property.
 
@@ -417,38 +415,20 @@ Example:
 ~~~
 
 
-## Push Message
-
-The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
-
-The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. Usually this means that the value is derived from the collection topic and the information whether the push message indicates a content and/or property update. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
-
-The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical for the user, for instance in slowly changing collections like a holiday calendar may be sent with `Urgency: low`.
-
-
 ## VAPID
 
-VAPID {{RFC8292}} SHOULD be used to restrict push subscriptions to the specific WebDAV server.
+VAPID binds push subscriptions to the specific WebDAV-Push server.
 
-A WebDAV server which supports VAPID stores a key pair. The server exposes an additional transport property `server-public-key`. It contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256dh"` MUST be added to allow different key types in the future.
-
-Example service detection of a WebDAV server that supports VAPID:
-
-~~~
-<?xml version="1.0" encoding="utf-8" ?>
-{::include xml/sample-propfind-multistatus-with-vapid.xml}
-~~~
+A WebDAV-Push server which supports VAPID stores a key pair. The server exposes an additional transport property `server-public-key` (within the `web-push` element), which contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256dh"` MUST be added to allow different key types in the future. See {{collection-properties}} for an example.
 
 If available, the client SHOULD use this key to create a restricted subscription at the push service.
 
-When the server sends a push message, it includes a corresponding `Authorization` header to prove its identity.
+When the server sends a push message, it includes a corresponding `Authorization` header to prove its identity to the push service.
 
 
 ## Message Encryption
 
-Message encryption SHOULD be used to hide details of push messages from the push services.
-
-Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
+Message encryption hides details of push messages from the push services. Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
 
 When the client then registers this subscription at the server, it includes additional subscription properties:
 
@@ -462,6 +442,15 @@ Example for a subscription registration requesting message encryption:
 ~~~
 
 The server uses these data to encrypt the payload and send it to the push service. The client then decrypts the payload again.
+
+
+## Push Message
+
+The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
+
+The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. Usually this means that the value is derived from the collection topic and the information whether the push message indicates a content and/or property update. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
+
+The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical for the user, for instance in slowly changing collections like a holiday calendar may be sent with `Urgency: low`.
 
 
 # XML Schema

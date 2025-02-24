@@ -3,7 +3,9 @@
     <href>/webdav/collection/</href>
     <prop>
       <P:transports>
-        <P:web-push />
+        <P:web-push>
+          <P:server-public-key type="p256dh">BA1Hxzyi1RUM1b5wjxsn7nGxAszw2u61m164i3MrAIxHF6YK5h4SDYic-dRuU_RCPCfA5aq9ojSwk5Y2EmClBPs</P:server-public-key>
+        </P:web-push>
         <!-- Not covered by this document:
         <X:some-other-transport>
           <X:some-parameter>...</X:some-parameter>
