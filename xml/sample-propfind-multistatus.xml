@@ -15,6 +15,9 @@
         <P:content-update>
           <sync-level>1</sync-level>
         </P:content-update>
+        <P:property-update>
+          <depth>0</depth>
+        </P:property-update>
       </P:supported-triggers>
     </prop>
   </response>

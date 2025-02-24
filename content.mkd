@@ -131,7 +131,7 @@ This section describes how a client can detect
 
 To provide information about WebDAV-Push support, new properties are defined. A WebDAV-Push server is REQUIRED to provide the `transports`, `topic` and `supported-triggers` properties for collections that support WebDAV-Push.
 
-The `transports` element contains push transports are supported by the server (one child element per transport). Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}).
+The `transports` element lists available push transports. Although the property is defined on every collection, its value is usually the same for every collection on the server. Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}).
 
 The `topic` is a globally unique identifier for the collection. A specific collection could be reachable at different URLs, but it can only have one push topic. A server could for instance use a server-internal ID that is not going to change or a random UUID per collection.
 
@@ -158,7 +158,9 @@ HTTP/1.1 207 Multi-Status
 {::include xml/sample-propfind-multistatus.xml}
 ~~~
 
-In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). It supports the Web Push transport. [^todo vapid key] Push notifications can be requested for content updates of internal members.
+[^todo] vapid key
+
+In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). It supports the Web Push transport. Push notifications can be requested on content updates of internal members and on property updates of the collection itself.
 
 The comment shows how support for some other (not yet defined) transport could be advertised together with additional specific information that is required to use it.
 
