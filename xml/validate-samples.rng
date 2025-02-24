@@ -10,7 +10,7 @@
     </choice>
   </start>
 
-  <define name="multistatus" ns="DAV:">
+  <define name="multistatus" ns="DAV:">   <!-- defined in WebDAV, here only for valiation of samples -->
     <element name="multistatus">
       <element name="response">
         <element name="href">
@@ -18,15 +18,9 @@
         </element>
         <element name="prop">
           <interleave>
-            <optional>
-              <ref name="prop-transports"/>
-            </optional>
-            <optional>
-              <ref name="prop-topic"/>
-            </optional>
-            <optional>
-              <ref name="prop-supported-triggers"/>
-            </optional>
+            <ref name="prop-transports"/>
+            <ref name="prop-topic"/>
+            <ref name="prop-supported-triggers"/>
           </interleave>
         </element>
       </element>
