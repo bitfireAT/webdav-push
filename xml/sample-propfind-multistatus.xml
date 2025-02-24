@@ -4,7 +4,6 @@
     <prop>
       <P:transports>
         <P:web-push />
-
         <!-- Not covered by this document:
         <X:some-other-transport>
           <X:some-parameter>...</X:some-parameter>
@@ -13,7 +12,9 @@
       </P:transports>
       <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
       <P:supported-triggers>
-        <P:content-update />
+        <P:content-update>
+          <sync-level>1</sync-level>
+        </P:content-update>
       </P:supported-triggers>
     </prop>
   </response>

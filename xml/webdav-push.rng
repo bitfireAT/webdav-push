@@ -2,8 +2,8 @@
 
   <!-- New WebDAV Collection Properties -->
 
+  <!-- available push transports -->
   <define name="prop-transports">
-    <!-- available push transports -->
     <element name="transports">
       <choice>
         <ref name="web-push-transport"/>
@@ -12,69 +12,63 @@
     </element>
   </define>
 
+  <!-- push topic -->
   <define name="prop-topic">
-    <!-- push topic -->
     <element name="topic">
       <text/>
     </element>
   </define>
 
-
-  <define name="trigger-content-update">
+  <define name="prop-supported-triggers-content-update">
     <element name="content-update">
-      <optional>
-        <element ns="DAV:" name="sync-level"> <!-- defined in RFC 6578 -->
-          <choice>
-            <value>1</value>
-            <value>infinite</value>
-          </choice>
-        </element>
-      </optional>
+      <ref name="prop-dav-sync-level"/>
     </element>
   </define>
-
-  <define name="trigger-property-update">
+  <define name="prop-supported-triggers-property-update">
     <element name="property-update">
-      <interleave>
-        <optional>
-          <element ns="DAV:" name="depth">  <!-- defined in WebDAV (RFC 4918) -->
-            <choice>
-              <value>0</value>
-              <value>1</value>
-              <value>infinite</value>
-            </choice>
-          </element>
-        </optional>
-
-        <optional>
-          <element ns="DAV:" name="prop">   <!-- defined in WebDAV (RFC 4918) -->
-            <zeroOrMore>
-              <element>
-                <anyName/>
-                <empty/>
-              </element>
-            </zeroOrMore>
-          </element>
-        </optional>
-      </interleave>
+      <ref name="prop-dav-depth"/>
     </element>
   </define>
-
+  <!-- supported triggers -->
   <define name="prop-supported-triggers">
-    <!-- supported triggers -->
     <element name="supported-triggers">
-      <zeroOrMore>
-        <ref name="trigger-content-update"/>
-      </zeroOrMore>
-      <zeroOrMore>
-        <ref name="trigger-property-update"/>
-      </zeroOrMore>
+      <choice>
+        <ref name="prop-supported-triggers-content-update"/>
+        <ref name="prop-supported-triggers-property-update"/>
+        <interleave>
+          <ref name="prop-supported-triggers-content-update"/>
+          <ref name="prop-supported-triggers-property-update"/>
+        </interleave>
+      </choice>
     </element>
   </define>
 
 
   <!-- Subscription Registration -->
 
+  <define name="subscription-registration-trigger-content-update">
+    <element name="content-update">
+      <!-- requested depth -->
+      <ref name="prop-dav-sync-level"/>
+    </element>
+  </define>
+  <define name="subscription-registration-trigger-property-update">
+    <element name="property-update">
+      <!-- requested depth -->
+      <ref name="prop-dav-depth"/>
+      <!-- interesting properties -->
+      <optional>
+        <element ns="DAV:" name="prop">   <!-- list of properties, as in PROPFIND request -->
+          <zeroOrMore>
+            <element>
+              <anyName/>
+              <empty/>
+            </element>
+          </zeroOrMore>
+        </element>
+      </optional>
+    </element>
+  </define>
   <define name="subscription-registration">
     <element name="push-register">
       <!-- subscription to register -->
@@ -85,17 +79,17 @@
         </choice>
       </element>
 
-      <!-- types of events -->
+      <!-- events that trigger a push notification -->
       <optional>
         <element name="trigger">
-          <interleave>
-            <optional>
-              <ref name="trigger-content-update"/>
-            </optional>
-            <optional>
-              <ref name="trigger-property-update"/>
-            </optional>
-          </interleave>
+          <choice>
+            <ref name="subscription-registration-trigger-content-update"/>
+            <ref name="subscription-registration-trigger-property-update"/>
+            <interleave>
+              <ref name="subscription-registration-trigger-content-update"/>
+              <ref name="subscription-registration-trigger-property-update"/>
+            </interleave>
+          </choice>
         </element>
       </optional>
 
@@ -121,9 +115,7 @@
         <zeroOrMore>
           <element name="content-update">
             <optional>
-              <element ns="DAV:" name="sync-token">
-                <text/>
-              </element>
+              <ref name="prop-dav-sync-token"/>
             </optional>
           </element>
         </zeroOrMore>
@@ -180,6 +172,34 @@
           <text/>
         </element>
       </optional>
+    </element>
+  </define>
+
+
+  <!-- External Properties -->
+
+  <define name="prop-dav-depth">        <!-- defined in WebDAV (RFC 4918) -->
+    <element ns="DAV:" name="depth">
+      <choice>
+        <value>0</value>
+        <value>1</value>
+        <value>infinite</value>
+      </choice>
+    </element>
+  </define>
+
+  <define name="prop-dav-sync-level">   <!-- defined in RFC 6578 -->
+    <element ns="DAV:" name="sync-level">
+      <choice>
+        <value>1</value>
+        <value>infinite</value>
+      </choice>
+    </element>
+  </define>
+
+  <define name="prop-dav-sync-token">   <!-- defined in RFC 6578 -->
+    <element ns="DAV:" name="sync-token">
+      <text/>
     </element>
   </define>
 

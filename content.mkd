@@ -129,13 +129,16 @@ This section describes how a client can detect
 
 ## Collection Properties
 
-To provide information about WebDAV-Push support, new collection properties are defined.
+To provide information about WebDAV-Push support, new properties are defined. A WebDAV-Push server is REQUIRED to provide the `transports`, `topic` and `supported-triggers` properties for collections that support WebDAV-Push.
 
 The `transports` element contains push transports are supported by the server (one child element per transport). Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}).
 
 The `topic` is a globally unique identifier for the collection. A specific collection could be reachable at different URLs, but it can only have one push topic. A server could for instance use a server-internal ID that is not going to change or a random UUID per collection.
 
-[^todo] The `supported-triggers` element contains supported trigger methods (see {{content-updates}} and {{property-updates}}). Do we even need it? Is it optional? Default value? Specify all depths, max depths?
+The `supported-triggers` element contains at least one of the following elements:
+
+- `content-update` if the collection supports push notifications on content updates ({{content-updates}}). It contains a `{DAV:}sync-level` property that indicates the maximum supported depth.
+- `property-update` if the collection supports push notifications on property updates ({{property-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 
 Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
 
@@ -155,7 +158,7 @@ HTTP/1.1 207 Multi-Status
 {::include xml/sample-propfind-multistatus.xml}
 ~~~
 
-In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). It supports the Web Push transport (without additional specific information).
+In this case, the requested collection supports WebDAV-Push in general (because it has a push topic). It supports the Web Push transport. [^todo vapid key] Push notifications can be requested for content updates of internal members.
 
 The comment shows how support for some other (not yet defined) transport could be advertised together with additional specific information that is required to use it.
 
