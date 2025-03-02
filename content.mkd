@@ -1,7 +1,7 @@
 
 # Introduction
 
-**(This document is in work and has not been submitted yet.)**
+**(This document is in work and subject of ongoing modification.)**
 
 WebDAV-Push is intended as a tool for WebDAV {{RFC4918}} clients to get notified about updates in collections in near time so that they can refresh their views, perform synchronization etc.
 
@@ -206,7 +206,7 @@ A _property update_ occurs when the WebDAV properties of the collection or its m
 
    A server SHOULD support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
-2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. [^todo] XML error when not supported.
+2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. If the `{DAV:}prop` element is present, but contains properties for which property update notifications are not supported, the server MAY ignore those properties, or treat the request as if it was sent with empty `{DAV:prop}`.
 
 ### Response
 
@@ -214,7 +214,9 @@ Allowed response codes:
 
 * 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. Details have to be specified by the particular transport definition.
 * 204 if the subscription was registered
+* 400 when the request doesn't contain valid information (for instance, missing or invalid `subscription` or neither a content nor a property trigger)
 * 403 with precondition `trigger-not-supported` when a requested trigger is not supported by the server or the collection
+* other response code with usual HTTP/WebDAV semantics
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
 
@@ -234,6 +236,10 @@ Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 Expires: Wed, 02 Oct 2024 07:28:00 GMT
 ~~~
 
+### Preconditions
+
+The `trigger-not-supported` element contains the trigger(s) that are not supported, together with the sync level/depth. If certain requested properties of a property update notification request are not supported, the `{DAV:}prop` element contains only the unsupported properties. If multiple triggers are not supported, the server can return either all of them or the first one and then abort the request.
+
 
 ## Subscription Updates
 
@@ -241,16 +247,7 @@ Every subscription has an identifier that uniquely identifies the (push transpor
 
 A server MUST NOT register a subscription with the same identifier multiple times. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested collection, the server MUST update the subscription with the given details and the expiration date. 
 
-Allowed response codes:
-
-* 201 if the registered subscription was updated and the server wants to share registration-specific details
-* 204 if the registered subscription was updated
-* 404 if the registration URL is unknown (or expired)
-* other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
-
-The server MUST return the registration URL in the `Location` header.
-
-The server MUST return a HTTP `Expires` header with the actual expiration date on the server.
+The response is the same as for subscription registration.
 
 
 ## Subscription Removal
@@ -261,7 +258,7 @@ Allowed response codes:
 
 * 204 if the registered subscription was removed.
 * 404 if the registration URL is unknown (or expired).
-* other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
+* other response code with usual HTTP/WebDAV semantics
 
 When a subscription registration is removed, no further push messages must be sent to the subscription.
 
