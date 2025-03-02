@@ -176,7 +176,7 @@ To subscribe to a collection, the client sends a `POST` request with `Content-Ty
 The `push-register` element contains:
 
 * exactly one `subscription` element, which contains all information the server needs to send a push message,
-* an optional `trigger` element to specify the types of events the client wants to be notified about, and
+* exactly one `trigger` element to specify the types of events the client wants to be notified about, and
 * an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{Section 5.6.7 of RFC9110}}).
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
@@ -186,43 +186,25 @@ To specify which updates the client wants to be notified about, it uses the `tri
 * A `content-update` element to indicate the client's interest in notifications when the members of the collection change (_content update_).
 * A `property-update` element to indicate the client's interest in notifications when the WebDAV properties of the collection change (_property update_).
 
-If the `trigger` element is missing or empty, the following default will be assumed:
-
-~~~xml
-<!-- default "trigger" if not specified: -->
-<trigger xmlns="https://bitfire.at/webdav-push" xmlns:D="DAV:">
-  <!-- client wants be notified about content updates of direct members -->
-  <content-update>
-    <D:sync-level>1</D:depth>
-  </content-update>
-
-   <!-- client wants to be notified about property changes of the collection -->
-  <property-update>
-    <D:depth>0</D:depth>
-    <D:prop/>
-  </property-update>
-</trigger>
-~~~
-
 ### Content Updates {#content-updates}
 
 A _content update_ occurs when a member is changed or removed, as defined in {{Section 3.5 of RFC6578}} (typically when a member is added or removed or its contents are modified). If the server supports {{RFC6578}}, a content update implies that the `{DAV:}sync-token` changes.
 
-The `content` element can contain an optional `{DAV:}sync-level` element (default value when missing: `1`) that specifies whether the client is interested only in changes of internal members or of all members.
+The `content` element contains a `{DAV:}sync-level` element that specifies whether the client is interested only in changes of internal members (value: `1`) or of all members (value: `infinite`).
 
-A server MUST support a `{DAV:}sync-level` of `1` and MAY support `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported
+A server SHOULD support a `{DAV:}sync-level` of `1` and MAY support `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
 ### Property Updates {#property-updates}
 
 A _property update_ occurs when the WebDAV properties of the collection or its members are modified. Notifications about properties update are controlled by two elements within `properties`:
 
-1. The optional `{DAV:}depth` element (as defined in {{Section 10.2 of RFC4918}}, value if missing: `0`) specifies the depth:
+1. The `{DAV:}depth` element (as defined in {{Section 10.2 of RFC4918}}) specifies the depth:
 
     * A depth of `0` means that the client is only interested in property updates of the subscribed collection itself.
     * A depth of `1` means that the client is interested in property updates of the subscribed collection and its internal members.
     * A depth of `infinite` means that the client is interested in property updates of the subscribed collection and all its members.
 
-    A server MUST support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent. [^todo] XML error when not supported.
+   A server SHOULD support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
 2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. [^todo] XML error when not supported.
 
@@ -232,13 +214,13 @@ Allowed response codes:
 
 * 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. Details have to be specified by the particular transport definition.
 * 204 if the subscription was registered
-* other response code with usual HTTP/WebDAV semantics (if possible, with `DAV:error` XML body)
+* 403 with precondition `trigger-not-supported` when a requested trigger is not supported by the server or the collection
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
 
 The server MUST return a HTTP `Expires` header (as defined in {{Section 5.3 of RFC9111}}) in the `IMF-fixdate` format with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
 
-Example:
+Example (successful registration):
 
 ~~~
 POST https://example.com/webdav/collection/
@@ -251,7 +233,6 @@ HTTP/1.1 201 Created
 Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 Expires: Wed, 02 Oct 2024 07:28:00 GMT
 ~~~
-
 
 
 ## Subscription Updates

@@ -1,6 +1,6 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" ns="https://bitfire.at/webdav-push">
 
-  <!-- New WebDAV Collection Properties -->
+  <!-- new WebDAV collection properties -->
 
   <!-- available push transports -->
   <define name="prop-transports">
@@ -44,7 +44,7 @@
   </define>
 
 
-  <!-- Subscription Registration -->
+  <!-- subscription registration -->
 
   <define name="subscription-registration-trigger-content-update">
     <element name="content-update">
@@ -56,7 +56,8 @@
     <element name="property-update">
       <!-- requested depth -->
       <ref name="prop-dav-depth"/>
-      <!-- interesting properties -->
+
+      <!-- properties client is interested in -->
       <optional>
         <element ns="DAV:" name="prop">   <!-- list of properties, as in PROPFIND request -->
           <zeroOrMore>
@@ -80,18 +81,16 @@
       </element>
 
       <!-- events that trigger a push notification -->
-      <optional>
-        <element name="trigger">
-          <choice>
+      <element name="trigger">
+        <choice>
+          <ref name="subscription-registration-trigger-content-update"/>
+          <ref name="subscription-registration-trigger-property-update"/>
+          <interleave>
             <ref name="subscription-registration-trigger-content-update"/>
             <ref name="subscription-registration-trigger-property-update"/>
-            <interleave>
-              <ref name="subscription-registration-trigger-content-update"/>
-              <ref name="subscription-registration-trigger-property-update"/>
-            </interleave>
-          </choice>
-        </element>
-      </optional>
+          </interleave>
+        </choice>
+      </element>
 
       <!-- expiration -->
       <optional>
@@ -103,7 +102,16 @@
   </define>
 
 
-  <!-- Push Message -->
+  <!-- XML error conditions (precondition/postcondition) for use with {DAV:}error element -->
+
+  <define name="precondition-trigger-not-supported">
+    <element name="trigger-not-supported">
+      <empty/>
+    </element>
+  </define>
+
+
+  <!-- push message -->
 
   <define name="push-message">
     <element name="push-message">
@@ -131,7 +139,7 @@
   </define>
 
 
-  <!-- Web Push Properties -->
+  <!-- Web Push properties -->
 
   <define name="web-push-transport">
     <element name="web-push">
@@ -176,7 +184,7 @@
   </define>
 
 
-  <!-- External Properties -->
+  <!-- external properties (only informational) -->
 
   <define name="prop-dav-depth">        <!-- defined in WebDAV (RFC 4918) -->
     <element ns="DAV:" name="depth">
