@@ -160,12 +160,20 @@
 
   <define name="web-push-subscription">
     <element name="web-push-subscription">
-      <element name="push-resource">
-        <text/>   <!-- push resource (absolute URI) -->
-      </element>
+      <interleave>
+        <!-- push resource (absolute URI) -->
+        <element name="push-resource">
+          <text/>
+        </element>
 
-      <!-- message encryption -->
-      <optional>
+        <!-- message encryption -->
+        <element name="content-encoding">
+          <choice>
+            <value>aes128gcm</value>
+          </choice>
+          <!-- or other encoding / not covered by this schema -->
+        </element>
+
         <element name="client-public-key">
           <attribute name="type">
             <choice>
@@ -179,7 +187,7 @@
         <element name="auth-secret">
           <text/>
         </element>
-      </optional>
+      </interleave>
     </element>
   </define>
 
