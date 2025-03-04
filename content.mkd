@@ -391,7 +391,7 @@ It contains exactly one `push-resource` element, which contains an absolute URI 
 
 VAPID binds push subscriptions to the specific WebDAV-Push server.
 
-A WebDAV-Push server which supports VAPID stores a key pair. The server exposes an additional transport property `server-public-key` (within the `web-push` element), which contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256dh"` MUST be added to allow different key types in the future. See {{collection-properties}} for an example.
+A WebDAV-Push server which supports VAPID stores a key pair. The server exposes an additional transport property `vapid-public-key` (within the `web-push` element), which contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{collection-properties}} for an example.
 
 If available, the client SHOULD use this key to create a restricted subscription at the push service.
 

@@ -145,10 +145,10 @@
     <element name="web-push">
       <!-- VAPID key -->
       <optional>
-        <element name="server-public-key">
+        <element name="vapid-public-key">
           <attribute name="type">
             <choice>
-              <value>p256dh</value>
+              <value>p256ecdsa</value>
               <!-- or other type / not covered by this schema -->
             </choice>
           </attribute>
@@ -169,12 +169,12 @@
         <!-- message encryption -->
         <element name="content-encoding">
           <choice>
-            <value>aes128gcm</value>
+            <value>aes128gcm</value>    <!-- defined in RFC8188 -->
+            <!-- or other encoding / not covered by this schema -->
           </choice>
-          <!-- or other encoding / not covered by this schema -->
         </element>
 
-        <element name="client-public-key">
+        <element name="subscription-public-key">
           <attribute name="type">
             <choice>
               <value>p256dh</value>
