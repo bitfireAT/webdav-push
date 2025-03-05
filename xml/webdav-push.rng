@@ -104,6 +104,18 @@
 
   <!-- XML error conditions (precondition/postcondition) for use with {DAV:}error element -->
 
+  <define name="precondition-invalid-subscription">
+    <element name="invalid-subscription">
+      <empty/>
+    </element>
+  </define>
+
+  <define name="precondition-push-not-available">
+    <element name="push-not-available">
+      <empty/>
+    </element>
+  </define>
+
   <define name="precondition-trigger-not-supported">
     <element name="trigger-not-supported">
       <empty/>
