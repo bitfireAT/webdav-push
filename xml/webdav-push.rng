@@ -145,10 +145,10 @@
     <element name="web-push">
       <!-- VAPID key -->
       <optional>
-        <element name="server-public-key">
+        <element name="vapid-public-key">
           <attribute name="type">
             <choice>
-              <value>p256dh</value>
+              <value>p256ecdsa</value>
               <!-- or other type / not covered by this schema -->
             </choice>
           </attribute>
@@ -160,13 +160,21 @@
 
   <define name="web-push-subscription">
     <element name="web-push-subscription">
-      <element name="push-resource">
-        <text/>   <!-- push resource (absolute URI) -->
-      </element>
+      <interleave>
+        <!-- push resource (absolute URI) -->
+        <element name="push-resource">
+          <text/>
+        </element>
 
-      <!-- message encryption -->
-      <optional>
-        <element name="client-public-key">
+        <!-- message encryption -->
+        <element name="content-encoding">
+          <choice>
+            <value>aes128gcm</value>    <!-- defined in RFC8188 -->
+            <!-- or other encoding / not covered by this schema -->
+          </choice>
+        </element>
+
+        <element name="subscription-public-key">
           <attribute name="type">
             <choice>
               <value>p256dh</value>
@@ -179,7 +187,7 @@
         <element name="auth-secret">
           <text/>
         </element>
-      </optional>
+      </interleave>
     </element>
   </define>
 

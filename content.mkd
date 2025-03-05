@@ -229,7 +229,7 @@ POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
 <?xml version="1.0" encoding="utf-8" ?>
-{::include xml/sample-registration.xml}
+{::include xml/sample-push-register.xml}
 
 HTTP/1.1 201 Created
 Location: https://example.com/webdav/subscriptions/io6Efei4ooph
@@ -386,18 +386,12 @@ The `web-push-subscription` element represents the public information of a Web P
 
 It contains exactly one `push-resource` element, which contains an absolute URI that identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.
 
-Example:
-
-~~~
-{::include xml/sample-web-push-subscription.xml}
-~~~
-
 
 ## VAPID
 
 VAPID binds push subscriptions to the specific WebDAV-Push server.
 
-A WebDAV-Push server which supports VAPID stores a key pair. The server exposes an additional transport property `server-public-key` (within the `web-push` element), which contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256dh"` MUST be added to allow different key types in the future. See {{collection-properties}} for an example.
+A WebDAV-Push server which supports VAPID stores a key pair. The server exposes an additional transport property `vapid-public-key` (within the `web-push` element), which contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{collection-properties}} for an example.
 
 If available, the client SHOULD use this key to create a restricted subscription at the push service.
 
@@ -408,16 +402,10 @@ When the server sends a push message, it includes a corresponding `Authorization
 
 Message encryption hides details of push messages from the push services. Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
 
-When the client then registers this subscription at the server, it includes additional subscription properties:
+When the client then registers this subscription at the server, it includes these subscription properties:
 
 * `client-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
 * `auth-secret` – authentication secret
-
-Example for a subscription registration requesting message encryption:
-
-~~~
-{::include xml/sample-registration-with-encryption.xml}
-~~~
 
 The server uses these data to encrypt the payload and send it to the push service. The client then decrypts the payload again.
 

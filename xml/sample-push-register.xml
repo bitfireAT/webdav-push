@@ -2,6 +2,9 @@
   <subscription>
     <web-push-subscription>
       <push-resource>https://up.example.net/yohd4yai5Phiz1wi</push-resource>
+      <content-encoding>aes128gcm</content-encoding>
+      <subscription-public-key type="p256dh">BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4</subscription-public-key>
+      <auth-secret>BTBZMqHH6r4Tts7J_aSIgg</auth-secret>
     </web-push-subscription>
   </subscription>
   <trigger>
