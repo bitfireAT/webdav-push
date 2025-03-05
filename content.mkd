@@ -140,7 +140,9 @@ The `supported-triggers` element contains at least one of the following elements
 - `content-update` if the collection supports push notifications on content updates ({{content-updates}}). It contains a `{DAV:}sync-level` property that indicates the maximum supported depth.
 - `property-update` if the collection supports push notifications on property updates ({{property-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 
-Clients can use WebDAV `PROPFIND` to retrieve these properties. Example:
+Clients can use WebDAV `PROPFIND` to retrieve these properties.
+
+Example:
 
 ~~~
 PROPFIND https://example.com/webdav/collection/
@@ -166,7 +168,7 @@ The comment shows how support for some other (not yet defined) transport could b
 
 # Subscription Management
 
-[^todo] Permissions / what to report when user is not allowed to register push.
+WebDAV-Push SHOULD only be advertised to clients which are actually allowed to use it.
 
 
 ## Subscription Registration
@@ -214,8 +216,9 @@ Allowed response codes:
 
 * 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. Details have to be specified by the particular transport definition.
 * 204 if the subscription was registered
-* 400 when the request doesn't contain valid information (for instance, missing or invalid `subscription` or neither a content nor a property trigger)
-* 403 with precondition `trigger-not-supported` when a requested trigger is not supported by the server or the collection
+* 403 with precondition `invalid-subscription` when the request doesn't contain a valid `subscription`
+* 403 with precondition `push-not-available` if WebDAV-Push is not available for this collection or if the user is not allowed to register a push subscription for it
+* 403 with precondition `trigger-not-supported` when the request doesn't contain a trigger of when a requested trigger is not supported by the server or the collection
 * other response code with usual HTTP/WebDAV semantics
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
