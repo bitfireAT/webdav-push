@@ -330,14 +330,28 @@ An invalid subscription is a subscription that push notifications can't be deliv
 A server MAY use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription for some time. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
 
 
+
 # CalDAV/CardDAV
 
-[^todo] Specific implementation notes for CalDAV/CardDAV. Especially a recommendation of what clients shall subscribe to and why:
+WebDAV-Push can be used with CalDAV {{RFC4791}} and CardDAV {{RFC6352}} to provide short-time update notifications when collections (calendars, address books) or entries (contacts, events, …) change.
 
-* homesets → content updates may trigger calendar list refresh
-* calendars / address books → content updates may trigger sync, property updates may trigger calendar meta-data refresh
-* principals → keep displayed user data up-to-date
+Depending on the features of a CalDAV/CardDAV client, it could for instance subscribe to:
 
+- content updates of a home-set to become notified about new collections,
+- content updates of a collection (usually with a sync-level of 1) to become notified about modified entries,
+- property updates of a collection (usually with a depth of zero) to become notified about changes of properties like display name, calendar color and access permissions,
+- property updates (for instance display name) of a principal to update real names of collection owners.
+
+CalDAV/CardDAV servers that support WebDAV-Push SHOULD support:
+
+- content updates with a sync-level of at least 1 on
+  - `calendar-home-set` and `addressbook-home-set` collections,
+  - calendars and address books (collections which have a `{DAV:}resourcetype` of `{CALDAV:}calendar` or `{CARDDAV:}addressbook`),
+- property updates with a depth of at least 0 on
+  - calendars and address books,
+  - principals (collections with have a `{DAV:}resourcetype` of `{DAV:}principal` as defined in {{Section 4 of RFC3744}}).
+
+[^todo] Regarding property updates, these properties SHOULD be supported (both when explicitly requested in a `DAV:prop` element and when that element is not present or empty): …
 
 
 # Security Considerations
