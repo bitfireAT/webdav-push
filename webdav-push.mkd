@@ -42,6 +42,10 @@ normative:
   RFC9111:
 
 informative:
+  RFC3744:
+  RFC4791:
+  RFC6352:
+  RFC6638:
   UnifiedPush:
     title: UnifiedPush
     target: https://unifiedpush.org
