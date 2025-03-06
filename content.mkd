@@ -208,7 +208,7 @@ A _property update_ occurs when the WebDAV properties of the collection or its m
 
    A server SHOULD support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
-2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. If the `{DAV:}prop` element is present, but contains properties for which property update notifications are not supported, the server MAY ignore those properties, or treat the request as if it was sent with empty `{DAV:prop}`.
+2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. If the `{DAV:}prop` element is present, but contains properties for which property update notifications are not supported, the server MAY ignore those properties (instead of rejecting the request with a `trigger-not-supported` response).
 
 ### Response
 
@@ -218,7 +218,7 @@ Allowed response codes:
 * 204 if the subscription was registered
 * 403 with precondition `invalid-subscription` when the request doesn't contain a valid `subscription`
 * 403 with precondition `push-not-available` if WebDAV-Push is not available for this collection or if the user is not allowed to register a push subscription for it
-* 403 with precondition `trigger-not-supported` when the request doesn't contain a trigger of when a requested trigger is not supported by the server or the collection
+* 403 with precondition `trigger-not-supported` when the request doesn't contain a trigger or when a requested trigger is not supported by the server or the collection
 * other response code with usual HTTP/WebDAV semantics
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
@@ -239,9 +239,7 @@ Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 Expires: Wed, 02 Oct 2024 07:28:00 GMT
 ~~~
 
-### Preconditions
-
-The `trigger-not-supported` element contains the trigger(s) that are not supported, together with the sync level/depth. If certain requested properties of a property update notification request are not supported, the `{DAV:}prop` element contains only the unsupported properties. If multiple triggers are not supported, the server can return either all of them or the first one and then abort the request.
+The `trigger-not-supported` precondition element contains the trigger(s) that are not supported, together with the sync level/depth. If certain requested properties of a property update notification request are not supported, the `{DAV:}prop` element contains only the unsupported properties. If multiple triggers are not supported, the server can return either all of them or the first one and then abort the request.
 
 
 ## Subscription Updates
@@ -344,14 +342,14 @@ Depending on the features of a CalDAV/CardDAV client, it could for instance subs
 
 CalDAV/CardDAV servers that support WebDAV-Push SHOULD support:
 
-- content updates with a sync-level of at least 1 on
+- content updates with a `{DAV:}sync-level` of at least 1 on
   - `calendar-home-set` and `addressbook-home-set` collections,
   - calendars and address books (collections which have a `{DAV:}resourcetype` of `{CALDAV:}calendar` or `{CARDDAV:}addressbook`),
-- property updates with a depth of at least 0 on
+- property updates with a `{DAV:}depth` of at least 0 on
   - calendars and address books,
   - principals (collections with have a `{DAV:}resourcetype` of `{DAV:}principal` as defined in {{Section 4 of RFC3744}}).
 
-[^todo] Regarding property updates, these properties SHOULD be supported (both when explicitly requested in a `DAV:prop` element and when that element is not present or empty): …
+[^todo] CalDAV Scheduling
 
 
 # Security Considerations
