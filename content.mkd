@@ -331,7 +331,7 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 # CalDAV/CardDAV
 
-WebDAV-Push can be used with CalDAV {{RFC4791}} and CardDAV {{RFC6352}} to provide short-time update notifications when collections (calendars, address books) or entries (contacts, events, …) change.
+WebDAV-Push can be used with CalDAV ({{RFC4791}}) and CardDAV ({{RFC6352}}) to provide short-time update notifications when collections (calendars, address books) or entries (contacts, events, …) change.
 
 Depending on the features of a CalDAV/CardDAV client, it could for instance subscribe to:
 
@@ -345,11 +345,10 @@ CalDAV/CardDAV servers that support WebDAV-Push SHOULD support:
 - content updates with a `{DAV:}sync-level` of at least 1 on
   - `calendar-home-set` and `addressbook-home-set` collections,
   - calendars and address books (collections which have a `{DAV:}resourcetype` of `{CALDAV:}calendar` or `{CARDDAV:}addressbook`),
+  - scheduling inbox and outbox collections (collections which have a `{DAV:}resourcetype` of `{CALDAV:}schedule-inbox` or `{CALDAV:}schedule-outbox` as defined in {{Section 2 of RFC6638}});
 - property updates with a `{DAV:}depth` of at least 0 on
   - calendars and address books,
   - principals (collections with have a `{DAV:}resourcetype` of `{DAV:}principal` as defined in {{Section 4 of RFC3744}}).
-
-[^todo] CalDAV Scheduling
 
 
 # Security Considerations
