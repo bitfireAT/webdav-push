@@ -21,9 +21,21 @@ Typical use cases:
 
 ## Architectural Overview
 
-[^todo] Figure
+~~~goat
+.--------------------.   .--------------.   .--------------------.
+| WebDAV-Push Server |   | Push Service |   | WebDAV-Push Client |
+'--------------------'   '--------------'   '--------------------'
 
-[^todo]: TODO
+                                  Create Subscription
+                                .----------------------o
+                                '---------------------->
+
+                     Register Subscription
+           <-------------------------------------------o
+
+                  Content Update Notification
+           o------------------->*---------------------->
+~~~
 
 
 ## Terminology
