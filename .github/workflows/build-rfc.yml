@@ -1,7 +1,5 @@
 name: Build and publish document
-on:
-  push:
-    branches: [main]
+on: push
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -23,7 +21,11 @@ jobs:
           key: webdav-push.mkd
 
       - name: Install packages
-        run: sudo gem install kramdown-rfc && sudo apt-get install --no-install-recommends -y xml2rfc
+        run: >
+          sudo apt-get install --no-install-recommends -y golang-go &&
+          sudo gem install kramdown-rfc &&
+          sudo pip3 install svgcheck xml2rfc --break-system-packages &&
+          go install github.com/blampe/goat/cmd/goat@latest && echo ~/go/bin >> $GITHUB_PATH
 
       - name: Prepare output directory
         run: mkdir build
@@ -41,6 +43,7 @@ jobs:
           path: build
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

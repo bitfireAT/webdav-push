@@ -13,17 +13,27 @@ Typical use cases:
 - A desktop file manager shows contents of a WebDAV collection and wants to be notified on updates in order to refresh the view.
 - A calendar Web app shows a CalDAV collection and wants to be notified on updates in order to refresh the view.
 
+~~~goat
+.--------------------.   .--------------.   .--------------------.
+| WebDAV-Push Server |   | Push Service |   | WebDAV-Push Client |
+'--------------------'   '--------------'   '--------------------'
+
+                                  Create subscription
+                                .----------------------o
+                                '---------------------->
+
+                      Register subscription
+           <-------------------------------------------o
+
+                   Content update notification
+           o------------------->*---------------------->
+~~~
+{: title="Basic WebDAV-Push Workflow"}
+
 
 ## Notational Conventions
 
 {::boilerplate bcp14-tagged}
-
-
-## Architectural Overview
-
-[^todo] Figure
-
-[^todo]: TODO
 
 
 ## Terminology
@@ -387,9 +397,31 @@ Corresponding terminology:
 * (WebDAV-Push) push server ↔ (Web Push) application server
 * (WebDAV-Push) push client (or redirect proxy) ↔ (Web Push) user agent
 
-Message encryption {{RFC8291}} MUST be used. VAPID {{RFC8292}} SHOULD be used. (If other methods to provide a security context for Web Push become established, those ones can and shall be used and necessary WebDAV properties shall be added to this document.)
+Message encryption {{RFC8291}} MUST be used. VAPID {{RFC8292}} SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
 
 A server that supports the Web Push transport MUST list the `web-push` element in the `transports` property.
+
+~~~goat
+.--------------------.   .--------------.   .--------------------.
+|                    |   |   Web Push   |   |                    |
+| WebDAV-Push Server |   |   Service    |   | WebDAV-Push Client |
+'--------------------'   '--------------'   '--------------------'
+
+                       Get VAPID public key
+            .------------------------------------------o
+            '------------------------------------------>
+
+                          Create restricted subscription
+                                .----------------------o
+                                '---------------------->
+
+               Register subscription (with encryption)
+           <-------------------------------------------o
+
+                   Content update notification
+           o---(encrypted)---->*------(encrypted)------>
+~~~
+{: title="WebDAV-Push over Web Push with VAPID and Message Encryption"}
 
 
 ## Subscription Registration
