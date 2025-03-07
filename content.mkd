@@ -13,6 +13,14 @@ Typical use cases:
 - A desktop file manager shows contents of a WebDAV collection and wants to be notified on updates in order to refresh the view.
 - A calendar Web app shows a CalDAV collection and wants to be notified on updates in order to refresh the view.
 
+
+## Notational Conventions
+
+{::boilerplate bcp14-tagged}
+
+
+## Overview
+
 ~~~goat
 .--------------------.   .--------------.   .--------------------.
 | WebDAV-Push Server |   | Push Service |   | WebDAV-Push Client |
@@ -30,10 +38,34 @@ Typical use cases:
 ~~~
 {: title="Basic WebDAV-Push Workflow"}
 
+A WebDAV-Push server needs to
 
-## Notational Conventions
+- advertise WebDAV-Push and relevant information (service detection),
+- manage subscriptions to collections, and
+- send push messages when a subscribed collection changes.
 
-{::boilerplate bcp14-tagged}
+In order to manage subscriptions, a WebDAV server needs to
+
+- provide a way for clients to subscribe to a collection (with transport-specific information),
+- provide a way for clients to unsubscribe from collections, and
+- handle expired or otherwise invalid subscriptions.
+
+Notifications about updates in collections have to be sent to all subscribed clients over the respective push transports.
+
+A WebDAV-Push client typically
+
+- detects whether the server supports WebDAV-Push and which push transports,
+- connects to a push service (which is usually not operated by the same party as the WebDAV server),
+- subscribes to one or more collections on the server (providing push service-specific details),
+- receives push notifications that cause some client-side action (like to refresh the view or run synchronization),
+- re-subscribes to collections before the subscriptions expire,
+- unsubscribes from collections when notifications are not needed anymore.
+
+WebDAV-Push is not restricted to a specific push transport. This allows even upcoming, yet unknown push transports to be used with WebDAV-Push. Push transport definitions can define extra properties and additional processing rules.
+
+WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}). If possible, other push transports SHOULD be connected over a Web Push gateway instead of defining a new WebDAV-Push transport.
+
+To use proprietary push services, client vendors may need to provide a rewrite proxy that offers a Web Push endpoint which signs and forwards the requests to the respective proprietary service. If possible, VAPID should be used instead of such proxies.
 
 
 ## Terminology
@@ -82,50 +114,6 @@ WebDAV-Push
 
 (WebDAV-Push) server
 : WebDAV server (for instance a CalDAV/CardDAV server) that implements WebDAV-Push
-
-
-## WebDAV Server with Support for WebDAV-Push
-
-A WebDAV server that implements WebDAV-Push needs to
-
-- advertise WebDAV-Push features and relevant information (service detection),
-- manage subscriptions to collections and
-- send push messages when a subscribed collection changes.
-
-In order to manage subscriptions, a WebDAV server needs to
-
-- provide a way for clients to subscribe to a collection (with transport-specific information),
-- provide a way for clients to unsubscribe from collections,
-- handle expired or otherwise invalid subscriptions.
-
-Notifications about updates in collections have to be sent to all subscribed clients over the respective push transports.
-
-The server must be prepared to handle errors. For instance, if a push transport signals that a subscription doesn't exist anymore, it must be removed and not be used again.
-
-
-## WebDAV Client with Support for WebDAV-Push
-
-A WebDAV client that implements WebDAV-Push typically
-
-- detects whether the server supports WebDAV-Push and which push transports,
-- connects to a push service (which is usually not operated by the same party as the WebDAV server),
-- subscribes to one or more collections on the server (providing push service-specific details),
-- receives push notifications that cause some client-side action (like to refresh the view or run synchronization),
-- re-subscribes to collections before the subscriptions expire,
-- unsubscribes from collections when notifications are not needed anymore.
-
-
-## Push Transports
-
-WebDAV-Push is not restricted to specific push transports and allows clients to specify which push transports they support. This allows even upcoming, yet unknown push transports to be used with WebDAV-Push.
-
-WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}).
-
-If possible, other push transports SHOULD be connected over a Web Push gateway instead of defining a new WebDAV-Push transport.
-
-For proprietary push services, client vendors may need to provide a rewrite proxy that signs and forwards the requests to the respective proprietary service (which usually accepts only authenticated requests from the client vendor).
-
-Push transport definitions can define extra properties and additional processing rules.
 
 
 
@@ -419,7 +407,7 @@ A server that supports the Web Push transport MUST list the `web-push` element i
            <-------------------------------------------o
 
                    Content update notification
-           o---(encrypted)---->*------(encrypted)------>
+           o---(encrypted)----->*------(encrypted)----->
 ~~~
 {: title="WebDAV-Push over Web Push with VAPID and Message Encryption"}
 
