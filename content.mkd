@@ -134,7 +134,7 @@ DAV: 1, 2, access-control, calendar-access, webdav-push
 Content-Length: 0
 ~~~
 
-Here, the OPTIONS method returns "webdav-push" in the DAV response header to indicate that the resource supports the properties and operations defined in this document.
+Here, the OPTIONS response contains "webdav-push" in the DAV header to indicate that the resource supports the properties and operations defined in this document.
 
 
 ## Collection Properties {#collection-properties}
