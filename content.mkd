@@ -119,15 +119,27 @@ WebDAV-Push
 
 # Service Detection
 
-This section describes how a client can detect
+A server that supports WebDAV-Push MUST include "webdav-push" in the `DAV` header of an `OPTIONS` response for any resource that supports WebDAV-Push. The "webdav-push" value MUST indicate that all MUST level requirements of this document are met.
 
-- whether a collection supports WebDAV-Push,
-- which push services are supported (may contain service-specific information).
+Example:
+
+~~~
+OPTIONS /calendars/
+Host: caldav.example.com
+
+HTTP/1.1 200 OK
+Allow: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, COPY, MOVE
+Allow: PROPFIND, PROPPATCH, LOCK, UNLOCK, REPORT, ACL
+DAV: 1, 2, access-control, calendar-access, webdav-push
+Content-Length: 0
+~~~
+
+Here, the OPTIONS method returns "webdav-push" in the DAV response header to indicate that the resource supports the properties and operations defined in this document.
 
 
 ## Collection Properties {#collection-properties}
 
-To provide information about WebDAV-Push support, new properties are defined. A WebDAV-Push server is REQUIRED to provide the `transports`, `topic` and `supported-triggers` properties for collections that support WebDAV-Push.
+To provide information about WebDAV-Push support, new properties are defined. A WebDAV-Push server MUST provide the `transports`, `topic` and `supported-triggers` properties for collections that support WebDAV-Push.
 
 The `transports` element lists available push transports. Although the property is defined on every collection, its value is usually the same for every collection on the server. Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}).
 
