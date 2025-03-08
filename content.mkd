@@ -224,8 +224,8 @@ A _property update_ occurs when the WebDAV properties of the collection or its m
 
 Allowed response codes:
 
-* 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. Details have to be specified by the particular transport definition.
-* 204 if the subscription was registered
+* 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. The format if this details is specified by the respective transport definition.
+* 204 if the subscription was registered without additional information available
 * 403 with precondition `invalid-subscription` when the request doesn't contain a valid `subscription`
 * 403 with precondition `push-not-available` if WebDAV-Push is not available for this collection or if the user is not allowed to register a push subscription for it
 * 403 with precondition `trigger-not-supported` when the request doesn't contain a trigger or when a requested trigger is not supported by the server or the collection
@@ -339,7 +339,18 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 
 
-# CalDAV/CardDAV
+# Interoperability
+
+## Client Guidelines
+
+Before registering a subscription, a client SHOULD check the available triggers. The client SHOULD NOT register a subscription for unsupported triggers. The client MUST be prepared to receive an error when it registers a subscription with unsupported triggers.
+
+For instance, if a server only supports content updates with a `{DAV:}sync-level` of 1, the client shouldn't register a subscription with an infinite `{DAV:}sync-level` or with a property update trigger, as this would cause an error.
+
+[^todo] Not useful if supported triggers change – ignore unsupported triggers instead?
+
+
+## CalDAV/CardDAV
 
 WebDAV-Push can be used with CalDAV ({{RFC4791}}) and CardDAV ({{RFC6352}}) to provide short-time update notifications when collections (calendars, address books) or entries (contacts, events, …) change.
 
