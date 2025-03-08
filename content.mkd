@@ -204,7 +204,7 @@ A _content update_ occurs when a member is changed or removed, as defined in {{S
 
 The `content` element contains a `{DAV:}sync-level` element that specifies whether the client is interested only in changes of internal members (value: `1`) or of all members (value: `infinite`).
 
-A server SHOULD support a `{DAV:}sync-level` of `1` and MAY support `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
+A server SHOULD support content update notifications with a `{DAV:}sync-level` of at least `1` for every push-capable collection. In case the `{DAV:sync-level}` is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
 ### Property Updates {#property-updates}
 
@@ -216,7 +216,7 @@ A _property update_ occurs when the WebDAV properties of the collection or its m
     * A depth of `1` means that the client is interested in property updates of the subscribed collection and its internal members.
     * A depth of `infinite` means that the client is interested in property updates of the subscribed collection and all its members.
 
-   A server SHOULD support a `depth` of 0 and MAY support `1` and `infinite`. In case of `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
+   In case the `{DAV:}depth` is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
 2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is not present or empty, the server chooses the properties that it considers to be useful for the client. If the `{DAV:}prop` element is present, but contains properties for which property update notifications are not supported, the server MAY ignore those properties (instead of rejecting the request with a `trigger-not-supported` response).
 
