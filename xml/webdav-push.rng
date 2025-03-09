@@ -116,8 +116,8 @@
     </element>
   </define>
 
-  <define name="precondition-trigger-not-supported">
-    <element name="trigger-not-supported">
+  <define name="precondition-no-trigger-supported">
+    <element name="no-trigger-supported">
       <empty/>
     </element>
   </define>
