@@ -206,9 +206,9 @@ A _content update_ occurs when a member is changed or removed, as defined in {{S
 
 The `content` element contains a `{DAV:}sync-level` element that specifies whether the client is interested only in changes of internal members (value: `1`) or of all members (value: `infinite`).
 
-A server SHOULD support content update notifications with a `{DAV:}sync-level` of at least `1` for every Push-capable collection. In case the `{DAV:sync-level}` is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
+A server SHOULD support content update notifications with a `{DAV:}sync-level` of at least `1` for every Push-capable collection. If a collection doesn't support the content update trigger with the requested `{DAV:}sync-level`, it MUST fall back to the lowest supported value instead. If the collection doesn't support the content update trigger at all, it MUST be ignored.
 
-If a collection doesn't support the content update trigger with the requested `{DAV:}sync-level`, it MUST fall back to the lowest supported value instead. If the collection doesn't support the content update trigger at all, it MUST be ignored.
+In case the `{DAV:sync-level}` is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
 ### Property Updates {#property-updates}
 
@@ -220,23 +220,23 @@ A _property update_ occurs when the WebDAV properties of the collection or its m
     * A depth of `1` means that the client is interested in property updates of the subscribed collection and its internal members.
     * A depth of `infinite` means that the client is interested in property updates of the subscribed collection and all its members.
 
-   In case the `{DAV:}depth` is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
-
    If the collection doesn't support the property update trigger with the requested `{DAV:}depth`, it MUST fall back to the lowest supported value instead. If the collection doesn't support the property update trigger at all, it MUST be ignored.
 
-2. The optional `{DAV:}prop` element (as it may be used in a `PROPFIND` request) specified a list of properties that the client is interested in. The list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is present and contains properties for which property update notifications are not supported, the server MUST ignore those properties.
+   In case the `{DAV:}depth` is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
-   If the `{DAV:}prop` element is empty or not present, the server chooses the properties that it considers to be useful for the client. Also, a server MAY ignore the contents of a `{DAV:prop}` element at all and treat it like if it was empty or not present.
+2. The optional `{DAV:}prop` element (as used in a `PROPFIND` request) specifies a list of properties that the client is interested in. This list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is present and contains properties for which property update notifications are not supported, the server MUST ignore those unsupported properties.
+
+   If the `{DAV:}prop` element is empty or not present, the server chooses a list of properties that it considers to be useful for the client. Also, a server MAY ignore the contents of a `{DAV:prop}` element at all and treat it like if it was empty or not present.
 
 ### Response
 
 Allowed response codes:
 
-* 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. The format if this details is specified by the respective transport definition.
-* 204 if the subscription was registered without additional information available
+* 201 if the subscription was registered and the server wants to return additional information, like encryption details that are only valid for this subscription. The format of these details is specified by the respective transport definition.
+* 204 if the subscription was registered without additional information
 * 403 with precondition `invalid-subscription` when the request doesn't contain a valid `subscription`
 * 403 with precondition `push-not-available` if WebDAV-Push is not available for this collection or if the user is not allowed to register a push subscription for it
-* 403 with precondition `no-supported-trigger` when the request doesn't contain a trigger or when all requested triggers have been ignored (because they're not supported)
+* 403 with precondition `no-supported-trigger` when the request doesn't contain a trigger or when all requested triggers are ignored (because they're not supported)
 * other response code with usual HTTP/WebDAV semantics
 
 When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
@@ -257,7 +257,7 @@ Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 Expires: Wed, 02 Oct 2024 07:28:00 GMT
 ~~~
 
-Example 2: If a client registers a content update trigger with a `{DAV:}sync-level` of `infinite` and a property update trigger with a `{DAV:}depth` of `1`, but the collection supports only content update triggers with a `{DAV:}sync-level` of `infinite` and doesn't support the property update trigger at all, it registers the subscription and responds with 201.
+Example 2: If a client registers a content update trigger with a `{DAV:}sync-level` of `infinite` and a property update trigger with a `{DAV:}depth` of `1`, but the collection supports only content update triggers with a `{DAV:}sync-level` of `1` and doesn't support the property update trigger at all, it registers the subscription and responds with 201. Notifications will then only be sent on content updates with a `{DAV:}sync-level` of `1` (trigger downgraded by server). On property updates, notifications will not be sent (trigger ignored by server).
 
 Example 3: If a client registers a property update trigger with a `{DAV:}depth` of `0` and the collection doesn't support property update triggers at all, the server ignores the trigger. So all triggers of the request are ignored and the server responds with 403 with `no-supported-trigger`.
 
@@ -353,11 +353,7 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 ## Client Guidelines
 
-Before registering a subscription, a client SHOULD check the available triggers. The client SHOULD NOT register a subscription for unsupported triggers. The client MUST be prepared to receive an error when it registers a subscription with unsupported triggers.
-
-For instance, if a server only supports content updates with a `{DAV:}sync-level` of 1, the client shouldn't register a subscription with an infinite `{DAV:}sync-level` or with a property update trigger, as this would cause an error.
-
-[^todo] Not useful if supported triggers change – ignore unsupported triggers instead?
+Before registering a subscription, a client SHOULD check whether the transport is supported and which triggers are supported (usually with the same `PROPFIND` request that requests details like the VAPID public key). The client MUST expect the server to downgrade or ignore certain triggers when they're not (fully) supported. The client MUST be prepared to receive an error when it registers a subscription with only unsupported triggers.
 
 
 ## CalDAV/CardDAV
