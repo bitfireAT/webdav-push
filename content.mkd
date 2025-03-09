@@ -13,6 +13,8 @@ Typical use cases:
 - A desktop file manager shows contents of a WebDAV collection and wants to be notified on updates in order to refresh the view.
 - A calendar Web app shows a CalDAV collection and wants to be notified on updates in order to refresh the view.
 
+[^todo]: TODO
+
 
 ## Notational Conventions
 
@@ -387,15 +389,15 @@ The general requirements from {{Section 8 of RFC8030}} apply regardless of which
 
 Push services could relate clients over metadata and heuristics. For instance, clients which are at the same time notified by a specific WebDAV-Push server have probably subscribed the same collection.
 
-[^todo] See RFC 3552 and RFC 6973.
+See RFC 3552 and RFC 6973 [^todo]
 
-[^todo] `Topic` header, don't use insecure hashes
+`Topic` header, don't use insecure hashes [^todo]
 
-[^todo] How sensitive are the data, how to minimize risks
+How sensitive are the data, how to minimize risks [^todo]
 
-[^todo] What happens when information leaks
+What happens when information leaks [^todo]
 
-[^todo] What happens when some component is hacked
+What happens when some component is hacked [^todo]
 
 
 # Web Push Transport {#transport-web-push}
