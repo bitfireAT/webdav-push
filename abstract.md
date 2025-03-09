@@ -1,3 +1,3 @@
-This document specifies a protocol to notify WebDAV clients over push (vs. polling) when contents of a collection are changed on the WebDAV server.
+This document specifies a protocol to notify WebDAV clients over push notifications when contents of a collection are changed on the WebDAV server.
 
-The protocol is intended to work with any push transport, however additional details are needed for each transport. Details for Web Push as a push transport are specified in the document.
+The protocol is primarily specified to be used with Web Push (RFC 8030), but can be used with other transports as well.
