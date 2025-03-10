@@ -223,7 +223,7 @@ A "property update" occurs when the WebDAV properties of the subscribed resource
    - only in property updates of the subscribed resource and its internal members (depth: `1`), or
    - in property updates of the subscribed resource and its members (depth: `infinite`).
 
-If the subscribed resource doesn't support the content update trigger with the requested depth, the server MUST fall back to the lowest supported value instead. If the content update trigger isn't supported for the subscribed resource at all, it MUST be ignored.
+   If the subscribed resource doesn't support the content update trigger with the requested depth, the server MUST fall back to the lowest supported value instead. If the content update trigger isn't supported for the subscribed resource at all, it MUST be ignored.
 
    In case the depth is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
