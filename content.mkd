@@ -67,7 +67,7 @@ WebDAV-Push is not restricted to a specific push transport. This allows even upc
 
 WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}). If possible, other push transports SHOULD be connected over a Web Push gateway instead of defining a new WebDAV-Push transport.
 
-To use a proprietary push service, a client vendor may need to provide a rewrite proxy that offers a Web Push endpoint which signs and forwards the requests to the respective proprietary service. If possible, VAPID should be used instead of such a proxy.
+To use a proprietary push service, a client vendor may need to provide a rewrite proxy that offers a Web Push endpoint which signs and forwards the requests to the respective push service. If possible, VAPID should be used instead of such a proxy.
 
 
 ## Terminology
@@ -98,10 +98,6 @@ Push service
 (Push) transport
 : Protocol that defines an actual push mechanism. In this document, Web Push is the only defined push transport (see {{transport-web-push}}). However, WebDAV-Push may also be used with other push transports like proprietary or yet unknown protocols. In that case, it has to be specified how to use that protocol with WebDAV-Push. A push transport typically involves a push service.
 
-Rewrite proxy
-: Push services usually require authentication from their users and often consider their user to be application vendor who has control over both the server and the client.
-
-  When however the server and clients are not in control of the same entity (like it's typically the case in WebDAV context), client and server can't share the same private key to authenticate against the push service. In that case, the client vendor may need to operate a rewrite proxy that receives each push message from the WebDAV-Push server, signs it with the same private key as the client and forwards it to the push service.
 
 Web Push
 : "Protocol for the delivery of real-time events to user agents", defined by {{RFC8030}}. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like {{UnifiedPush}}. Some parts (namely push message delivery from the push service to the client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients.
@@ -276,9 +272,9 @@ Example 3: A client registers a property update trigger with a depth of `0` and 
 
 ## Subscription Updates
 
-Every subscription has an identifier that uniquely identifies the (push transport, push service, client) triple. For Web Push, the identifier is the push resource URI.
+Every subscription has a transport-specific unique identifier (the push resource in case of Web Push).
 
-A server MUST NOT register a subscription with the same identifier multiple times. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested resource, the server MUST update the subscription with the given details and the expiration date. 
+A server MUST NOT register a subscription with the same identifier multiple times for the same resource. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested resource, the server MUST update the registration with the given details and the expiration date.
 
 The response is the same as for subscription registration.
 
@@ -409,15 +405,15 @@ When the Web Push transport is used for WebDAV-Push,
 
 * {{RFC8030}} defines how to generate subscriptions and send push messages,
 * the WebDAV-Push server acts as Web Push application server,
-* the WebDAV client (or a redirect proxy) acts as Web Push user agent.
+* the WebDAV client acts as Web Push user agent.
 
 Corresponding terminology:
 
 * (WebDAV-Push) push subscription ↔ (Web Push) push resource
 * (WebDAV-Push) push server ↔ (Web Push) application server
-* (WebDAV-Push) push client (or redirect proxy) ↔ (Web Push) user agent
+* (WebDAV-Push) push client ↔ (Web Push) user agent
 
-Message encryption {{RFC8291}} MUST be used. VAPID {{RFC8292}} SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
+Message encryption ({{message-encryption}}) MUST be used. VAPID ({{vapid}}) SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
 
 A server that supports the Web Push transport MUST list the `web-push` element in the `transports` property.
 
@@ -428,8 +424,8 @@ A server that supports the Web Push transport MUST list the `web-push` element i
 '--------------------'   '--------------'   '--------------------'
 
                        Get VAPID public key
-            .------------------------------------------o
-            '------------------------------------------>
+           .-------------------------------------------o
+           '------------------------------------------->
 
                           Create restricted subscription
                                 .----------------------o
@@ -438,7 +434,7 @@ A server that supports the Web Push transport MUST list the `web-push` element i
                Register subscription (with encryption)
            <-------------------------------------------o
 
-                   Content update notification
+               Content/property update notification
            o---(encrypted)----->*------(encrypted)----->
 ~~~
 {: title="WebDAV-Push over Web Push with VAPID and Message Encryption"}
@@ -448,46 +444,62 @@ A server that supports the Web Push transport MUST list the `web-push` element i
 
 To register a Web Push subscription, the `subscription` element of the `push-register` request contains exactly one `web-push-subscription`.
 
-The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server (Web Push application server).
+The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server.
 
-It contains exactly one `push-resource` element, which contains an absolute URI that identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.
+It contains exactly one `push-resource` element, which specifies the absolute URI that identifies the endpoint where Web Push notifications are sent to.
 
-
-## VAPID
-
-VAPID binds push subscriptions to the specific WebDAV-Push server.
-
-A WebDAV-Push server which supports VAPID stores a key pair. The server exposes an additional transport property `vapid-public-key` (within the `web-push` element), which contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{push-properties}} for an example.
-
-If available, the client SHOULD use this key to create a restricted subscription at the push service.
-
-When the server sends a push message, it includes a corresponding `Authorization` header to prove its identity to the push service.
+A Web Push subscription is uniquely identified by its push resource.
 
 
-## Message Encryption
+## VAPID {#vapid}
+
+VAPID {{RFC8292}} binds push subscriptions to the specific WebDAV-Push server.
+
+A WebDAV-Push server that supports VAPID stores a key pair. It exposes an additional transport property `vapid-public-key` within the `web-push` element, which contains the VAPID public key in uncompressed form and base64url encoded. The attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{push-properties}} for an example.
+
+If available, the client MUST use this key to create a restricted subscription at the push service, except when it knows that the push service doesn't support VAPID.
+
+A client can expect the VAPID public key to be the same for all resources on the server. However the VAPID public key can still sometimes change (for instance when the server or user data is moved to another machine). In that case a client has to create new restricted subscriptions because the old ones won't work anymore.
+
+When the server provides a VAPID public key, it MUST include a corresponding `Authorization` header when sending a push message in order to prove its identity to the push service.
+
+
+## Message Encryption {#message-encryption}
 
 Message encryption hides details of push messages from the push services. Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
 
-When the client then registers this subscription at the server, it includes these subscription properties:
+When the client then registers this subscription at the server, it MUST include these subscription properties:
 
-* `client-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
+* `content-encoding` – how the encrypted content is encoded; currently only `aes128gcm` is supported
+* `subscription-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
 * `auth-secret` – authentication secret
 
-The server uses these data to encrypt the payload and send it to the push service. The client then decrypts the payload again.
+These properties are bound to the subscription (which is identified by the push resource). A server doesn't need to store these properties for every registration, but only once for the subscription.
+
+The server uses these data to encrypt the payload before sending it to the push service. The client then decrypts the payload again.
 
 
 ## Push Message
 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
-The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. Usually this means that the value is derived from the collection topic and the information whether the push message indicates a content and/or property update. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
+The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
 
-The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical for the user, for instance in slowly changing collections like a holiday calendar may be sent with `Urgency: low`.
+For instance, the header value could be derived with a secure hash function from
+
+- the collection topic,
+- whether the push message contains a content update,
+- whether the push message contains a property update, and
+- a secret that is only used for this purpose.
+
+The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical, for instance in slowly changing collections like a holiday calendar could be sent with `Urgency: low`.
 
 
 # XML Schema
 
-When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace (`https://bitfire.at/webdav-push`). All XML elements defined by this document reside in this namespace.
+When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace: `https://bitfire.at/webdav-push`
+
+All XML elements defined by this document reside in this namespace.
 
 To reference element names in another namespace, the `{ns}element` syntax is used. For instance, `{DAV:}prop` means the `prop` XML element in the `DAV:` namespace.
 
