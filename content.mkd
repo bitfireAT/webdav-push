@@ -276,9 +276,9 @@ Example 3: A client registers a property update trigger with a depth of `0` and 
 
 ## Subscription Updates
 
-Every subscription has an identifier that uniquely identifies the (push transport, push service, client) triple. For Web Push, the identifier is the push resource URI.
+Every subscription has a transport-specific unique identifier (the push resource in case of Web Push).
 
-A server MUST NOT register a subscription with the same identifier multiple times. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested resource, the server MUST update the subscription with the given details and the expiration date. 
+A server MUST NOT register a subscription with the same identifier multiple times for the same resource. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested resource, the server MUST update the registration with the given details and the expiration date.
 
 The response is the same as for subscription registration.
 
@@ -428,8 +428,8 @@ A server that supports the Web Push transport MUST list the `web-push` element i
 '--------------------'   '--------------'   '--------------------'
 
                        Get VAPID public key
-            .------------------------------------------o
-            '------------------------------------------>
+           .-------------------------------------------o
+           '------------------------------------------->
 
                           Create restricted subscription
                                 .----------------------o
@@ -438,7 +438,7 @@ A server that supports the Web Push transport MUST list the `web-push` element i
                Register subscription (with encryption)
            <-------------------------------------------o
 
-                   Content update notification
+               Content/property update notification
            o---(encrypted)----->*------(encrypted)----->
 ~~~
 {: title="WebDAV-Push over Web Push with VAPID and Message Encryption"}
@@ -450,7 +450,7 @@ To register a Web Push subscription, the `subscription` element of the `push-reg
 
 The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server (Web Push application server).
 
-It contains exactly one `push-resource` element, which contains an absolute URI that identifies the endpoint where Web Push notifications are sent to. The push resource is used as the unique identifier for the subscription.
+It contains exactly one `push-resource` element, which contains an absolute URI that identifies the endpoint where Web Push notifications are sent to. The push resource is the unique identifier for the subscription.
 
 
 ## VAPID
@@ -459,21 +459,24 @@ VAPID binds push subscriptions to the specific WebDAV-Push server.
 
 A WebDAV-Push server which supports VAPID stores a key pair. The server exposes an additional transport property `vapid-public-key` (within the `web-push` element), which contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{push-properties}} for an example.
 
-If available, the client SHOULD use this key to create a restricted subscription at the push service.
+If available, the client MUST use this key to create a restricted subscription at the push service, except when it knows that the push service doesn't support VAPID.
 
-When the server sends a push message, it includes a corresponding `Authorization` header to prove its identity to the push service.
+A client can expect the VAPID public key to be the same for all resources on the server. When the server provides a VAPID public key, it MUST include a corresponding `Authorization` header when sending a push message in order to prove its identity to the push service.
 
 
 ## Message Encryption
 
 Message encryption hides details of push messages from the push services. Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
 
-When the client then registers this subscription at the server, it includes these subscription properties:
+When the client then registers this subscription at the server, it MUST include these subscription properties:
 
+* `content-encoding` – how the encrypted content is encoded; currently only `aes128gcm` is supported
 * `client-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
 * `auth-secret` – authentication secret
 
-The server uses these data to encrypt the payload and send it to the push service. The client then decrypts the payload again.
+These properties are bound to the subscription, which is identified by the push resource. A server doesn't need to store these properties for every registration, but only once for the subscription.
+
+The server uses these data to encrypt the payload before sending it to the push service. The client then decrypts the payload again.
 
 
 ## Push Message
