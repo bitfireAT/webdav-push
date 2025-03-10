@@ -453,13 +453,15 @@ A Web Push subscription is uniquely identified by its push resource.
 
 ## VAPID {#vapid}
 
-VAPID binds push subscriptions to the specific WebDAV-Push server.
+VAPID {{RFC8292}} binds push subscriptions to the specific WebDAV-Push server.
 
-A WebDAV-Push server which supports VAPID stores a key pair. The server exposes an additional transport property `vapid-public-key` (within the `web-push` element), which contains the VAPID public key in uncompressed form and base64url encoded. Its attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{push-properties}} for an example.
+A WebDAV-Push server that supports VAPID stores a key pair. It exposes an additional transport property `vapid-public-key` within the `web-push` element, which contains the VAPID public key in uncompressed form and base64url encoded. The attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{push-properties}} for an example.
 
 If available, the client MUST use this key to create a restricted subscription at the push service, except when it knows that the push service doesn't support VAPID.
 
-A client can expect the VAPID public key to be the same for all resources on the server. When the server provides a VAPID public key, it MUST include a corresponding `Authorization` header when sending a push message in order to prove its identity to the push service.
+A client can expect the VAPID public key to be the same for all resources on the server. However the VAPID public key can still sometimes change (for instance when the server or user data is moved to another machine). In that case a client has to create new restricted subscriptions because the old ones won't work anymore.
+
+When the server provides a VAPID public key, it MUST include a corresponding `Authorization` header when sending a push message in order to prove its identity to the push service.
 
 
 ## Message Encryption {#message-encryption}
@@ -469,7 +471,7 @@ Message encryption hides details of push messages from the push services. Before
 When the client then registers this subscription at the server, it MUST include these subscription properties:
 
 * `content-encoding` – how the encrypted content is encoded; currently only `aes128gcm` is supported
-* `client-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
+* `subscription-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
 * `auth-secret` – authentication secret
 
 These properties are bound to the subscription (which is identified by the push resource). A server doesn't need to store these properties for every registration, but only once for the subscription.
