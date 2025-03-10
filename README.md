@@ -60,9 +60,8 @@ A lot of people have shown their interest in WebDAV-Push. Thank you for all idea
 If you're interested:
 
 - have a look at the [specification draft](https://bitfireat.github.io/webdav-push/draft-bitfire-webdav-push-00.html) and tell us your ideas
-- send PRs for content of this repository, especially the specification content (`content.md`)
 - take part in our [Discussions](https://github.com/bitfireAT/webdav-push/discussions) – feel free to create new topics with your ideas, questions, what you would love to see, …
-- join our Matrix channel: [#webdav-push:matrix.org](https://matrix.to/#/#webdav-push:matrix.org) – not always very active, but well observed
+- join our Matrix channel: [#webdav-push:matrix.org](https://matrix.to/#/#webdav-push:matrix.org)
 - watch [@davx5@fosstodon.org](https://fosstodon.org/@davx5app), where we sometimes post Push-related news too
 
 We would love to see some activity!
@@ -72,17 +71,7 @@ We would love to see some activity!
 
 The repository contains:
 
-- **a specification draft describing our current idea of WebDAV-Push** (see above)
+- **a [specification draft](https://bitfireat.github.io/webdav-push/draft-bitfire-webdav-push-00.html) describing our current idea of WebDAV-Push** (see above)
 - discussion and exchange about the WebDAV Push topic (in [Discussions](https://github.com/bitfireAT/webdav-push/discussions))
 - specific tasks (in [Issues](https://github.com/bitfireAT/webdav-push/issues)) and related patches (in [Pull requests](https://github.com/bitfireAT/webdav-push/pulls))
 
-
-## Additional content / FAQ
-
-There are some additional explanations that are non-normative and thus not found in the specification draft.
-
-"Big" architecture diagram:
-
-![Big architecture diagram](images/architecture.svg)
-
-UnifiedPush (UP) is a specification which is intentionally designed as a 100% compatible subset of Web Push, together with a software that can be used to implement these documents. From a WebDAV-Push server perspective, UP endpoints can be seen as Web Push resources.
