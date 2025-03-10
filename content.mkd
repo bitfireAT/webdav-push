@@ -413,7 +413,7 @@ Corresponding terminology:
 * (WebDAV-Push) push server ↔ (Web Push) application server
 * (WebDAV-Push) push client ↔ (Web Push) user agent
 
-Message encryption {{RFC8291}} MUST be used. VAPID {{RFC8292}} SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
+Message encryption ({{message-encryption}}) MUST be used. VAPID ({{vapid}}) SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
 
 A server that supports the Web Push transport MUST list the `web-push` element in the `transports` property.
 
@@ -444,12 +444,14 @@ A server that supports the Web Push transport MUST list the `web-push` element i
 
 To register a Web Push subscription, the `subscription` element of the `push-register` request contains exactly one `web-push-subscription`.
 
-The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server (Web Push application server).
+The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server.
 
-It contains exactly one `push-resource` element, which contains an absolute URI that identifies the endpoint where Web Push notifications are sent to. The push resource is the unique identifier for the subscription.
+It contains exactly one `push-resource` element, which specifies the absolute URI that identifies the endpoint where Web Push notifications are sent to.
+
+A Web Push subscription is uniquely identified by its push resource.
 
 
-## VAPID
+## VAPID {#vapid}
 
 VAPID binds push subscriptions to the specific WebDAV-Push server.
 
@@ -460,7 +462,7 @@ If available, the client MUST use this key to create a restricted subscription a
 A client can expect the VAPID public key to be the same for all resources on the server. When the server provides a VAPID public key, it MUST include a corresponding `Authorization` header when sending a push message in order to prove its identity to the push service.
 
 
-## Message Encryption
+## Message Encryption {#message-encryption}
 
 Message encryption hides details of push messages from the push services. Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
 
@@ -470,7 +472,7 @@ When the client then registers this subscription at the server, it MUST include 
 * `client-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
 * `auth-secret` – authentication secret
 
-These properties are bound to the subscription, which is identified by the push resource. A server doesn't need to store these properties for every registration, but only once for the subscription.
+These properties are bound to the subscription (which is identified by the push resource). A server doesn't need to store these properties for every registration, but only once for the subscription.
 
 The server uses these data to encrypt the payload before sending it to the push service. The client then decrypts the payload again.
 
@@ -479,14 +481,23 @@ The server uses these data to encrypt the payload before sending it to the push 
 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
-The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. Usually this means that the value is derived from the collection topic and the information whether the push message indicates a content and/or property update. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
+The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
 
-The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical for the user, for instance in slowly changing collections like a holiday calendar may be sent with `Urgency: low`.
+For instance, the header value could be derived with a secure hash function from
+
+- the collection topic,
+- whether the push message contains a content update,
+- whether the push message contains a property update, and
+- a secret that is only used for this purpose.
+
+The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical, for instance in slowly changing collections like a holiday calendar could be sent with `Urgency: low`.
 
 
 # XML Schema
 
-When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace (`https://bitfire.at/webdav-push`). All XML elements defined by this document reside in this namespace.
+When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace: `https://bitfire.at/webdav-push`
+
+All XML elements defined by this document reside in this namespace.
 
 To reference element names in another namespace, the `{ns}element` syntax is used. For instance, `{DAV:}prop` means the `prop` XML element in the `DAV:` namespace.
 
