@@ -67,7 +67,7 @@ WebDAV-Push is not restricted to a specific push transport. This allows even upc
 
 WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}). If possible, other push transports SHOULD be connected over a Web Push gateway instead of defining a new WebDAV-Push transport.
 
-To use a proprietary push service, a client vendor may need to provide a rewrite proxy that offers a Web Push endpoint which signs and forwards the requests to the respective proprietary service. If possible, VAPID should be used instead of such a proxy.
+To use a proprietary push service, a client vendor may need to provide a rewrite proxy that offers a Web Push endpoint which signs and forwards the requests to the respective push service. If possible, VAPID should be used instead of such a proxy.
 
 
 ## Terminology
@@ -98,10 +98,6 @@ Push service
 (Push) transport
 : Protocol that defines an actual push mechanism. In this document, Web Push is the only defined push transport (see {{transport-web-push}}). However, WebDAV-Push may also be used with other push transports like proprietary or yet unknown protocols. In that case, it has to be specified how to use that protocol with WebDAV-Push. A push transport typically involves a push service.
 
-Rewrite proxy
-: Push services usually require authentication from their users and often consider their user to be application vendor who has control over both the server and the client.
-
-  When however the server and clients are not in control of the same entity (like it's typically the case in WebDAV context), client and server can't share the same private key to authenticate against the push service. In that case, the client vendor may need to operate a rewrite proxy that receives each push message from the WebDAV-Push server, signs it with the same private key as the client and forwards it to the push service.
 
 Web Push
 : "Protocol for the delivery of real-time events to user agents", defined by {{RFC8030}}. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like {{UnifiedPush}}. Some parts (namely push message delivery from the push service to the client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients.
@@ -409,13 +405,13 @@ When the Web Push transport is used for WebDAV-Push,
 
 * {{RFC8030}} defines how to generate subscriptions and send push messages,
 * the WebDAV-Push server acts as Web Push application server,
-* the WebDAV client (or a redirect proxy) acts as Web Push user agent.
+* the WebDAV client acts as Web Push user agent.
 
 Corresponding terminology:
 
 * (WebDAV-Push) push subscription ↔ (Web Push) push resource
 * (WebDAV-Push) push server ↔ (Web Push) application server
-* (WebDAV-Push) push client (or redirect proxy) ↔ (Web Push) user agent
+* (WebDAV-Push) push client ↔ (Web Push) user agent
 
 Message encryption {{RFC8291}} MUST be used. VAPID {{RFC8292}} SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
 
