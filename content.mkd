@@ -60,7 +60,7 @@ A WebDAV-Push client typically
 - connects to a push service (which is usually not operated by the same party as the WebDAV server),
 - subscribes to one or more resources on the server (with the data received from the push service),
 - receives push notifications that cause some client-side action (like to refresh the view or run synchronization),
-- re-subscribes to resources before the subscriptions expire,
+- re-subscribes to resources before the registrations expire,
 - unsubscribes from resources when notifications are not needed anymore.
 
 WebDAV-Push is not restricted to a specific push transport. This allows even upcoming, yet unknown push transports to be used with WebDAV-Push. Push transport definitions can define extra properties and additional processing rules.
@@ -141,18 +141,18 @@ Here, the OPTIONS response contains "webdav-push" in the DAV header to indicate 
 
 ## Push Properties {#push-properties}
 
-To provide information about WebDAV-Push support, new properties are defined. A WebDAV-Push server MUST provide the `transports`, `topic` and `supported-triggers` properties for resources that support WebDAV-Push. A WebDAV-Push server MUST NOT provide the `topic` and `supported-triggers` properties for resources that don't support WebDAV-Push (for instance for non-collection resources, if they're not supported).
+To provide information about WebDAV-Push support, new properties are defined. A server MUST provide the `transports`, `topic` and `supported-triggers` properties for resources that support WebDAV-Push. A server MUST NOT provide the `topic` and `supported-triggers` properties for resources that don't support WebDAV-Push (for instance for non-collection resources, if they're not supported).
 
 The `transports` element lists available push transports. Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}). Although the property is defined on every Push-capable resource, its value is usually the same for every resource on the server.
 
-The `topic` is a globally unique identifier for the resource. A specific resource could be reachable with different URLs, but it can have only one push topic. A server could for instance use a random UUID or a canonical URL that won't change over the lifetime of the resource. The `topic` should be globally unique because a client can subscribe to resources from multiple servers and needs to be able to determine the correct one when it receives a push message.
+The `topic` is a globally unique identifier for the resource. A specific resource could be reachable with different URLs, but it can have only one push topic. A server could for instance use a random UUID or a canonical URL that won't change over the lifetime of the resource. The value should be globally unique because a client can subscribe to resources from multiple servers and needs to be able to determine the correct one when it receives a push message.
 
 The `supported-triggers` element MUST contain at least one of the following elements:
 
 - `content-update` if the resource supports push notifications on content updates (see {{content-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 - `property-update` if the resource supports push notifications on property updates (see {{property-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 
-Clients can use WebDAV `PROPFIND` to retrieve these properties.
+Clients can use WebDAV `PROPFIND` to retrieve these properties. WebDAV-Push SHOULD only be advertised to clients which are actually allowed to use it.
 
 Example:
 
@@ -180,9 +180,6 @@ The comment shows how support for some other (not yet defined) transport could b
 
 # Subscription Management
 
-WebDAV-Push SHOULD only be advertised to clients which are actually allowed to use it.
-
-
 ## Subscription Registration
 
 To subscribe to a resource, the client sends a `POST` request with `Content-Type: application/xml` to the resource it wants to subscribe. The root XML element of the XML body is `push-register` and can be used to distinguish between WebDAV-Push and other requests.
@@ -197,46 +194,50 @@ The `subscription` element specifies a subscription that shall be notified on up
 
 To specify which updates the client wants to be notified about, it uses the `trigger` element, which itself can contain:
 
-* A `content-update` element to indicate the client's interest in notifications when the contents of the subscribed resource or its members change (_content update_).
-* A `property-update` element to indicate the client's interest in notifications when the WebDAV properties of the subscribed resource or its members change (_property update_).
+* A `content-update` element to indicate the client's interest in notifications when the contents of the subscribed resource or its members change ("content update").
+* A `property-update` element to indicate the client's interest in notifications when the WebDAV properties of the subscribed resource or its members change ("property update").
 
-WebDAV-Push is intended more as a helpful tool to speed up things (like synchronization) than a strict query processor. So subscriptions are processed in a relaxed way: the server does its best to fulfill the request, but if a certain trigger is not available, it's downgraded or ignored instead of rejected with an error response. If a client needs to know which triggers are supported, it can use `PROPFIND` with `supported-triggers`.
+WebDAV-Push is intended more as a helpful tool to speed up things (like synchronization) than a strict query processor. So subscriptions are processed in a relaxed way: the server does its best to fulfill the request, but if a certain trigger is not available, it's downgraded or ignored instead of rejected with an error response. If a client needs to know which triggers are supported, it can use `PROPFIND` with `supported-triggers`. A client MUST expect the server to downgrade or ignore certain triggers when they're not (fully) supported, and MUST be prepared to receive an error when it registers a subscription with only unsupported triggers.
 
 ### Content Updates {#content-updates}
 
-A _content update_ occurs when the subscribed resource or a member is changed or removed, as defined in {{Section 3.5 of RFC6578}}. Typically this is the case when the resource itself or a member is added or removed or the contents are modified. If the server supports {{RFC6578}}, a content update implies that the `{DAV:}sync-token` changes.
+A "content update" occurs when the subscribed resource or a member is changed or removed, as defined in {{Section 3.5 of RFC6578}}. Typically, this is the case when the resource itself is modified or removed, or when a member is added or removed or its contents are modified. If the server supports {{RFC6578}}, a content update of a collection usually implies that the `{DAV:}sync-token` changes.
 
 The `content` element contains a `{DAV:}depth` element that specifies whether the client is interested
 
 - only in content updates of the subscribed resource (depth: `0`),
-- only in content updates of the subscribed resource and internal members (depth: `1`), or
-- in content updates of the subscribed resource and all members (depth: `infinite`).
+- only in content updates of the subscribed resource and its internal members (depth: `1`), or
+- in content updates of the subscribed resource and its members (depth: `infinite`).
 
-On a collection, a content update with a depth of zero only occurs when the collection has an assigned entity body that is returned by `GET` and that body changes. Server support for content updates with a depth of zero on collections is OPTIONAL.
+A content update of a collection itself (not of a member) only occurs when the collection has an entity body that is returned by `GET` and that body changes. A server MAY ignore such changes and not send notifications in that case.
 
 A server SHOULD support content update notifications with a depth of at least `1` for every Push-capable collection.
 
-If a resource doesn't support the content update trigger with the requested depth, it MUST fall back to the lowest supported value instead. If the resource doesn't support the content update trigger at all, it MUST be ignored.
+If the subscribed resource doesn't support the content update trigger with the requested depth, the server MUST fall back to the lowest supported value instead. If the content update trigger isn't supported for the subscribed resource at all, it MUST be ignored.
 
 In case the depth is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
 ### Property Updates {#property-updates}
 
-A _property update_ occurs when the WebDAV properties of the subscribed resource or its members are modified. Notifications about properties update are controlled by two elements within `properties`:
+A "property update" occurs when the WebDAV properties of the subscribed resource or its members are modified. Properties update notifications are controlled by two elements within the `property-update` element:
 
 1. The `{DAV:}depth` element specifies whether the client is interested
 
-  - only in property updates of the subscribed resource (depth: `0`),
-  - only in property updates of the subscribed resource and internal members (depth: `1`), or
-  - in property updates of the subscribed resource and all members (depth: `infinite`).
+   - only in property updates of the subscribed resource (depth: `0`),
+   - only in property updates of the subscribed resource and its internal members (depth: `1`), or
+   - in property updates of the subscribed resource and its members (depth: `infinite`).
 
-   If the resource doesn't support the property update trigger with the requested `{DAV:}depth`, it MUST fall back to the lowest supported value instead. If the resource doesn't support the property update trigger at all, it MUST be ignored.
+If the subscribed resource doesn't support the content update trigger with the requested depth, the server MUST fall back to the lowest supported value instead. If the content update trigger isn't supported for the subscribed resource at all, it MUST be ignored.
 
-   In case the `{DAV:}depth` is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
+   In case the depth is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
-2. The optional `{DAV:}prop` element (as used in a `PROPFIND` request) specifies a list of properties that the client is interested in. If the `{DAV:}prop` element is empty or not present, the server chooses a list of properties that it considers to be useful for the client.
+2. The optional `{DAV:}prop` element (as used in a `PROPFIND` request) specifies a list of properties that the client is interested in.
 
-   This list of properties MUST NOT contain properties that represent a content update, especially `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`. If the `{DAV:}prop` element is present and contains properties for which property update notifications are not supported, the server MUST ignore those unsupported properties. Also, a server MAY ignore the contents of a `{DAV:prop}` element at all and treat it like if it was empty or not present.
+   If the `{DAV:}prop` element is empty or not present, the server chooses a list of properties that it considers to be useful for the client. If the `{DAV:}prop` element is present and contains properties for which property update notifications are not supported, the server MUST ignore those unsupported properties. Also, a server MAY ignore the contents of a `{DAV:prop}` element at all and treat it like if it was empty or not present.
+
+   Neither a server nor a client SHOULD use property update notifications for properties that automatically change on a content update, like `{DAV:}getetag`, `{DAV:}getlastmodified` and `{DAV:}sync-token`, because this would implicitly cause a property update for every content update. Notifications about content updates should instead be requested/sent explicitly as content update notifications.
+
+The removal of a resource, including the subscribed resource, is not considered as a property update but as a content update.
 
 
 ### Response
@@ -268,9 +269,9 @@ Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 Expires: Wed, 02 Oct 2024 07:28:00 GMT
 ~~~
 
-Example 2: A client registers a content update trigger with a `{DAV:}depth` of `infinite` and a property update trigger with a `{DAV:}depth` of `1`, but the collection supports only content update triggers with a `{DAV:}depth` of `1` and doesn't support the property update trigger at all, it registers the subscription and responds with 201. Notifications will then only be sent on content updates with a `{DAV:}depth` of `1` (trigger downgraded by server). On property updates, notifications will not be sent (trigger ignored by server).
+Example 2: A client registers a content update trigger with a depth of `infinite` and a property update trigger with a depth of `1`, but the collection supports only content update triggers with a depth of `1` and doesn't support the property update trigger at all, it registers the subscription and responds with 201. Notifications will then only be sent on content updates with a depth of `1` (trigger downgraded by server). On property updates, notifications will not be sent (trigger ignored by server).
 
-Example 3: A client registers a property update trigger with a `{DAV:}depth` of `0` and the collection doesn't support property update triggers at all, the server ignores the trigger. So all triggers of the request are ignored and the server responds with 403 with `no-supported-trigger`.
+Example 3: A client registers a property update trigger with a depth of `0` and the collection doesn't support property update triggers at all, the server ignores the trigger. So all triggers of the request are ignored and the server responds with 403 with `no-supported-trigger`.
 
 
 ## Subscription Updates
@@ -337,7 +338,7 @@ Example:
 {::include xml/sample-push-message.xml}
 ~~~
 
-Here, both the contents and the properties of the resource (or it's members, according to the requested trigger) with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed. The new sync-token (after the change) is `http://example.com/sync/10`.
+Here, both the contents and the properties of the resource (or its members, depending on the registered trigger) with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed. The new sync-token (after the change) is `http://example.com/sync/10`.
 
 When necessary or useful, a server MAY
 
@@ -358,14 +359,7 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 
 
-# Interoperability
-
-## Client Guidelines
-
-Before registering a subscription, a client SHOULD check whether the transport is supported and which triggers are supported (usually with the same `PROPFIND` request that requests details like the VAPID public key). The client MUST expect the server to downgrade or ignore certain triggers when they're not (fully) supported. The client MUST be prepared to receive an error when it registers a subscription with only unsupported triggers.
-
-
-## CalDAV/CardDAV
+# CalDAV/CardDAV
 
 WebDAV-Push can be used with CalDAV ({{RFC4791}}) and CardDAV ({{RFC6352}}) to provide short-time update notifications when collections (calendars, address books) or entries (contacts, events, …) change.
 
