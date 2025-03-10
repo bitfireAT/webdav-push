@@ -21,7 +21,7 @@
 
   <define name="prop-supported-triggers-content-update">
     <element name="content-update">
-      <ref name="prop-dav-sync-level"/>
+      <ref name="prop-dav-depth"/>
     </element>
   </define>
   <define name="prop-supported-triggers-property-update">
@@ -49,7 +49,7 @@
   <define name="subscription-registration-trigger-content-update">
     <element name="content-update">
       <!-- requested depth -->
-      <ref name="prop-dav-sync-level"/>
+      <ref name="prop-dav-depth"/>
     </element>
   </define>
   <define name="subscription-registration-trigger-property-update">
@@ -210,15 +210,6 @@
     <element ns="DAV:" name="depth">
       <choice>
         <value>0</value>
-        <value>1</value>
-        <value>infinite</value>
-      </choice>
-    </element>
-  </define>
-
-  <define name="prop-dav-sync-level">   <!-- defined in RFC 6578 -->
-    <element ns="DAV:" name="sync-level">
-      <choice>
         <value>1</value>
         <value>infinite</value>
       </choice>

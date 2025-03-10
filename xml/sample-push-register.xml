@@ -9,7 +9,7 @@
   </subscription>
   <trigger>
     <content-update>
-      <D:sync-level>infinite</D:sync-level>
+      <D:depth>infinite</D:depth>
     </content-update>
     <property-update>
       <D:depth>0</D:depth>

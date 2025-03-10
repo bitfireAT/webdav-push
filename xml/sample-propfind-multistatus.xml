@@ -15,7 +15,7 @@
       <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>
       <P:supported-triggers>
         <P:content-update>
-          <sync-level>1</sync-level>
+          <depth>1</depth>
         </P:content-update>
         <P:property-update>
           <depth>0</depth>
