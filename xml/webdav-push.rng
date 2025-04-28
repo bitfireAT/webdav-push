@@ -211,7 +211,7 @@
       <choice>
         <value>0</value>
         <value>1</value>
-        <value>infinite</value>
+        <value>infinity</value>
       </choice>
     </element>
   </define>
