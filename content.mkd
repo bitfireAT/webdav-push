@@ -203,7 +203,7 @@ The `content` element contains a `{DAV:}depth` element that specifies whether th
 
 - only in content updates of the subscribed resource (depth: `0`),
 - only in content updates of the subscribed resource and its internal members (depth: `1`), or
-- in content updates of the subscribed resource and its members (depth: `infinite`).
+- in content updates of the subscribed resource and its members (depth: `infinity`).
 
 A content update of a collection itself (not of a member) only occurs when the collection has an entity body that is returned by `GET` and that body changes. A server MAY ignore such changes and not send notifications in that case.
 
@@ -211,7 +211,7 @@ A server SHOULD support content update notifications with a depth of at least `1
 
 If the subscribed resource doesn't support the content update trigger with the requested depth, the server MUST fall back to the lowest supported value instead. If the content update trigger isn't supported for the subscribed resource at all, it MUST be ignored.
 
-In case the depth is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
+In case the depth is `infinity`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
 ### Property Updates {#property-updates}
 
@@ -221,11 +221,11 @@ A "property update" occurs when the WebDAV properties of the subscribed resource
 
    - only in property updates of the subscribed resource (depth: `0`),
    - only in property updates of the subscribed resource and its internal members (depth: `1`), or
-   - in property updates of the subscribed resource and its members (depth: `infinite`).
+   - in property updates of the subscribed resource and its members (depth: `infinity`).
 
    If the subscribed resource doesn't support the content update trigger with the requested depth, the server MUST fall back to the lowest supported value instead. If the content update trigger isn't supported for the subscribed resource at all, it MUST be ignored.
 
-   In case the depth is `infinite`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
+   In case the depth is `infinity`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
 2. The optional `{DAV:}prop` element (as used in a `PROPFIND` request) specifies a list of properties that the client is interested in.
 
@@ -265,7 +265,7 @@ Location: https://example.com/webdav/subscriptions/io6Efei4ooph
 Expires: Wed, 02 Oct 2024 07:28:00 GMT
 ~~~
 
-Example 2: A client registers a content update trigger with a depth of `infinite` and a property update trigger with a depth of `1`, but the collection supports only content update triggers with a depth of `1` and doesn't support the property update trigger at all, it registers the subscription and responds with 201. Notifications will then only be sent on content updates with a depth of `1` (trigger downgraded by server). On property updates, notifications will not be sent (trigger ignored by server).
+Example 2: A client registers a content update trigger with infinite depth and a property update trigger with a depth of `1`, but the collection supports only content update triggers with a depth of `1` and doesn't support the property update trigger at all, it registers the subscription and responds with 201. Notifications will then only be sent on content updates with a depth of `1` (trigger downgraded by server). On property updates, notifications will not be sent (trigger ignored by server).
 
 Example 3: A client registers a property update trigger with a depth of `0` and the collection doesn't support property update triggers at all, the server ignores the trigger. So all triggers of the request are ignored and the server responds with 403 with `no-supported-trigger`.
 
