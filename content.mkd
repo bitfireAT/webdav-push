@@ -336,13 +336,23 @@ Example:
 
 Here, both the contents and the properties of the resource (or its members, depending on the registered trigger) with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed. The new sync-token (after the change) is `http://example.com/sync/10`.
 
-When necessary or useful, a server MAY
 
-* impose a rate limit for push messages,
-* delay push messages (usually for a short time, for instance to avoid multiple push messages for ongoing changes in the user interface),
-* merge/omit push messages.
+## Rate Limiting
 
-Such measures SHOULD not change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted. If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened.
+It's possible that a lot of changes occur within a short period of time (like an upload of many contacts or a mass-change of events, especially for a collection with a lot of subscriptions). This can lead to problems when every change results in a push message:
+
+- The push server has to send a lot of messages (number of changes times number of subscriptions), which means high load and traffic.
+- The push service receives a lot of messages within a short period of time (spiky traffic, which should be avoided) and may throttle or deny delivery.
+- Push clients receive a lot of unnecessary notifications, because they'd only need one after all changes are done. Especially for mobile clients that also means a lot of useless battery and network usage.
+
+Servers SHOULD take measures to avoid such problems. These can include:
+
+* to send push messages asynchrously (so that for instance a `PUT` doesn't block until all notifications are sent),
+* to impose a rate limit for push messages,
+* to delay push messages (usually for a short time),
+* to merge/omit push messages.
+
+Such measures MUST not change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted (the messages are _merged_ into a single one). If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened. So in that case the server could either send two messages (one merged message for the content updates and one for the property update) or even better a single push message that signals both the content and the property update.
 
 
 ## Removal of Invalid Subscriptions
