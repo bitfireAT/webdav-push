@@ -317,6 +317,8 @@ A WebDAV-Push server MUST notify registered subscriptions of a subscribed resour
 - on a _content update_, if this was requested during subscription registration,
 - on a _property update_, if this was requested during subscription registration.
 
+In case of the Web Push transport, this happens over a `POST` request to the subscription (push resource).
+
 
 ## Push Message
 
@@ -337,6 +339,43 @@ Example:
 Here, both the contents and the properties of the resource (or its members, depending on the registered trigger) with topic `O7M1nQ7cKkKTKsoS_j6Z3w` have changed. The new sync-token (after the change) is `http://example.com/sync/10`.
 
 
+## Suppressing Notifications
+
+Clients may not want to receive push notifications for changes they have induced themselves. They can indicate this with the `Push-Dont-Notify` header field, which is sent together with the request that causes the change.
+
+A server SHOULD NOT send push notifications that are triggered by the current operation to the subscriptions identified by the `Push-Dont-Notify` header.
+
+Definition (RFC 4918 syntax, like If Header). List of subscription identifiers / push resources, or `*` for no notifications. [^todo]
+
+Example 1:
+
+```
+PUT /file.txt HTTP/1.1
+Host: www.example.com
+Push-Dont-Notify: <https://up.example.net/yohd4yai5Phiz1wi>
+
+[…]
+
+HTTP/1.1 201 Created
+```
+
+In this example, the client requests that the server doesn't send a push notification for the change in `file.txt` to the given push resource.
+
+Example 2:
+
+```
+DELETE /file.txt HTTP/1.1
+Host: www.example.com
+Push-Dont-Notify: *
+
+[…]
+
+HTTP/1.1 204 No Content
+```
+
+In this example, the client requests that the server doesn't send push notifications because of the deletion to any push subscription.
+
+
 ## Rate Limiting
 
 It's possible that a lot of changes occur within a short period of time (like an upload of many contacts or a mass-change of events, especially for a collection with a lot of subscriptions). This can lead to problems when every change results in a push message:
@@ -353,6 +392,8 @@ Servers SHOULD take measures to avoid such problems. These can include:
 * to merge/omit push messages.
 
 Such measures MUST not change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted (the messages are _merged_ into a single one). If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened. So in that case the server could either send two messages (one merged message for the content updates and one for the property update) or even better a single push message that signals both the content and the property update.
+
+Clients MAY use the `Push-Dont-Notify: *` header to reduce the number of push messages when desired (for instance, for all requests in a batch except the last one). However clients should be aware that it may be possible that the last operation fails and then no push notification is sent at all, so this should be used only when really necessary.
 
 
 ## Removal of Invalid Subscriptions
