@@ -188,7 +188,7 @@ The `push-register` element contains:
 
 The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
-To specify which updates the client wants to be notified about, it uses the `trigger` element, which itself can contain:
+To specify which updates the client wants to be notified about, it uses the `trigger` (((trigger))) element, which itself can contain:
 
 * A `content-update` element to indicate the client's interest in notifications when the contents of the subscribed resource or its members change ("content update").
 * A `property-update` element to indicate the client's interest in notifications when the WebDAV properties of the subscribed resource or its members change ("property update").
@@ -341,39 +341,47 @@ Here, both the contents and the properties of the resource (or its members, depe
 
 ## Suppressing Notifications
 
-Clients may not want to receive push notifications for changes they have induced themselves. They can indicate this with the `Push-Dont-Notify` header field, which is sent together with the request that causes the change.
+A client may not want to receive push notifications for a change that it induces itself. It can indicate this with the `Push-Dont-Notify` header field, which is sent together with the request that causes the change.
 
-A server SHOULD NOT send push notifications that are triggered by the current operation to the subscriptions identified by the `Push-Dont-Notify` header.
+Header name: "Push-Dont-Notify"(((Push-Dont-Notify)))  
+Value syntax in ABNF with #rule extension as defined in {{Section 5.6.1 of RFC9110}}:
 
-Definition (RFC 4918 syntax, like If Header). List of subscription identifiers / push resources, or `*` for no notifications. [^todo]
+    Push-Dont-Notify        = 1#(quoted-registration-url) / "*"
+
+    quoted-registration-url = quoted-string
+                              ; absolute push registration URL
+
+A server SHOULD NOT send push notifications that are triggered by the requested operation to the subscriptions of the `Push-Dont-Notify` header.
+
+Because URIs are not per se canonical, the URI MUST be provided in the exact form as it was originally provided by the server in the `Location` header.
+
+Usage of the asterisk value (`*`) requests that the server doesn't send any notifications for the operation.
+
+Multiple values can be provided as a list and/or using multiple lines as described in {{Section 5.2 of RFC9110}}. If the asterisk is used, other values MUST NOT be sent.
 
 Example 1:
 
-```
-PUT /file.txt HTTP/1.1
-Host: www.example.com
-Push-Dont-Notify: <https://up.example.net/yohd4yai5Phiz1wi>
+    PUT /file.txt HTTP/1.1
+    Host: www.example.com
+    Push-Dont-Notify: "https://example.com/webdav/subscriptions/io6Efei4ooph"
+    
+    […]
+    
+    HTTP/1.1 201 Created
 
-[…]
-
-HTTP/1.1 201 Created
-```
-
-In this example, the client requests that the server doesn't send a push notification for the change in `file.txt` to the given push resource.
+In this example, the client requests that the server doesn't send a push notification for the change in `file.txt` to the mentioned subscription.
 
 Example 2:
 
-```
-DELETE /file.txt HTTP/1.1
-Host: www.example.com
-Push-Dont-Notify: *
+    DELETE /file.txt HTTP/1.1
+    Host: www.example.com
+    Push-Dont-Notify: *
+    
+    […]
+    
+    HTTP/1.1 204 No Content
 
-[…]
-
-HTTP/1.1 204 No Content
-```
-
-In this example, the client requests that the server doesn't send push notifications because of the deletion to any push subscription.
+Here the client requests that the server doesn't send any push notification in the context of the deletion.
 
 
 ## Rate Limiting
