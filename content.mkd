@@ -247,7 +247,7 @@ Allowed response codes:
 * 403 with precondition `no-supported-trigger` when the request doesn't contain a trigger or when all requested triggers are ignored (because they're not supported)
 * other response code with usual HTTP/WebDAV semantics
 
-When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send the registration URL in the `Location` header.
+When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send an absolute, canonical registration URL in the `Location` header.
 
 The server MUST return a HTTP `Expires` header (as defined in {{Section 5.3 of RFC9111}}) in the `IMF-fixdate` format with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
 
@@ -357,7 +357,7 @@ quoted-registration-url = quoted-string
 
 A server SHOULD NOT send push notifications that are triggered by the requested operation to the subscriptions of the `Push-Dont-Notify` header.
 
-Because URIs are not per se canonical, the URI MUST be provided in the exact form as it was originally provided by the server in the `Location` header.
+Because URIs are not per se canonical, the URL MUST be provided in the exact form as it was originally provided by the server in the `Location` header.
 
 Usage of the asterisk value (`*`) requests that the server doesn't send any notifications for the operation.
 
