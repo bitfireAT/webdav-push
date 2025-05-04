@@ -67,7 +67,7 @@ WebDAV-Push is not restricted to a specific push transport. This allows even upc
 
 WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}). If possible, other push transports SHOULD be connected over a Web Push gateway instead of defining a new WebDAV-Push transport.
 
-To use a proprietary push service, a client vendor may need to provide a rewrite proxy that offers a Web Push endpoint which signs and forwards the requests to the respective push service. If possible, VAPID should be used instead of such a proxy.
+To use a proprietary push service, a client vendor may need to provide a rewrite proxy that offers a Web Push endpoint which signs and forwards the requests to the respective push service. If possible, VAPID {{RFC8292}} should be used instead of such a proxy.
 
 
 ## Terminology
@@ -424,7 +424,7 @@ A server MAY use some logic like remembering the last successful delivery plus s
 
 # CalDAV/CardDAV
 
-WebDAV-Push can be used with CalDAV ({{RFC4791}}) and CardDAV ({{RFC6352}}) to provide short-time update notifications when collections (calendars, address books) or entries (contacts, events, …) change.
+WebDAV-Push can be used with CalDAV {{RFC4791}} and CardDAV {{RFC6352}} to provide short-time update notifications when collections (calendars, address books) or entries (contacts, events, …) change.
 
 Depending on the features of a CalDAV/CardDAV client, it could for instance subscribe to:
 
