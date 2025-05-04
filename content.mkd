@@ -223,7 +223,7 @@ A "property update" occurs when the WebDAV properties of the subscribed resource
    - only in property updates of the subscribed resource and its internal members (depth: `1`), or
    - in property updates of the subscribed resource and its members (depth: `infinity`).
 
-   If the subscribed resource doesn't support the content update trigger with the requested depth, the server MUST fall back to the lowest supported value instead. If the content update trigger isn't supported for the subscribed resource at all, it MUST be ignored.
+   If the subscribed resource doesn't support the property update trigger with the requested depth, the server MUST fall back to the lowest supported value instead. If the property update trigger isn't supported for the subscribed resource at all, it MUST be ignored.
 
    In case the depth is `infinity`, the limitations described in {{Section 3.3 of RFC6578}} apply: notifications about changes in members which are not supported by the `DAV:sync-collection` report may not be sent.
 
@@ -324,11 +324,13 @@ In case of the Web Push transport, this happens over a `POST` request to the sub
 
 The push message body consists of a `push-message` element, which contains information about the affected resource:
 
-- a `topic` element with the push topic,
+- a `topic` element with the push topic (except for VAPID key rotation messages, see {{vapid-key-rotation}}),
 - a `content-update` element in case of a content update, and/or
 - a `property-update` element in case of a property update.
 
-The `content-update` element SHOULD contain a `{DAV:}sync-token` element so that a client can ignore the push message when it already knows the latest state.
+The `content-update` element of a push message SHOULD contain a `{DAV:}sync-token` element so that a client can ignore the push message when it already knows the latest state.
+
+The `property-update` element of a push message is usually empty (except for VAPID key rotation messages).
 
 Example:
 
@@ -472,7 +474,7 @@ Corresponding terminology:
 * (WebDAV-Push) push server ↔ (Web Push) application server
 * (WebDAV-Push) push client ↔ (Web Push) user agent
 
-Message encryption ({{message-encryption}}) MUST be used. VAPID ({{vapid}}) SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
+Message encryption ({{message-encryption}}) MUST be used. VAPID(((VAPID))) ({{vapid}}) SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
 
 A server that supports the Web Push transport MUST list the `web-push` element in the `transports` property.
 
@@ -510,17 +512,33 @@ It contains exactly one `push-resource` element, which specifies the absolute UR
 A Web Push subscription is uniquely identified by its push resource.
 
 
-## VAPID {#vapid}
+## VAPID(((VAPID))) {#vapid}
 
-VAPID {{RFC8292}} binds push subscriptions to the specific WebDAV-Push server.
+VAPID {{RFC8292}} binds push subscriptions to a specific WebDAV-Push server.
 
 A WebDAV-Push server that supports VAPID stores a key pair. It exposes an additional transport property `vapid-public-key` within the `web-push` element, which contains the VAPID public key in uncompressed form and base64url encoded. The attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{push-properties}} for an example.
 
-If available, the client MUST use this key to create a restricted subscription at the push service, except when it knows that the push service doesn't support VAPID.
+If the server provides a VAPID public key, the client MUST use that key to create a restricted subscription at the push service (except when the used push service doesn't support VAPID).
 
-A client can expect the VAPID public key to be the same for all resources on the server. However the VAPID public key can still sometimes change (for instance when the server or user data is moved to another machine). In that case a client has to create new restricted subscriptions because the old ones won't work anymore.
+A client can expect the VAPID public key to be the same for all resources on the server.
 
-When the server provides a VAPID public key, it MUST include a corresponding `Authorization` header when sending a push message in order to prove its identity to the push service.
+When the server provides a VAPID public key, it MUST include a corresponding `Authorization` header when sending a push message to prove its identity to the push service.
+
+### Key Rotation {#vapid-key-rotation}
+
+The VAPID public key can sometimes change, either intentionally (key rotation) or for instance when the server or user data is moved to another machine. When the VAPID key has changed, a client has to create new restricted subscriptions because the old ones are bound to the old key and thus don't work anymore.
+
+When a server that changes its VAPID key is able to notify clients with the old VAPID key before switching, it SHOULD send a key rotation push message to every distinct active subscription.
+
+A key rotation push message is a push message that only contains a `property-update` that includes a `{DAV:}prop` property with the `transports` property like this:
+
+~~~
+{::include xml/push-message-vapid-key.xml}
+~~~
+
+A client that receives a key rotation push message MUST assume that the last known VAPID key isn't valid anymore. So in order to restore Push functionality, it has to query the new VAPID key, create a new subscription and register it again.
+
+However because it's possible that the VAPID key changes without possibility to notify the clients with the old key, clients are advised to verify the VAPID key regularly.
 
 
 ## Message Encryption {#message-encryption}

@@ -128,8 +128,10 @@
   <define name="push-message">
     <element name="push-message">
       <interleave>
-        <!-- collection topic -->
-        <ref name="prop-topic"/>
+        <!-- collection topic (not present in VAPID key rotation message) -->
+        <zeroOrMore>
+          <ref name="prop-topic"/>
+        </zeroOrMore>
 
         <!-- content update -->
         <zeroOrMore>
@@ -143,7 +145,9 @@
         <!-- property update -->
         <zeroOrMore>
           <element name="property-update">
-            <empty/>
+            <optional>
+              <ref name="prop-dav-prop"/>
+            </optional>
           </element>
         </zeroOrMore>
       </interleave>
@@ -205,6 +209,17 @@
 
 
   <!-- external properties (only informational) -->
+
+  <define name="prop-dav-prop">
+    <element ns="DAV:" name="prop">
+      <zeroOrMore>
+        <element>
+          <anyName/>
+          <empty/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
 
   <define name="prop-dav-depth">        <!-- defined in WebDAV (RFC 4918) -->
     <element ns="DAV:" name="depth">
