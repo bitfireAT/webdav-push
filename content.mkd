@@ -98,7 +98,6 @@ Push service
 (Push) transport
 : Protocol that defines an actual push mechanism. In this document, Web Push is the only defined push transport (see {{transport-web-push}}). However, WebDAV-Push may also be used with other push transports like proprietary or yet unknown protocols. In that case, it has to be specified how to use that protocol with WebDAV-Push. A push transport typically involves a push service.
 
-
 Web Push
 : "Protocol for the delivery of real-time events to user agents", defined by {{RFC8030}}. Usually implemented in browsers (which means that major browser vendors provide their own push services), but there are also other implementations like {{UnifiedPush}}. Some parts (namely push message delivery from the push service to the client) specify implementation details that may be done by other means without changing the meaning of the RFC for WebDAV-Push servers and clients.
 
@@ -137,13 +136,13 @@ Here, the OPTIONS response contains "webdav-push" in the DAV header to indicate 
 
 ## Push Properties {#push-properties}
 
-To provide information about WebDAV-Push support, new properties are defined. A server MUST provide the `transports`, `topic` and `supported-triggers` properties for resources that support WebDAV-Push. A server MUST NOT provide the `topic` and `supported-triggers` properties for resources that don't support WebDAV-Push (for instance for non-collection resources, if they're not supported).
+To provide information about WebDAV-Push support, new properties are defined. A server MUST provide the `transports`(((transports XML element))), `topic` and `supported-triggers` properties for resources that support WebDAV-Push. A server MUST NOT provide the `topic` and `supported-triggers` properties for resources that don't support WebDAV-Push (for instance for non-collection resources, if they're not supported).
 
-The `transports` element lists available push transports. Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}). Although the property is defined on every Push-capable resource, its value is usually the same for every resource on the server.
+The `transports` element(((transports XML element))) lists available push transports. Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}). Although the property is defined on every Push-capable resource, its value is usually the same for every resource on the server.
 
-The `topic` is a globally unique identifier for the resource. A specific resource could be reachable with different URLs, but it can have only one push topic. A server could for instance use a random UUID or a canonical URL that won't change over the lifetime of the resource. The value should be globally unique because a client can subscribe to resources from multiple servers and needs to be able to determine the correct one when it receives a push message.
+The `topic`(((topic XML element))) is a globally unique identifier for the resource. A specific resource could be reachable with different URLs, but it can have only one push topic. A server could for instance use a random UUID or a canonical URL that won't change over the lifetime of the resource. The value should be globally unique because a client can subscribe to resources from multiple servers and needs to be able to determine the correct one when it receives a push message.
 
-The `supported-triggers` element MUST contain at least one of the following elements:
+The `supported-triggers` element(((supported-triggers XML element))) MUST contain at least one of the following elements:
 
 - `content-update` if the resource supports push notifications on content updates (see {{content-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 - `property-update` if the resource supports push notifications on property updates (see {{property-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
@@ -180,15 +179,15 @@ The comment shows how support for some other (not yet defined) transport could b
 
 To subscribe to a resource, the client sends a `POST` request with `Content-Type: application/xml` to the resource it wants to subscribe. The root XML element of the XML body is `push-register` and can be used to distinguish between WebDAV-Push and other requests.
 
-The `push-register` element contains:
+The `push-register` element(((push-register XML element))) contains:
 
 * exactly one `subscription` element, which contains all information the server needs to send a push message,
 * exactly one `trigger` element to specify the type of updates the client wants to be notified about, and
 * an optional `expires` element that contains the requested expiration time in the `IMF-fixdate` format (as defined in {{Section 5.6.7 of RFC9110}}).
 
-The `subscription` element specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
+The `subscription` element(((subscription XML element))) specifies a subscription that shall be notified on updates and contains exactly one element with details about a specific subscription type. Within the scope of this document, only the `web-push-subscription` child element is defined (see {{transport-web-push}}).
 
-To specify which updates the client wants to be notified about, it uses the `trigger` (((trigger))) element, which itself can contain:
+To specify which updates the client wants to be notified about, it uses the `trigger` (((trigger XML element))) element, which itself can contain:
 
 * A `content-update` element to indicate the client's interest in notifications when the contents of the subscribed resource or its members change ("content update").
 * A `property-update` element to indicate the client's interest in notifications when the WebDAV properties of the subscribed resource or its members change ("property update").
@@ -199,7 +198,7 @@ WebDAV-Push is intended more as a helpful tool to speed up things (like synchron
 
 A "content update" occurs when the subscribed resource or a member is changed or removed, as defined in {{Section 3.5 of RFC6578}}. Typically, this is the case when the resource itself is modified or removed, or when a member is added or removed or its contents are modified. If the server supports {{RFC6578}}, a content update of a collection usually implies that the `{DAV:}sync-token` changes.
 
-The `content` element contains a `{DAV:}depth` element that specifies whether the client is interested
+The `content-update` element(((content-update XML element))) contains a `{DAV:}depth` element that specifies whether the client is interested
 
 - only in content updates of the subscribed resource (depth: `0`),
 - only in content updates of the subscribed resource and its internal members (depth: `1`), or
@@ -215,7 +214,7 @@ In case the depth is `infinity`, the limitations described in {{Section 3.3 of R
 
 ### Property Updates {#property-updates}
 
-A "property update" occurs when the WebDAV properties of the subscribed resource or its members are modified. Properties update notifications are controlled by two elements within the `property-update` element:
+A "property update" occurs when the WebDAV properties of the subscribed resource or its members are modified. Properties update notifications are controlled by two elements within the `property-update`(((property-update XML element))) element:
 
 1. The `{DAV:}depth` element specifies whether the client is interested
 
@@ -247,7 +246,7 @@ Allowed response codes:
 * 403 with precondition `no-supported-trigger` when the request doesn't contain a trigger or when all requested triggers are ignored (because they're not supported)
 * other response code with usual HTTP/WebDAV semantics
 
-When a subscription is registered the first time, the server creates a URL that identifies that registration (registration URL) which can be used to remove the subscription. The server MUST send an absolute, canonical registration URL in the `Location` header.
+When a subscription is registered the first time, the server creates a canonical URL that identifies that registration (registration URL)(((Registration URL))) which can be used to remove the subscription. The server MUST send an absolute registration URL in the `Location` header.
 
 The server MUST return a HTTP `Expires` header (as defined in {{Section 5.3 of RFC9111}}) in the `IMF-fixdate` format with the actual expiration date on the server, which may be shorter than the expiration requested by the client.
 
@@ -324,9 +323,9 @@ In case of the Web Push transport, this happens over a `POST` request to the sub
 
 The push message body consists of a `push-message` element, which contains information about the affected resource:
 
-- a `topic` element with the push topic (except for VAPID key rotation messages, see {{vapid-key-rotation}}),
-- a `content-update` element in case of a content update, and/or
-- a `property-update` element in case of a property update.
+- a `topic` element(((topic XML element))) with the push topic (except for VAPID key rotation messages, see {{vapid-key-rotation}}),
+- a `content-update` element(((content-update XML element))) in case of a content update, and/or
+- a `property-update` element(((property-update XML element))) in case of a property update.
 
 The `content-update` element of a push message SHOULD contain a `{DAV:}sync-token` element so that a client can ignore the push message when it already knows the latest state.
 
@@ -482,7 +481,7 @@ Corresponding terminology:
 
 Message encryption ({{message-encryption}}) MUST be used. VAPID(((VAPID))) ({{vapid}}) SHOULD be used. (If other methods to provide a security context for Web Push become established, those can be used and necessary WebDAV properties shall be added to this document.)
 
-A server that supports the Web Push transport MUST list the `web-push` element in the `transports` property.
+A server that supports the Web Push transport MUST list the `web-push` element(((web-push XML element))) in the `transports` property.
 
 ~~~goat
 .--------------------.   .--------------.   .--------------------.
@@ -511,9 +510,9 @@ A server that supports the Web Push transport MUST list the `web-push` element i
 
 To register a Web Push subscription, the `subscription` element of the `push-register` request contains exactly one `web-push-subscription`.
 
-The `web-push-subscription` element represents the public information of a Web Push subscription that is shared with the WebDAV-Push server.
+The `web-push-subscription` element(((web-push-subscription XML element))) represents the public information of a Web Push subscription that is shared with the WebDAV-Push server.
 
-It contains exactly one `push-resource` element, which specifies the absolute URI that identifies the endpoint where Web Push notifications are sent to.
+It contains exactly one `push-resource` element(((push-resource XML element))), which specifies the absolute URI that identifies the endpoint where Web Push notifications are sent to.
 
 A Web Push subscription is uniquely identified by its push resource.
 
@@ -522,7 +521,7 @@ A Web Push subscription is uniquely identified by its push resource.
 
 VAPID {{RFC8292}} binds push subscriptions to a specific WebDAV-Push server.
 
-A WebDAV-Push server that supports VAPID stores a key pair. It exposes an additional transport property `vapid-public-key` within the `web-push` element, which contains the VAPID public key in uncompressed form and base64url encoded. The attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{push-properties}} for an example.
+A WebDAV-Push server that supports VAPID stores a key pair. It exposes an additional transport property `vapid-public-key`(((vapid-public-key XML element))) within the `web-push` element, which contains the VAPID public key in uncompressed form and base64url encoded. The attribute `type="p256ecdsa"` MUST be added to allow different key types in the future. See {{push-properties}} for an example.
 
 If the server provides a VAPID public key, the client MUST use that key to create a restricted subscription at the push service (except when the used push service doesn't support VAPID).
 
@@ -547,15 +546,15 @@ A client that receives a key rotation push message MUST assume that the last kno
 However because it's possible that the VAPID key changes without possibility to notify the clients with the old key, clients are advised to verify the VAPID key regularly.
 
 
-## Message Encryption {#message-encryption}
+## Message Encryption(((Encryption))) {#message-encryption}
 
 Message encryption hides details of push messages from the push services. Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
 
 When the client then registers this subscription at the server, it MUST include these subscription properties:
 
-* `content-encoding` – how the encrypted content is encoded; currently only `aes128gcm` is supported
-* `subscription-public-key` – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
-* `auth-secret` – authentication secret
+* `content-encoding`(((content-encoding XML element))) – how the encrypted content is encoded; currently only `aes128gcm` is supported
+* `subscription-public-key`(((subscription-public-key XML element))) – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
+* `auth-secret`(((auth-secret XML element))) – authentication secret
 
 These properties are bound to the subscription (which is identified by the push resource). A server doesn't need to store these properties for every registration, but only once for the subscription.
 
