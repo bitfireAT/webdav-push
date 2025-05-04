@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<push-message xmlns="https://bitfire.at/webdav-push" xmlns:D="DAV:">
+  <property-update>
+    <D:prop>
+      <transports />
+    </D:prop>
+  </property-update>
+</push-message>
