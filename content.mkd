@@ -121,10 +121,10 @@ A server that supports WebDAV-Push MUST include "webdav-push" in the `DAV` heade
 
 Example:
 
-~~~
+~~~http-message
 OPTIONS /calendars/
 Host: caldav.example.com
-
+    
 HTTP/1.1 200 OK
 Allow: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, COPY, MOVE
 Allow: PROPFIND, PROPPATCH, LOCK, UNLOCK, REPORT, ACL
@@ -152,7 +152,7 @@ Clients can use WebDAV `PROPFIND` to retrieve these properties. WebDAV-Push SHOU
 
 Example:
 
-~~~
+~~~http-message
 PROPFIND https://example.com/webdav/collection/
 <?xml version="1.0" encoding="utf-8" ?>
 <propfind xmlns="DAV:" xmlns:P="https://bitfire.at/webdav-push">
@@ -253,7 +253,7 @@ The server MUST return a HTTP `Expires` header (as defined in {{Section 5.3 of R
 
 Example 1 (successful registration):
 
-~~~
+~~~http-message
 POST https://example.com/webdav/collection/
 Content-Type: application/xml; charset="utf-8"
 
@@ -291,7 +291,7 @@ Allowed response codes:
 
 Sample request:
 
-~~~
+~~~http-message
 DELETE https://example.com/webdav/subscriptions/io6Efei4ooph
 
 HTTP/1.1 204 Unregistered
@@ -334,7 +334,7 @@ The `property-update` element of a push message is usually empty (except for VAP
 
 Example:
 
-~~~
+~~~xml
 {::include xml/sample-push-message.xml}
 ~~~
 
@@ -348,10 +348,12 @@ A client may not want to receive push notifications for a change that it induces
 Header name: "Push-Dont-Notify"(((Push-Dont-Notify)))  
 Value syntax in ABNF with #rule extension as defined in {{Section 5.6.1 of RFC9110}}:
 
-    Push-Dont-Notify        = 1#(quoted-registration-url) / "*"
+~~~abnf-rfc9110
+Push-Dont-Notify        = 1#(quoted-registration-url) / "*"
 
-    quoted-registration-url = quoted-string
-                              ; absolute push registration URL
+quoted-registration-url = quoted-string
+                          ; absolute push registration URL
+~~~
 
 A server SHOULD NOT send push notifications that are triggered by the requested operation to the subscriptions of the `Push-Dont-Notify` header.
 
@@ -363,25 +365,29 @@ Multiple values can be provided as a list and/or using multiple lines as describ
 
 Example 1:
 
-    PUT /file.txt HTTP/1.1
-    Host: www.example.com
-    Push-Dont-Notify: "https://example.com/webdav/subscriptions/io6Efei4ooph"
-    
-    […]
-    
-    HTTP/1.1 201 Created
+~~~http-message
+PUT /file.txt HTTP/1.1
+Host: www.example.com
+Push-Dont-Notify: "https://example.com/webdav/subscriptions/io6Efei4ooph"
+
+[…]
+
+HTTP/1.1 201 Created
+~~~
 
 In this example, the client requests that the server doesn't send a push notification for the change in `file.txt` to the mentioned subscription.
 
 Example 2:
 
-    DELETE /file.txt HTTP/1.1
-    Host: www.example.com
-    Push-Dont-Notify: *
-    
-    […]
-    
-    HTTP/1.1 204 No Content
+~~~http-message
+DELETE /file.txt HTTP/1.1
+Host: www.example.com
+Push-Dont-Notify: *
+
+[…]
+
+HTTP/1.1 204 No Content
+~~~
 
 Here the client requests that the server doesn't send any push notification in the context of the deletion.
 
@@ -532,7 +538,7 @@ When a server that changes its VAPID key is able to notify clients with the old 
 
 A key rotation push message is a push message that only contains a `property-update` that includes a `{DAV:}prop` property with the `transports` property like this:
 
-~~~
+~~~xml
 {::include xml/push-message-vapid-key.xml}
 ~~~
 
@@ -582,6 +588,6 @@ To reference element names in another namespace, the `{ns}element` syntax is use
 
 The XML schema formally defines the XML elements used by this document and is expressed in {{RELAXNG}}.
 
-~~~
+~~~xml
 {::include xml/webdav-push.rng}
 ~~~
