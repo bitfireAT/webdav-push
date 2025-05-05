@@ -445,6 +445,10 @@ CalDAV/CardDAV servers that support WebDAV-Push SHOULD support:
 
 # Security Considerations
 
+WebDAV-Push operates within the usual security context of WebDAV. Servers usually restrict WebDAV access to authorized users. It makes sense to apply the same restrictions to WebDAV-Push operations (like subscription registration). It's however up to the server to define which WebDAV-Push operations are allowed and under which conditions. If a request is denied because of wrong authentication or missing privileges, the correct HTTP/WebDAV status codes MUST be used.
+
+It's RECOMMENDED
+
 The general requirements from {{Section 8 of RFC8030}} apply regardless of which transport is used. Especially:
 
 - HTTP over TLS MUST be used for all communications.
