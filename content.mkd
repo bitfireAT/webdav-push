@@ -111,6 +111,15 @@ WebDAV-Push
 : WebDAV server (for instance a CalDAV/CardDAV server) that implements WebDAV-Push
 
 
+## XML Element Namespace
+
+When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace: `https://bitfire.at/webdav-push`
+
+All XML elements defined by this document reside in this namespace. The XML schema for the elements can be found in {{xml-schema}}.
+
+To reference element names in another namespace, the `{ns}element` syntax is used. For instance, `{DAV:}prop` means the `prop` XML element in the `DAV:` namespace.
+
+
 
 # Service Detection
 
@@ -572,15 +581,11 @@ When using the Web Push transport, the general requirements from {{Section 8 of 
 
 
 
+--- back
+
 # XML Schema
 
-When XML element names are used without namespace in this document, they are in the WebDAV-Push namespace: `https://bitfire.at/webdav-push`
-
-All XML elements defined by this document reside in this namespace.
-
-To reference element names in another namespace, the `{ns}element` syntax is used. For instance, `{DAV:}prop` means the `prop` XML element in the `DAV:` namespace.
-
-The XML schema formally defines the XML elements used by this document and is expressed in {{RELAXNG}}.
+This XML schema formally defines the XML elements used by this document and is expressed in {{RELAXNG}}.
 
 ~~~xml
 {::include xml/webdav-push.rng}
