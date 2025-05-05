@@ -154,7 +154,7 @@ The `supported-triggers` element(((supported-triggers XML element))) MUST contai
 - `content-update` if the resource supports push notifications on content updates (see {{content-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 - `property-update` if the resource supports push notifications on property updates (see {{property-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 
-Clients can use WebDAV `PROPFIND` to retrieve these properties.
+A client can use WebDAV `PROPFIND` to retrieve these properties.
 
 Example:
 
@@ -306,9 +306,9 @@ HTTP/1.1 204 Unregistered
 
 ## Expiration
 
-Clients can specify an expiration date-time when they register a subscription. A server SHOULD take the requested expiration time into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server SHOULD allow subscriptions to be valid at least three days. However when the expiration is too far in the future, it becomes more probable that the subscription will become invalid or stale at some time.
+A client can specify an expiration date-time when they register a subscription. A server SHOULD take the requested expiration time into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server SHOULD allow subscriptions to be valid at least three days. However when the expiration is too far in the future, it becomes more probable that the subscription will become invalid or stale at some time.
 
-Clients have to refresh their registrations regularly and before the expiration date to keep them working. They can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed.
+A client has to refresh its registrations regularly and before the expiration date to keep them working. It can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed.
 
 Expired subscriptions MUST NOT be used anymore as chances are high that doing so would cause errors.
 
@@ -402,16 +402,16 @@ It's possible that a lot of changes occur within a short period of time (like an
 - The push service receives a lot of messages within a short period of time (spiky traffic, which should be avoided) and may throttle or deny delivery.
 - Push clients receive a lot of unnecessary notifications, because they'd only need one after all changes are done. Especially for mobile clients that also means a lot of useless battery and network usage.
 
-Servers SHOULD take measures to avoid such problems. These can include:
+A server SHOULD take measures to avoid such problems. These can include:
 
-* to send push messages asynchrously (so that for instance a `PUT` doesn't block until all notifications are sent),
+* to send push messages asynchronously (so that for instance a `PUT` doesn't block until all notifications are sent),
 * to impose a rate limit for push messages,
 * to delay push messages (usually for a short time),
 * to merge/omit push messages.
 
 Such measures SHOULD NOT change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted (the messages are _merged_ into a single one). If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened. So in that case the server could either send two messages (one merged message for the content updates and one for the property update) or even better a single push message that signals both the content and the property update.
 
-Clients MAY use the `Push-Dont-Notify: *` header to reduce the number of push messages when desired (for instance, for all requests in a batch except the last one). However clients should be aware that it may be possible that the last operation fails and then no push notification is sent at all, so this should be used only when really necessary.
+A client MAY use the `Push-Dont-Notify: *` header to reduce the number of push messages when desired (for instance, for all requests in a batch except the last one). However it should be aware that if the last operation fails, then no push notification is sent at all; so this should be used only when really necessary.
 
 
 ## Removal of Invalid Subscriptions
@@ -435,7 +435,7 @@ Depending on the features of a CalDAV/CardDAV client, it could for instance subs
 - property updates of a collection (usually with a depth of `0`) to become notified about changes of properties like display name, calendar color and access permissions,
 - property updates (for instance display name) of a principal to update real names of collection owners.
 
-CalDAV/CardDAV servers that support WebDAV-Push SHOULD support:
+A CalDAV/CardDAV server that supports WebDAV-Push SHOULD support:
 
 - content updates with a `{DAV:}depth` of at least 1 on
   - `calendar-home-set` and `addressbook-home-set` collections,
@@ -558,7 +558,7 @@ The server MAY use the `Urgency` header to set the priority of the push message.
 
 ## Security Context
 
-WebDAV-Push operates within the usual security context of WebDAV. Servers usually restrict WebDAV access to authorized users. It makes sense to apply the same restrictions to WebDAV-Push operations (like subscription registration). It's however up to the server to define which WebDAV-Push operations are allowed and under which conditions. If a request is denied because of wrong authentication or security restrictions, the correct HTTP/WebDAV status codes MUST be used (usually 401 or 403).
+WebDAV-Push operates within the usual security context of WebDAV. A server usually restricts WebDAV access to authorized users. It makes sense to apply the same restrictions to WebDAV-Push operations (like subscription registration). It's however up to the server to define which WebDAV-Push operations are allowed and under which conditions. If a request is denied because of wrong authentication or security restrictions, the correct HTTP/WebDAV status codes MUST be used (usually 401 or 403).
 
 WebDAV-Push SHOULD only be advertised to clients which are actually allowed to use it.
 
