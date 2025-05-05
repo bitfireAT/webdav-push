@@ -65,9 +65,7 @@ A WebDAV-Push client typically
 
 WebDAV-Push is not restricted to a specific push transport. This allows even upcoming, yet unknown push transports to be used with WebDAV-Push. Push transport definitions can define extra properties and additional processing rules.
 
-WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}). If possible, other push transports SHOULD be connected over a Web Push gateway instead of defining a new WebDAV-Push transport.
-
-To use a proprietary push service, a client vendor may need to provide a rewrite proxy that offers a Web Push endpoint that signs and forwards the requests to the respective push service. If possible, VAPID {{RFC8292}} should be used instead of such a proxy.
+WebDAV-Push implementations SHOULD implement at least the Web Push transport (defined in {{transport-web-push}}). Ideally, other transports are connected over a Web Push gateway instead of defining a new WebDAV-Push transport.
 
 
 ## Terminology
@@ -116,7 +114,7 @@ WebDAV-Push
 
 # Service Detection
 
-A server that supports WebDAV-Push MUST include "webdav-push" in the `DAV` header of an `OPTIONS` response for any resource that supports WebDAV-Push. The "webdav-push" value MUST indicate that all MUST level requirements of this document are met.
+A server that supports WebDAV-Push MUST include "webdav-push" in the `DAV` header of an `OPTIONS` response for any resource that supports WebDAV-Push. The "webdav-push" value MUST indicate that all MUST-level requirements of this document are met and all SHOULD-level requirements are met except for a good reason.
 
 Example:
 
@@ -140,7 +138,7 @@ To provide information about WebDAV-Push support, new properties are defined. A 
 
 The `transports` element(((transports XML element))) lists available push transports. Within the scope of this document, the only supported transport is `web-push` (see {{transport-web-push}}). Although the property is defined on every Push-capable resource, its value is usually the same for every resource on the server.
 
-The `topic`(((topic XML element))) is a globally unique identifier for the resource. A specific resource could be reachable with different URLs, but it can have only one push topic. A server could for instance use a random UUID or a canonical URL that won't change over the lifetime of the resource. The value should be globally unique because a client can subscribe to resources from multiple servers and needs to be able to determine the correct one when it receives a push message.
+The `topic`(((topic XML element))) is a (server-wide) unique identifier for the resource. A specific resource could be reachable with different URLs, but it can have only one push topic. A server could for instance use a random UUID or a canonical URL that won't change over the lifetime of the resource.
 
 The `supported-triggers` element(((supported-triggers XML element))) MUST contain at least one of the following elements:
 
@@ -299,9 +297,7 @@ HTTP/1.1 204 Unregistered
 
 ## Expiration
 
-Clients MAY specify an expiration date-time when they register a subscription.
-
-A server SHOULD take the expiration specified by a client into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server MUST allow subscriptions to be valid at least three days.
+Clients can specify an expiration date-time when they register a subscription. A server SHOULD take the requested expiration time into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server SHOULD allow subscriptions to be valid at least three days. However when the expiration is too far in the future, it becomes more probable that the subscription will become invalid or stale at some time.
 
 Clients have to refresh their registrations regularly and before the expiration date to keep them working. They can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed.
 
@@ -313,7 +309,7 @@ Expired subscriptions MUST NOT be used anymore as chances are high that doing so
 
 A WebDAV-Push server MUST notify registered subscriptions of a subscribed resource:
 
-- on a _content update_, if this was requested during subscription registration,
+- on a _content update_, if this was requested during subscription registration, and
 - on a _property update_, if this was requested during subscription registration.
 
 In case of the Web Push transport, this happens over a `POST` request to the subscription (push resource).
@@ -354,11 +350,9 @@ quoted-registration-url = quoted-string
                           ; absolute push registration URL
 ~~~
 
-A server SHOULD NOT send push notifications that are triggered by the requested operation to the subscriptions of the `Push-Dont-Notify` header.
+In the context of the requested operation, a server MUST NOT send push notifications to the explicitly given subscription URLs of the `Push-Dont-Notify` header, and it SHOULD NOT send any push notifications when the asterisk value (`*`) is used.
 
-Because URIs are not per se canonical, the URL MUST be provided in the exact form as it was originally provided by the server in the `Location` header.
-
-Usage of the asterisk value (`*`) requests that the server doesn't send any notifications for the operation.
+Because URLs are not per se canonical, registration URLs MUST be provided in the exact form as it was originally provided by the server in the `Location` header.
 
 Multiple values can be provided as a list and/or using multiple lines as described in {{Section 5.2 of RFC9110}}. If the asterisk is used, other values MUST NOT be sent.
 
@@ -406,18 +400,18 @@ Servers SHOULD take measures to avoid such problems. These can include:
 * to delay push messages (usually for a short time),
 * to merge/omit push messages.
 
-Such measures MUST not change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted (the messages are _merged_ into a single one). If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened. So in that case the server could either send two messages (one merged message for the content updates and one for the property update) or even better a single push message that signals both the content and the property update.
+Such measures SHOULD NOT change the overall meaning of the push notifications so that the client can still perform its desired action. For instance, of a series of push messages that contain only content updates and occur shortly after each other, all but the last message can be omitted (the messages are _merged_ into a single one). If one of the push messages signals a property update, it can't be just omitted because the client then wouldn't know that a property update happened. So in that case the server could either send two messages (one merged message for the content updates and one for the property update) or even better a single push message that signals both the content and the property update.
 
 Clients MAY use the `Push-Dont-Notify: *` header to reduce the number of push messages when desired (for instance, for all requests in a batch except the last one). However clients should be aware that it may be possible that the last operation fails and then no push notification is sent at all, so this should be used only when really necessary.
 
 
 ## Removal of Invalid Subscriptions
 
-A WebDAV-Push server MUST ensure that invalid subscriptions (encountered when trying to sending a push notification) are removed at some time.
+A WebDAV-Push server SHOULD remove invalid subscriptions (encountered when trying to sending a push notification) at some time.
 
-An invalid subscription is a subscription that push notifications can't be delivered to. Usually the push service returns an HTTP error code like 404 when it receives a notification for an invalid subscription. There may also be other conditions that render a subscription invalid, like a non-resolvable hostname or an encryption handshake error.
+An invalid subscription is a subscription that push notifications can't be delivered to. Usually the push service returns an HTTP error code like 404 when it receives a notification for an invalid subscription. There may also be other conditions that render a subscription invalid, like a non-resolvable hostname or an encryption error.
 
-A server MAY use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
+A server could use some logic like remembering the last successful delivery plus some tolerance interval to defer removal of an invalid subscription. Doing so will make WebDAV-Push more reliable in case of temporary problems and avoid temporal "holes" between subscription removal and re-registration.
 
 
 
@@ -556,7 +550,7 @@ However because it's possible that the VAPID key changes without possibility to 
 
 Message encryption hides details of push messages from the push services. Before creating the subscription, the client generates a key pair as defined in {{RFC8291}}.
 
-When the client then registers this subscription at the server, it MUST include these subscription properties:
+When the client then registers this subscription at the server, it includes these subscription properties:
 
 * `content-encoding`(((content-encoding XML element))) – how the encrypted content is encoded; currently only `aes128gcm` is supported
 * `subscription-public-key`(((subscription-public-key XML element))) – public key of the user agent's key pair in uncompressed form and base64url encoded; attribute `type="p256dh"` MUST be added to allow different key types in the future
@@ -572,13 +566,6 @@ The server uses these data to encrypt the payload before sending it to the push 
 The push message is delivered via `POST` to the push resource, with `Content-Type: application/xml; charset="UTF-8"`.
 
 The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
-
-For instance, the header value could be derived with a secure hash function from
-
-- the collection topic,
-- whether the push message contains a content update,
-- whether the push message contains a property update, and
-- a secret that is only used for this purpose.
 
 The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical, for instance in slowly changing collections like a holiday calendar could be sent with `Urgency: low`.
 
