@@ -145,7 +145,7 @@ The `supported-triggers` element(((supported-triggers XML element))) MUST contai
 - `content-update` if the resource supports push notifications on content updates (see {{content-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 - `property-update` if the resource supports push notifications on property updates (see {{property-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 
-Clients can use WebDAV `PROPFIND` to retrieve these properties. WebDAV-Push SHOULD only be advertised to clients which are actually allowed to use it.
+Clients can use WebDAV `PROPFIND` to retrieve these properties.
 
 Example:
 
@@ -437,26 +437,6 @@ CalDAV/CardDAV servers that support WebDAV-Push SHOULD support:
   - principals (collections with have a `{DAV:}resourcetype` of `{DAV:}principal` as defined in {{Section 4 of RFC3744}}).
 
 
-# Security Considerations
-
-The general requirements from {{Section 8 of RFC8030}} apply regardless of which transport is used. Especially:
-
-- HTTP over TLS MUST be used for all communications.
-- Mechanisms that provide end-to-end confidentiality, integrity and data origin authentication MUST be used.
-
-Push services could relate clients over metadata and heuristics. For instance, clients which are at the same time notified by a specific WebDAV-Push server have probably subscribed the same resource.
-
-See RFC 3552 and RFC 6973 [^todo]
-
-`Topic` header, don't use insecure hashes [^todo]
-
-How sensitive are the data, how to minimize risks [^todo]
-
-What happens when information leaks [^todo]
-
-What happens when some component is hacked [^todo]
-
-
 # Web Push Transport {#transport-web-push}
 
 WebDAV-Push can be used with Web Push {{RFC8030}} as a transport to deliver WebDAV-Push notifications directly to compliant user agents, like Web browsers which come with their own push service infrastructure.
@@ -562,6 +542,34 @@ The push message is delivered via `POST` to the push resource, with `Content-Typ
 The server MAY send the push message with a `Topic` header so that an undelivered push message can be replaced by an updated one. The server MUST ensure that the meaning doesn't change when a push message is potentially replaced. The `Topic` header is visible to the push service, so its value MUST NOT contain sensitive information.
 
 The server MAY use the `Urgency` header to set the priority of the push message. For instance, a CalDAV server may send push notifications for new/changed events with alarms that are scheduled within the next 15 minutes with `Urgency: high` so that users receive the alarm as soon as possible. Updates that are not that time-critical, for instance in slowly changing collections like a holiday calendar could be sent with `Urgency: low`.
+
+
+
+# Security Considerations
+
+## Security Context
+
+WebDAV-Push operates within the usual security context of WebDAV. Servers usually restrict WebDAV access to authorized users. It makes sense to apply the same restrictions to WebDAV-Push operations (like subscription registration). It's however up to the server to define which WebDAV-Push operations are allowed and under which conditions. If a request is denied because of wrong authentication or security restrictions, the correct HTTP/WebDAV status codes MUST be used (usually 401 or 403).
+
+WebDAV-Push SHOULD only be advertised to clients which are actually allowed to use it.
+
+A server SHOULD restrict all requests to the access and knowledge scope of the currently authenticated user. For instance, when a subscription is registered, the registration can be associcated with the current user. The server should then restrict further usage of the registration URL to that user. The server should deny to update/delete the registration of another user, or to use a registration URL created by another user in the `Push-Dont-Notify` header.
+
+
+## Push Services
+
+Even when push messages are end-to-end-encrypted, push services can relate clients over metadata and heuristics. For instance, clients which are at the same time notified by a specific WebDAV-Push server have probably subscribed the same resource. Push services could also create a map of which clients are registered to which WebDAV-Push servers.
+
+The value of a potential `Topic` header of a push message is not covered by end-to-end encryption because it's require the push service to process it.
+
+
+## Web Push
+
+When using the Web Push transport, the general requirements from {{Section 8 of RFC8030}} apply, especially:
+
+- HTTP over TLS MUST be used for all communications.
+- Mechanisms that provide end-to-end confidentiality, integrity and data origin authentication MUST be used.
+
 
 
 # XML Schema
