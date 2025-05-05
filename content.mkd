@@ -147,7 +147,7 @@ The `supported-triggers` element(((supported-triggers XML element))) MUST contai
 - `content-update` if the resource supports push notifications on content updates (see {{content-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 - `property-update` if the resource supports push notifications on property updates (see {{property-updates}}). It contains a `{DAV:}depth` property that indicates the maximum supported depth.
 
-Clients can use WebDAV `PROPFIND` to retrieve these properties. WebDAV-Push SHOULD only be advertised to clients which are actually allowed to use it.
+Clients can use WebDAV `PROPFIND` to retrieve these properties.
 
 Example:
 
@@ -448,6 +448,8 @@ CalDAV/CardDAV servers that support WebDAV-Push SHOULD support:
 WebDAV-Push operates within the usual security context of WebDAV. Servers usually restrict WebDAV access to authorized users. It makes sense to apply the same restrictions to WebDAV-Push operations (like subscription registration). It's however up to the server to define which WebDAV-Push operations are allowed and under which conditions. If a request is denied because of wrong authentication or missing privileges, the correct HTTP/WebDAV status codes MUST be used.
 
 It's RECOMMENDED
+
+WebDAV-Push SHOULD only be advertised to clients which are actually allowed to use it.
 
 The general requirements from {{Section 8 of RFC8030}} apply regardless of which transport is used. Especially:
 
