@@ -306,11 +306,11 @@ HTTP/1.1 204 Unregistered
 
 ## Expiration
 
-A client can specify an expiration date-time when they register a subscription. A server SHOULD take the requested expiration time into consideration, but MAY impose its own (often stricter) expiration rules, for instance to keep their database clean or because the client has specified an implausible late expiration. A server SHOULD allow subscriptions to be valid at least three days. However when the expiration is too far in the future, it becomes more probable that the subscription will become invalid or stale at some time.
+When a client registers or updates a subscription, it can request a specific expiration date-time. A server SHOULD take the requested expiration time into consideration, but MAY impose its own (often stricter) expiration rules. A server SHOULD allow subscriptions to be valid at least three days. When the expiration is too far in the future, it becomes more probable that the subscription will become invalid or stale at some time.
 
-A client has to refresh its registrations regularly and before the expiration date to keep them working. It can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed.
+A client has to refresh its registrations regularly and before the expiration to keep them working. It can expect that subscriptions usually stay valid until their expiration, although there may be special circumstances that cause all subscriptions to be reset, like when the server software is changed.
 
-Expired subscriptions MUST NOT be used anymore as chances are high that doing so would cause errors.
+A server MUST NOT send a notification to an expired subscription.
 
 
 
@@ -364,6 +364,8 @@ In the context of the requested operation, a server MUST NOT send push notificat
 Because URLs are not per se canonical, registration URLs MUST be provided in the exact form as it was originally provided by the server in the `Location` header.
 
 Multiple values can be provided as a list and/or using multiple lines as described in {{Section 5.2 of RFC9110}}. If the asterisk is used, other values MUST NOT be sent.
+
+A server MUST ignore invalid values.
 
 Example 1:
 
