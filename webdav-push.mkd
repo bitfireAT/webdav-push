@@ -7,8 +7,9 @@ category: exp
 submissionType: independent
 ipr: none
 workgroup: Independent submission
-keyword: WebDAV
-keyword: push
+keyword:
+  - WebDAV
+  - push
 
 stand_alone: yes
 pi: [toc, sortrefs, symrefs]
