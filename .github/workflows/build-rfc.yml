@@ -11,8 +11,6 @@ jobs:
   build:
     name: Generate HTML/TXT
     runs-on: ubuntu-latest
-    env:
-      PATH: ./.venv/bin:./vendor/bundle/bin:./node_modules/.bin:$PATH
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -30,7 +28,11 @@ jobs:
           sudo apt-get install --no-install-recommends -y ruby nodejs npm
 
       - name: Install dependencies
-        run: ./prepare.sh
+        run: |
+          ./prepare.sh
+          echo "./.venv/bin" >> $GITHUB_PATH
+          echo "./vendor/bundle/bin" >> $GITHUB_PATH
+          echo "./node_modules/.bin" >> $GITHUB_PATH
 
       - name: Prepare output directory
         run: mkdir build
