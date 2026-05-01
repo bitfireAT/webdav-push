@@ -21,7 +21,7 @@ Typical use cases:
 
 ## Overview
 
-~~~goat
+~~~aasvg
 .--------------------.   .--------------.   .--------------------.
 | WebDAV-Push Server |   | Push Service |   | WebDAV-Push Client |
 '--------------------'   '--------------'   '--------------------'
@@ -471,7 +471,7 @@ Message encryption ({{message-encryption}}) MUST be used. VAPID(((VAPID))) ({{va
 
 A server that supports the Web Push transport MUST list the `web-push` element(((web-push XML element))) in the `transports` property.
 
-~~~goat
+~~~aasvg
 .--------------------.   .--------------.   .--------------------.
 |                    |   |   Web Push   |   |                    |
 | WebDAV-Push Server |   |   Service    |   | WebDAV-Push Client |

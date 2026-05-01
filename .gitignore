@@ -1,8 +1,15 @@
 .idea/
 .obsidian/
 .refcache/
+
 build/
 
-Gemfile.lock
+# Node.js
 node_modules/
-vendor/
+
+# Python
+.venv/
+
+# Ruby
+vendor/bundle/
+Gemfile.lock
