@@ -284,6 +284,11 @@ A server MUST NOT register a subscription with the same identifier multiple time
 
 The response is the same as for subscription registration.
 
+**Note:** Both registering and updating a subscription use the same POST request to the WebDAV resource. The server distinguishes between these two operations by checking whether the push resource is already registered for that resource. Therefore, when a client needs to change a subscription's push resource, it cannot update the existing subscription because that would require changing the identifier itself. Instead:
+
+- the old subscription for the old push resource has to be removed, and then
+- a new subscription for the new push resource has to be created.
+
 
 ## Subscription Removal
 
