@@ -15,23 +15,37 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: |
-            $HOME/.local/share/gem
-            .refcache
-          key: webdav-push.mkd
+          path: .refcache
+          key: kramdown-refcache
 
-      - name: Install packages
-        run: >
-          sudo apt-get install --no-install-recommends -y golang-go &&
-          sudo gem install kramdown-rfc &&
-          sudo pip3 install svgcheck xml2rfc --break-system-packages &&
-          go install github.com/blampe/goat/cmd/goat@v0.2.0 && echo ~/go/bin >> $GITHUB_PATH
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: '4.0'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'latest'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          npm ci && echo "$GITHUB_WORKSPACE/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Prepare output directory
         run: mkdir build
 
       - name: Kramdown to XML
-        run: kramdown-rfc2629 webdav-push.mkd >build/draft-bitfire-webdav-push-00.xml
+        run: bundle exec kramdown-rfc2629 webdav-push.mkd >build/draft-bitfire-webdav-push-00.xml
 
       - name: XML to HTML
         run: (cd build; xml2rfc --html draft-bitfire-webdav-push-00.xml)
