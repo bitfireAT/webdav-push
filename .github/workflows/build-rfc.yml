@@ -15,35 +15,37 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: |
-            .venv
-            vendor/bundle
-            node_modules
-            .refcache
-          key: webdav-push-deps-${{ hashFiles('requirements.txt', 'Gemfile', 'package.json') }}
+          path: .refcache
+          key: kramdown-refcache
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+          cache: 'pip'
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'
+          bundler-cache: true
+          ruby-version: '4.0'
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: 'latest'
+          cache: 'npm'
 
       - name: Install dependencies
         run: |
-          ./prepare.sh
-          echo "./.venv/bin" >> $GITHUB_PATH
-          echo "./vendor/bundle/bin" >> $GITHUB_PATH
-          echo "./node_modules/.bin" >> $GITHUB_PATH
+          pip install -r requirements.txt
+          npm ci && echo "$GITHUB_WORKSPACE/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Prepare output directory
         run: mkdir build
 
       - name: Kramdown to XML
-        run: kramdown-rfc2629 webdav-push.mkd >build/draft-bitfire-webdav-push-00.xml
+        run: bundle exec kramdown-rfc2629 webdav-push.mkd >build/draft-bitfire-webdav-push-00.xml
 
       - name: XML to HTML
         run: (cd build; xml2rfc --html draft-bitfire-webdav-push-00.xml)

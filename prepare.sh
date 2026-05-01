@@ -15,12 +15,10 @@ deactivate
 
 # Ruby dependencies via bundler (local install)
 bundle config set path 'vendor/bundle'
-bundle config set without 'development test'
 bundle install
 
 # Node.js dependencies (aasvg)
 npm install
-export PATH="$(pwd)/node_modules/.bin:$PATH"
 
 echo "Dependencies installed successfully."
 echo "To use them, prepend to PATH before running build.sh:"
