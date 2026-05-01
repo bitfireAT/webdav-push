@@ -1,6 +1,9 @@
 #!/bin/sh
+
+export KRAMDOWN_DONT_VERIFY_HTTPS=1
+
 mkdir -p build
-kramdown-rfc2629 -3 webdav-push.mkd >build/webdav-push.xml && (cd build; xml2rfc --html webdav-push.xml && xml2rfc --text webdav-push.xml)
+bundle exec kramdown-rfc2629 -3 webdav-push.mkd >build/webdav-push.xml && (cd build; xml2rfc --html webdav-push.xml && xml2rfc --text webdav-push.xml)
 
 echo To view in a browser, run:   xdg-open build/webdav-push.html
 

@@ -11,21 +11,26 @@ jobs:
   build:
     name: Generate HTML/TXT
     runs-on: ubuntu-latest
+    env:
+      PATH: ./.venv/bin:./vendor/bundle/bin:./node_modules/.bin:$PATH
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
           path: |
-            $HOME/.local/share/gem
+            .venv
+            vendor/bundle
+            node_modules
             .refcache
-          key: webdav-push.mkd
+          key: webdav-push-deps-${{ hashFiles('requirements.txt', 'Gemfile', 'package.json') }}
 
-      - name: Install packages
+      - name: Install Ruby and Node.js
         run: >
-          sudo apt-get install --no-install-recommends -y golang-go &&
-          sudo gem install kramdown-rfc &&
-          sudo pip3 install svgcheck xml2rfc --break-system-packages &&
-          go install github.com/blampe/goat/cmd/goat@latest && echo ~/go/bin >> $GITHUB_PATH
+          sudo apt-get update &&
+          sudo apt-get install --no-install-recommends -y ruby nodejs npm
+
+      - name: Install dependencies
+        run: ./prepare.sh
 
       - name: Prepare output directory
         run: mkdir build
