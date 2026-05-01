@@ -22,10 +22,15 @@ jobs:
             .refcache
           key: webdav-push-deps-${{ hashFiles('requirements.txt', 'Gemfile', 'package.json') }}
 
-      - name: Install Ruby and Node.js
-        run: >
-          sudo apt-get update &&
-          sudo apt-get install --no-install-recommends -y ruby nodejs npm
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Install dependencies
         run: |
