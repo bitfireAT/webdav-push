@@ -25,7 +25,7 @@ jobs:
           sudo apt-get install --no-install-recommends -y golang-go &&
           sudo gem install kramdown-rfc &&
           sudo pip3 install svgcheck xml2rfc --break-system-packages &&
-          go install github.com/blampe/goat/cmd/goat@latest && echo ~/go/bin >> $GITHUB_PATH
+          go install github.com/blampe/goat/cmd/goat@v0.2.0 && echo ~/go/bin >> $GITHUB_PATH
 
       - name: Prepare output directory
         run: mkdir build
