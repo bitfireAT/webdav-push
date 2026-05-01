@@ -13,8 +13,6 @@ Typical use cases:
 - A desktop file manager shows contents of a WebDAV collection and wants to be notified on updates in order to refresh the view.
 - A calendar Web app shows a CalDAV collection and wants to be notified on updates in order to refresh the view.
 
-[^todo]: TO BE DONE
-
 
 ## Notational Conventions
 
@@ -283,6 +281,11 @@ Every subscription has a transport-specific unique identifier (the push resource
 A server MUST NOT register a subscription with the same identifier multiple times for the same resource. Instead, when a client wants to register a subscription with an identifier that is already registered for the requested resource, the server MUST update the registration with the given details and the expiration date.
 
 The response is the same as for subscription registration.
+
+**Note:** Both registering and updating a subscription use the same POST request to the WebDAV resource. The server distinguishes between these two operations by checking whether the push resource is already registered for that resource. Therefore, when a client needs to change a subscription's push resource, it cannot update the existing subscription because that would require changing the identifier itself. Instead:
+
+- the old subscription for the old push resource has to be removed, and then
+- a new subscription for the new push resource has to be created.
 
 
 ## Subscription Removal
