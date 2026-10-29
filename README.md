@@ -45,12 +45,24 @@ Currently, the main organizations / people behind WebDAV Push are:
 - [@bitfireAT](https://github.com/bitfireAT) (developers of [DAVx⁵](https://github.com/bitfireAT/davx5-ose)) – very interested in developing Push for WebDAV, especially CalDAV/CardDAV
 - [@verdigado](https://github.com/verdigado) – interested in using CalDAV/CardDAV push
 
-The plan is to
+## Current state (Nov 2026)
 
-- [draft a specification](content.md),
-- make a [first server-side implementation](https://github.com/bitfireAT/nc_ext_dav_push) for [@Nextcloud](https://github.com/nextcloud) (who are interested in supporting that) – it's in development and can already be used for demonstration purposes,
-- make a first client-side implementation for DAVx⁵ – basic support for demonstration purposes is also already available in the lastest releases,
-- ensure that it's usable with [@UnifiedPush](https://github.com/UnifiedPush) (because there's already much awesome open technology available).
+[Specification Draft](content.md) is finished and seems to be working quite nicely for different implementations.
+
+We implemented it in DAVx⁵: Push providers (FCM or [@UnifiedPush](https://github.com/UnifiedPush) can be chosen via the DAVx⁵ settings (bottom).
+
+Available on these servers:
+
+| Name | WebDAV Push Support | Product type |
+| :--------------- | :-----: | :---------: |
+| DAVx⁵            | Yes     | Client |
+| Nextcloud        | Yes (via NC app: dav_push)     | Server |
+| Xandikos         | Yes     | Server |
+| rustical         | Yes     | Server |
+| Chiri            | Yes     | Client |
+| Open Xchange     | Yes     | Server |
+| KDE PIM          | planned | Client |
+
 
 A lot of people have shown their interest in WebDAV-Push. Thank you for all ideas and encouragement!
 
