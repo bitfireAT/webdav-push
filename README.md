@@ -47,18 +47,21 @@ Currently, the main organizations / people behind WebDAV Push are:
 
 ## Current state (Nov 2026)
 
-- [draft a specification](content.md) is finished and seems to be working quite nicely for different implementations
-- implemented in DAVx⁵ - Push [@UnifiedPush](https://github.com/UnifiedPush) providers can be chosen via DAVx⁵ Settings (bottom).
+[Specification Draft](content.md) is finished and seems to be working quite nicely for different implementations.
+
+We implemented it in DAVx⁵: Push providers (FCM or [@UnifiedPush](https://github.com/UnifiedPush) can be chosen via the DAVx⁵ settings (bottom).
 
 Available on these servers:
 
-| Server           | WebDAV Push Support |
-| :--------------- | :-----: |
-| Nextcloud        | Yes (via NC app: dav_push)     |
-| Xandikos         | Yes     |
-| rustical         | Yes     |
-| Chiri            | Yes     |
-| Open Xchange     | Yes     |
+| Name | WebDAV Push Support | Product type |
+| :--------------- | :-----: | :---------: |
+| DAVx⁵            | Yes     | Client |
+| Nextcloud        | Yes (via NC app: dav_push)     | Server |
+| Xandikos         | Yes     | Server |
+| rustical         | Yes     | Server |
+| Chiri            | Yes     | Client |
+| Open Xchange     | Yes     | Server |
+| KDE PIM          | planned | Client |
 
 
 A lot of people have shown their interest in WebDAV-Push. Thank you for all ideas and encouragement!
